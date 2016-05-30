@@ -27,7 +27,7 @@ public class ArduinoOperation {
 	 * 
 	 * @param color
 	 */
-	public int setEntryLED(COLOR color){
+	public int setEntryLED(Color color){
 		return 0;
 	}
 
@@ -35,7 +35,7 @@ public class ArduinoOperation {
 	 * 
 	 * @param color
 	 */
-	public int setExitLED(COLOR color){
+	public int setExitLED(Color color){
 		return 0;
 	}
 }//end ArduinoOperation

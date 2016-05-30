@@ -8,7 +8,7 @@ package com.lge.sureparksystem.parkserver;
  */
 public class MultiColorLED extends LED {
 
-	private COLOR colorStatus;
+	private Color colorStatus;
 
 	public MultiColorLED(){
 
@@ -23,7 +23,7 @@ public class MultiColorLED extends LED {
 
 	}
 
-	public COLOR getColor(){
+	public Color getColor(){
 		return null;
 	}
 
@@ -31,7 +31,7 @@ public class MultiColorLED extends LED {
 	 * 
 	 * @param colorType    colorType
 	 */
-	public void setColor(COLOR colorType){
+	public void setColor(Color colorType){
 
 	}
 }//end MultiColorLED
