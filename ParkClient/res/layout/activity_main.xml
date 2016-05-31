@@ -1,9 +1,75 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    <TextView
-        android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@drawable/architecture_bg" >
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_sure_park" />
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="#99777777" >
+
+        <TextView
+            android:id="@+id/sureparkSystem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:text="@string/loginText"
+            android:theme="@style/login_text" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/sureparkSystem"
+            android:text="@string/id"
+            android:theme="@style/login_text" />
+
+        <EditText
+            android:id="@+id/edit_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView"
+            android:ems="10"
+            android:inputType="text" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/edit_id"
+            android:text="@string/password"
+            android:theme="@style/login_text" />
+
+        <EditText
+            android:id="@+id/edit_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/edit_id"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView2"
+            android:ems="10"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_ok"
+            style="?android:attr/buttonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/edit_password"
+            android:layout_below="@+id/edit_password"
+            android:text="@string/ok"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
+
 </RelativeLayout>
