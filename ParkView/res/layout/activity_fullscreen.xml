@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#000000"
     tools:context="com.lge.sureparksystem.parkview.FullscreenActivity" >
 
     <!--
@@ -17,8 +17,8 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
+        android:text="@string/full_screen_content"
+        android:textColor="#ff0000"
         android:textSize="50sp"
         android:textStyle="bold" />
 
@@ -57,19 +57,12 @@
                 android:layout_weight="1"
                 android:text="@string/qrcode_read_button" />
             <Button
-                android:id="@+id/visual_parking_guide_button"
+                android:id="@+id/slot_guide_button"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/visual_parking_guide_button" />
-            <Button
-                android:id="@+id/audio_parking_guide_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/audio_parking_guide_button" />
+                android:text="@string/slot_guide_button" />
         </LinearLayout>
     </FrameLayout>
 

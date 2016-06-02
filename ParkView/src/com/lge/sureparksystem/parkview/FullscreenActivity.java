@@ -1,7 +1,11 @@
 package com.lge.sureparksystem.parkview;
 
+import java.util.Random;
+
+import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
+import com.lge.sureparksystem.parkview.qrcode.IntentResult;
+import com.lge.sureparksystem.parkview.tts.TTSWrapper;
 import com.lge.sureparksystem.parkview.util.SystemUiHider;
-import com.lge.sureparksystem.parkview.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,8 +13,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -48,8 +54,8 @@ public class FullscreenActivity extends Activity {
 	 */
 	private SystemUiHider mSystemUiHider;
 
-	private TTSController tts = null;
-	private IntentIntegrator integrator = null;
+	private TTSWrapper tts = null;
+	private IntentIntegrator intentIntegrator = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +89,12 @@ public class FullscreenActivity extends Activity {
 					if (mShortAnimTime == 0) {
 						mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 					}
+					
 					controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
 				} else {
 					// If the ViewPropertyAnimator APIs aren't
 					// available, simply show or hide the in-layout UI
-					// controls.
+					// controls.					
 					controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
 				}
 
@@ -115,12 +122,11 @@ public class FullscreenActivity extends Activity {
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
 		findViewById(R.id.welcome_button).setOnTouchListener(mDelayHideTouchListener);
-		findViewById(R.id.qrcode_read_button).setOnTouchListener(mDelayHideTouchListener2);
-		findViewById(R.id.visual_parking_guide_button).setOnTouchListener(mDelayHideTouchListener3);
-		findViewById(R.id.audio_parking_guide_button).setOnTouchListener(mDelayHideTouchListener4);
+		findViewById(R.id.qrcode_read_button).setOnTouchListener(mDelayHideTouchListenerQRCode);
+		findViewById(R.id.slot_guide_button).setOnTouchListener(mDelayHideTouchListenerSlotGuide);
 
-		tts = new TTSController(getApplicationContext());
-		integrator = new IntentIntegrator(FullscreenActivity.this);
+		tts = new TTSWrapper(getApplicationContext());
+		intentIntegrator = new IntentIntegrator(FullscreenActivity.this);
 	}
 
 	@Override
@@ -142,48 +148,50 @@ public class FullscreenActivity extends Activity {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
+				TextView tv = (TextView) findViewById(R.id.fullscreen_content);
+				tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
+				
+				tv.setText("Welcome!\nSure\nPark");
+				
 				tts.speak("Welcome! Sure Park. Please scan your reservation number");
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
+			
 			return false;
 		}
 	};
 
-	View.OnTouchListener mDelayHideTouchListener2 = new View.OnTouchListener() {
+	View.OnTouchListener mDelayHideTouchListenerQRCode = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
-				integrator.initiateScan();
+				intentIntegrator.initiateScan();
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
+			
 			return false;
 		}
 	};
 
-	View.OnTouchListener mDelayHideTouchListener3 = new View.OnTouchListener() {
+	View.OnTouchListener mDelayHideTouchListenerSlotGuide = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
-				/**
-				 * 
-				 */
+				Random r = new Random();
+				int number = r.nextInt(4) + 1;
+				
+				TextView tv = (TextView) findViewById(R.id.fullscreen_content);
+				tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
+				
+				tv.setText(String.valueOf(number));
+				
+				tts.speak("Your Parking Slot is " + number);
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
-			return false;
-		}
-	};
-
-	View.OnTouchListener mDelayHideTouchListener4 = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				tts.speak("Your Parking Slot is TWO!!!");
-
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
+			
 			return false;
 		}
 	};
@@ -204,25 +212,22 @@ public class FullscreenActivity extends Activity {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 	}
-	
+
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		// TODO Auto-generated method stub
 
-		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
 			// handle scan result
-			String string =  scanResult.getContents()==null?"0":scanResult.getContents();
-			if (string.equalsIgnoreCase("0")) {
-				Toast.makeText(this, "Problem to get the  contant Number", Toast.LENGTH_LONG).show();
-
-			}else {
-				Toast.makeText(this, string, Toast.LENGTH_LONG).show();
-
-			}
-
+			String qrcode =  scanResult.getContents();			
+			
+			TextView tv = (TextView) findViewById(R.id.fullscreen_content);
+			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
+			
+			tv.setText(qrcode);
 		}
-		else{
+		else {
 			Toast.makeText(this, "Problem to secan the barcode.", Toast.LENGTH_LONG).show();
 		}
 	}
