@@ -1,19 +1,19 @@
-package com.lge.sureparksystem.parkserver;
+package com.lge.sureparksystem.parkserver.entity;
 
+import java.util.Date;
 
 /**
  * @author yongchul.park
  * @version 1.0
  * @created 30-5-2016 ¿ÀÈÄ 7:16:27
  */
-public class ParkingSlot {
+public class Reservation {
 
-	private boolean assigned;
-	private String id;
-	private LED led;
-	private boolean occupied;
+	private Date date;
+	private Driver driver;
+	private Date time;
 
-	public ParkingSlot(){
+	public Reservation(){
 
 	}
 
@@ -25,4 +25,4 @@ public class ParkingSlot {
 	  throws Throwable{
 
 	}
-}//end ParkingSlot
+}//end Reservation

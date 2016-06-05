@@ -5,6 +5,7 @@
     <string name="welcome_button">Welcome</string>
     <string name="qrcode_read_button">QR Code Reader</string>
     <string name="slot_guide_button">Slot Guide</string>
+    <string name="connect_button">Connect to Server</string>    
     <string name="full_screen_content">Welcome\nSure\nPark</string>
 
 </resources>

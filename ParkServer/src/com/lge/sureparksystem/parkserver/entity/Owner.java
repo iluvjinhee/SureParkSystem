@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver;
+package com.lge.sureparksystem.parkserver.entity;
 
 import java.util.List;
 

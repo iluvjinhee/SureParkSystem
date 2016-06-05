@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
 import com.lge.sureparksystem.parkview.qrcode.IntentResult;
+import com.lge.sureparksystem.parkview.socket.ClientSocket;
 import com.lge.sureparksystem.parkview.tts.TTSWrapper;
 import com.lge.sureparksystem.parkview.util.SystemUiHider;
 
@@ -56,6 +57,7 @@ public class FullscreenActivity extends Activity {
 
 	private TTSWrapper tts = null;
 	private IntentIntegrator intentIntegrator = null;
+	private TextView tv = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class FullscreenActivity extends Activity {
 		findViewById(R.id.welcome_button).setOnTouchListener(mDelayHideTouchListener);
 		findViewById(R.id.qrcode_read_button).setOnTouchListener(mDelayHideTouchListenerQRCode);
 		findViewById(R.id.slot_guide_button).setOnTouchListener(mDelayHideTouchListenerSlotGuide);
+		findViewById(R.id.connect_button).setOnTouchListener(mDelayHideTouchListenerConnect);		
 
 		tts = new TTSWrapper(getApplicationContext());
 		intentIntegrator = new IntentIntegrator(FullscreenActivity.this);
@@ -148,12 +151,9 @@ public class FullscreenActivity extends Activity {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
-				TextView tv = (TextView) findViewById(R.id.fullscreen_content);
-				tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
-				
-				tv.setText("Welcome!\nSure\nPark");
-				
-				tts.speak("Welcome! Sure Park. Please scan your reservation number");
+				String msg = "Welcome! Sure Park.\nPlease scan your reservation number";
+				setDisplay(msg, 100);				
+				tts.speak(msg);
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
@@ -182,12 +182,21 @@ public class FullscreenActivity extends Activity {
 				Random r = new Random();
 				int number = r.nextInt(4) + 1;
 				
-				TextView tv = (TextView) findViewById(R.id.fullscreen_content);
-				tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
-				
-				tv.setText(String.valueOf(number));
-				
+				setDisplay(String.valueOf(number), 250);				
 				tts.speak("Your Parking Slot is " + number);
+
+				delayedHide(AUTO_HIDE_DELAY_MILLIS);
+			}
+			
+			return false;
+		}
+	};
+	
+	View.OnTouchListener mDelayHideTouchListenerConnect = new View.OnTouchListener() {
+		@Override
+		public boolean onTouch(View view, MotionEvent motionEvent) {
+			if (AUTO_HIDE) {
+				connectServer();
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
@@ -220,15 +229,25 @@ public class FullscreenActivity extends Activity {
 		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
 			// handle scan result
-			String qrcode =  scanResult.getContents();			
+			String qrcode =  scanResult.getContents();		
 			
-			TextView tv = (TextView) findViewById(R.id.fullscreen_content);
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
-			
-			tv.setText(qrcode);
+			setDisplay(qrcode, 250);
 		}
 		else {
 			Toast.makeText(this, "Problem to secan the barcode.", Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	void setDisplay(String text, int size) {
+		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
+		
+		tv.setText(text);
+	}
+	
+	void connectServer() {
+		tv = (TextView) findViewById(R.id.fullscreen_content);
+		
+		ClientSocket myClient = new ClientSocket(ClientSocket.IP_ADDRESS, ClientSocket.PORT, tv);
+		myClient.execute();
 	}
 }
