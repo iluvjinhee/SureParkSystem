@@ -1,16 +1,15 @@
 package com.lge.sureparksystem.parkview.socket;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -21,15 +20,18 @@ public class ClientSocket extends AsyncTask<Void, String, Void> {
 
 	String dstAddress;
 	int dstPort;
-	String response = "";
 	TextView textResponse;
+	
+	private Socket socket = null;
+	private PrintWriter out = null;
+	private BufferedReader in = null;
 	
 	public ClientSocket(String addr, int port, TextView textResponse) {
 		dstAddress = addr;
 		dstPort = port;
 		this.textResponse = textResponse;
 	}
-
+	
 	@Override
     protected void onProgressUpdate(String... response) {
 		textResponse.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
@@ -38,34 +40,34 @@ public class ClientSocket extends AsyncTask<Void, String, Void> {
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
-		Socket socket = null;
-
 		try {
 			socket = new Socket(dstAddress, dstPort);
 
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-			byte[] buffer = new byte[1024];
-
-			int bytesRead;
-			InputStream inputStream = socket.getInputStream();			
-			
-			// notice: inputStream.read() will block if no data return			 
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				byteArrayOutputStream.write(buffer, 0, bytesRead);
-				response += byteArrayOutputStream.toString("UTF-8");
-				
-				publishProgress(response);
-				
-				response = "";
+			if(socket.isConnected()) {			
+			    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			    out = new PrintWriter(socket.getOutputStream(), true);
+			    
+			    String response = "";		    
+			    while(true) {
+			    	response = in.readLine();
+			    	if(!response.equals("")) {
+						publishProgress(response);
+			    	}
+			    	
+			    	try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			    }
 			}
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();			
-			response = "UnknownHostException: " + e.toString();
+			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();			
-			response = "IOException: " + e.toString();
+			e.printStackTrace();
 		} finally {
 			if (socket != null) {
 				try {
@@ -83,5 +85,15 @@ public class ClientSocket extends AsyncTask<Void, String, Void> {
 	@Override
 	protected void onPostExecute(Void result) {		
 		super.onPostExecute(result);
-	}	
+	}
+	
+	public void sendMsg(String msg) {
+		try {
+			if(socket.isConnected()) {
+				out.println(msg);
+			}
+		} catch (Exception e) {
+	        Log.i("ClientSocket", "Socket is NULL!!!");
+	    }
+	}
 }

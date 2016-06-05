@@ -1,5 +1,8 @@
 package com.lge.sureparksystem.parkview;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Random;
 
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -14,8 +17,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +32,7 @@ import android.widget.Toast;
 public class FullscreenActivity extends Activity {
 	/**
 	 * Whether or not the system UI should be auto-hidden after
-	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
+	 * {@link #AUTO_HIDE_DELA	Y_MILLIS} milliseconds.
 	 */
 	private static final boolean AUTO_HIDE = true;
 
@@ -57,6 +58,7 @@ public class FullscreenActivity extends Activity {
 	 */
 	private SystemUiHider mSystemUiHider;
 
+	private ClientSocket socketClient = null;
 	private TTSWrapper tts = null;
 	private IntentIntegrator intentIntegrator = null;
 	private TextView tv = null;
@@ -231,9 +233,12 @@ public class FullscreenActivity extends Activity {
 		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
 			// handle scan result
-			String qrcode =  scanResult.getContents();		
-			
-			setDisplay(qrcode, 250);
+			String qrcode =  scanResult.getContents();
+			if(qrcode != null) {
+				setDisplay(qrcode, 50);
+				
+				socketClient.sendMsg(qrcode);			
+			}
 		}
 		else {
 			Toast.makeText(this, "Problem to secan the barcode.", Toast.LENGTH_LONG).show();
@@ -249,7 +254,7 @@ public class FullscreenActivity extends Activity {
 	void connectServer() {
 		tv = (TextView) findViewById(R.id.fullscreen_content);
 		
-		ClientSocket myClient = new ClientSocket(ClientSocket.IP_ADDRESS, ClientSocket.PORT, tv);
-		myClient.execute();
+		socketClient = new ClientSocket(ClientSocket.IP_ADDRESS, ClientSocket.PORT, tv);
+		socketClient.execute();
 	}
 }
