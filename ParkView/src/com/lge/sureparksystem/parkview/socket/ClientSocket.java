@@ -14,7 +14,7 @@ public class ClientSocket {
 	
 	private Socket socket = null;
 	private PrintWriter out = null;
-	private ClientSocketAsync receiver = null;
+	private ClientSocketReceiver receiver = null;
 	
 	Thread thread = new Thread(new Runnable()
 	{
@@ -42,7 +42,7 @@ public class ClientSocket {
 		dstAddress = addr;
 		dstPort = port;
 		
-		receiver = new ClientSocketAsync(textResponse);
+		receiver = new ClientSocketReceiver(textResponse);
 	}
 	
 	public void connect() {
