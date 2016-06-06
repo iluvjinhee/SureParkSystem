@@ -1,8 +1,5 @@
 package com.lge.sureparksystem.parkview;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Random;
 
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -255,6 +252,6 @@ public class FullscreenActivity extends Activity {
 		tv = (TextView) findViewById(R.id.fullscreen_content);
 		
 		socketClient = new ClientSocket(ClientSocket.IP_ADDRESS, ClientSocket.PORT, tv);
-		socketClient.execute();
+		socketClient.connect();
 	}
 }
