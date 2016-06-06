@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
 import com.lge.sureparksystem.parkview.qrcode.IntentResult;
-import com.lge.sureparksystem.parkview.socket.ClientSocket;
+import com.lge.sureparksystem.parkview.socket.SocketForClient;
 import com.lge.sureparksystem.parkview.tts.TTSWrapper;
 import com.lge.sureparksystem.parkview.util.SystemUiHider;
 
@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,35 +28,13 @@ import android.widget.Toast;
  * @see SystemUiHider
  */
 public class FullscreenActivity extends Activity {
-	/**
-	 * Whether or not the system UI should be auto-hidden after
-	 * {@link #AUTO_HIDE_DELA	Y_MILLIS} milliseconds.
-	 */
 	private static final boolean AUTO_HIDE = true;
-
-	/**
-	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-	 * user interaction before hiding the system UI.
-	 */
 	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-	/**
-	 * If set, will toggle the system UI visibility upon interaction. Otherwise,
-	 * will show the system UI visibility upon interaction.
-	 */
 	private static final boolean TOGGLE_ON_CLICK = true;
-
-	/**
-	 * The flags to pass to {@link SystemUiHider#getInstance}.
-	 */
 	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-	/**
-	 * The instance of the {@link SystemUiHider} for this activity.
-	 */
 	private SystemUiHider mSystemUiHider;
 
-	private ClientSocket socketClient = null;
+	private SocketForClient clientSocket = null;
 	private TTSWrapper tts = null;
 	private IntentIntegrator intentIntegrator = null;
 	private TextView tv = null;
@@ -127,10 +106,11 @@ public class FullscreenActivity extends Activity {
 		findViewById(R.id.welcome_button).setOnTouchListener(mDelayHideTouchListener);
 		findViewById(R.id.qrcode_read_button).setOnTouchListener(mDelayHideTouchListenerQRCode);
 		findViewById(R.id.slot_guide_button).setOnTouchListener(mDelayHideTouchListenerSlotGuide);
-		findViewById(R.id.connect_button).setOnTouchListener(mDelayHideTouchListenerConnect);		
 
 		tts = new TTSWrapper(getApplicationContext());
 		intentIntegrator = new IntentIntegrator(FullscreenActivity.this);
+		
+		connectServer();
 	}
 
 	@Override
@@ -197,7 +177,7 @@ public class FullscreenActivity extends Activity {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
-				connectServer();
+
 
 				delayedHide(AUTO_HIDE_DELAY_MILLIS);
 			}
@@ -234,7 +214,7 @@ public class FullscreenActivity extends Activity {
 			if(qrcode != null) {
 				setDisplay(qrcode, 50);
 				
-				socketClient.sendMsg(qrcode);			
+				clientSocket.sendMsg(qrcode);			
 			}
 		}
 		else {
@@ -249,9 +229,28 @@ public class FullscreenActivity extends Activity {
 	}
 	
 	void connectServer() {
+		Log.d("ParkView", "connectServer");
+		
 		tv = (TextView) findViewById(R.id.fullscreen_content);
 		
-		socketClient = new ClientSocket(ClientSocket.IP_ADDRESS, ClientSocket.PORT, tv);
-		socketClient.connect();
+		if(clientSocket == null) {
+			clientSocket = new SocketForClient(SocketForClient.IP_ADDRESS, SocketForClient.PORT, tv);
+			clientSocket.connect();
+		}		
+	}
+	
+	void disconnectServer() {
+		Log.d("ParkView", "disconnectServer");
+		
+		if(clientSocket == null) {
+			clientSocket.disconnect();
+		}		
+	}
+
+	@Override
+	public void finish() {
+		clientSocket.disconnect();
+		
+		super.finish();
 	}
 }

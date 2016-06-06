@@ -63,13 +63,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/slot_guide_button" />
-            <Button
-                android:id="@+id/connect_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/connect_button" />
         </LinearLayout>
     </FrameLayout>
 
