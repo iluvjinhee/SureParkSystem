@@ -14,12 +14,12 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-public class ClientSocketReceiver extends AsyncTask<Socket, String, Void> {
+public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 	TextView textResponse;
 	
 	private BufferedReader in = null;
 	
-	public ClientSocketReceiver(TextView textResponse) {
+	public ReceiverAsync(TextView textResponse) {
 		this.textResponse = textResponse;
 	}
 	
