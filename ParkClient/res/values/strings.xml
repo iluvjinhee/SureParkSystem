@@ -6,7 +6,8 @@
     <string name="loginText">Please insert your information!!</string>
     <string name="id">ID</string>
     <string name="password">Password</string>
-	<string name="ok">Ok</string>
+    <string name="ok">Ok</string>
     <string name="action_settings">Settings</string>
-        <string name="loading">Loading&#8230;</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="create">Create ID</string>
 </resources>

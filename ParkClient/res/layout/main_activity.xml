@@ -38,10 +38,11 @@
 
     <Button
         android:id="@+id/btn_temp"
-        style="?android:attr/buttonBarStyle"
+        style="?android:attr/buttonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:text="Temp Fragment btn"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white" />
+
 </FrameLayout>
