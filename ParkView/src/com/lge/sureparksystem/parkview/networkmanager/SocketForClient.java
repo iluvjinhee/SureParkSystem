@@ -1,8 +1,10 @@
-package com.lge.sureparksystem.parkview.socket;
+package com.lge.sureparksystem.parkview.networkmanager;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import com.lge.sureparksystem.parkview.controller.Controller;
 
 import android.util.Log;
 import android.widget.TextView;
@@ -13,7 +15,8 @@ public class SocketForClient {
 
 	String dstAddress;
 	int dstPort;
-	private TextView tv;
+	
+	private Controller controller;
 	
 	private Socket socket = null;
 	private PrintWriter out = null;
@@ -21,10 +24,10 @@ public class SocketForClient {
 	
 	private Thread socketThread = null;
 	
-	public SocketForClient(String addr, int port, TextView textResponse) {
+	public SocketForClient(String addr, int port, Controller controller) {
 		dstAddress = addr;
 		dstPort = port;
-		this.tv = textResponse;
+		this.controller = controller;
 	}
 	
 	public void connect() {
@@ -36,7 +39,7 @@ public class SocketForClient {
 				        try {
 				        	socket = new Socket(dstAddress, dstPort);
 				        	
-				    		receiver = new ReceiverAsync(tv);
+				    		receiver = new ReceiverAsync(controller);
 				    		
 				        	if(socket.isConnected()) {			
 				    		    out = new PrintWriter(socket.getOutputStream(), true);		    

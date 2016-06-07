@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.socket;
+package com.lge.sureparksystem.parkview.networkmanager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import com.lge.sureparksystem.parkview.controller.Controller;
 
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -15,20 +17,13 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
-	TextView textResponse;
-	
+	private Controller controller = null;
 	private BufferedReader in = null;
 	
-	public ReceiverAsync(TextView textResponse) {
-		this.textResponse = textResponse;
+	public ReceiverAsync(Controller controller) {
+		this.controller = controller;
 	}
 	
-	@Override
-    protected void onProgressUpdate(String... response) {
-		textResponse.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
-		textResponse.setText(response[0]);
-    }
-
 	@Override
 	protected Void doInBackground(Socket... arg0) {
 		Socket socket = arg0[0];
@@ -36,11 +31,11 @@ public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 			if(socket.isConnected()) {			
 			    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			    
-			    String response = "";		    
+			    String msg = "";		    
 			    while(true) {
-			    	response = in.readLine();
-			    	if(!response.equals("")) {
-						publishProgress(response);
+			    	msg = in.readLine();
+			    	if(msg != null && !msg.equals("")) {
+						publishProgress(msg);
 			    	}
 			    }
 			}
@@ -63,6 +58,11 @@ public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 		
 		return null;
 	}
+	
+	@Override
+    protected void onProgressUpdate(String... message) {
+		controller.parseMessage(message[0]);
+    }
 
 	@Override
 	protected void onPostExecute(Void result) {		

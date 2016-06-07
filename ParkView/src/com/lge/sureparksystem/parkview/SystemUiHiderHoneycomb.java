@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.util;
+package com.lge.sureparksystem.parkview;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

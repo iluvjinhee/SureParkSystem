@@ -2,11 +2,11 @@ package com.lge.sureparksystem.parkview;
 
 import java.util.Random;
 
+import com.lge.sureparksystem.parkview.controller.Controller;
+import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
 import com.lge.sureparksystem.parkview.qrcode.IntentResult;
-import com.lge.sureparksystem.parkview.socket.SocketForClient;
 import com.lge.sureparksystem.parkview.tts.TTSWrapper;
-import com.lge.sureparksystem.parkview.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -33,12 +33,11 @@ public class FullscreenActivity extends Activity {
 	private static final boolean TOGGLE_ON_CLICK = true;
 	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 	private SystemUiHider mSystemUiHider;
-
-	private SocketForClient clientSocket = null;
-	private TTSWrapper tts = null;
-	private IntentIntegrator intentIntegrator = null;
-	private TextView tv = null;
 	
+	private Controller controller = null;
+	
+	private TextView fullScreenUI = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,19 +99,16 @@ public class FullscreenActivity extends Activity {
 			}
 		});
 
-		// Upon interacting with UI controls, delay any scheduled hide()
-		// operations to prevent the jarring behavior of controls going away
-		// while interacting with the UI.
-		findViewById(R.id.welcome_button).setOnTouchListener(mDelayHideTouchListener);
-		findViewById(R.id.qrcode_read_button).setOnTouchListener(mDelayHideTouchListenerQRCode);
-		findViewById(R.id.slot_guide_button).setOnTouchListener(mDelayHideTouchListenerSlotGuide);
-
-		tts = new TTSWrapper(getApplicationContext());
-		intentIntegrator = new IntentIntegrator(FullscreenActivity.this);
-		
-		connectServer();
+		controller = new Controller(this);
 	}
 
+	@Override
+	public void finish() {
+		controller.destroy();
+		
+		super.finish();
+	}
+	
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -122,69 +118,6 @@ public class FullscreenActivity extends Activity {
 		// are available.
 		delayedHide(100);
 	}
-
-	/**
-	 * Touch listener to use for in-layout UI controls to delay hiding the
-	 * system UI. This is to prevent the jarring behavior of controls going away
-	 * while interacting with activity UI.
-	 */
-	View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				String msg = "Welcome! Sure Park.\nPlease scan your reservation number";
-				setDisplay(msg, 100);				
-				tts.speak(msg);
-
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			
-			return false;
-		}
-	};
-
-	View.OnTouchListener mDelayHideTouchListenerQRCode = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				intentIntegrator.initiateScan();
-
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			
-			return false;
-		}
-	};
-
-	View.OnTouchListener mDelayHideTouchListenerSlotGuide = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				Random r = new Random();
-				int number = r.nextInt(4) + 1;
-				
-				setDisplay(String.valueOf(number), 250);				
-				tts.speak("Your Parking Slot is " + number);
-
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			
-			return false;
-		}
-	};
-	
-	View.OnTouchListener mDelayHideTouchListenerConnect = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-
-
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			
-			return false;
-		}
-	};
 
 	Handler mHideHandler = new Handler();
 	Runnable mHideRunnable = new Runnable() {
@@ -205,52 +138,17 @@ public class FullscreenActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		// TODO Auto-generated method stub
-
-		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-		if (scanResult != null) {
-			// handle scan result
-			String qrcode =  scanResult.getContents();
-			if(qrcode != null) {
-				setDisplay(qrcode, 50);
-				
-				clientSocket.sendMsg(qrcode);			
-			}
-		}
-		else {
-			Toast.makeText(this, "Problem to secan the barcode.", Toast.LENGTH_LONG).show();
-		}
+		controller.parseActivityResult(requestCode, resultCode, intent);
 	}
 	
-	void setDisplay(String text, int size) {
-		tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
+	public void setDisplay(String msg, int size) {
+		fullScreenUI = (TextView) findViewById(R.id.fullscreen_content);
 		
-		tv.setText(text);
+		fullScreenUI.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
+		fullScreenUI.setText(msg);
 	}
 	
-	void connectServer() {
-		Log.d("ParkView", "connectServer");
-		
-		tv = (TextView) findViewById(R.id.fullscreen_content);
-		
-		if(clientSocket == null) {
-			clientSocket = new SocketForClient(SocketForClient.IP_ADDRESS, SocketForClient.PORT, tv);
-			clientSocket.connect();
-		}		
-	}
-	
-	void disconnectServer() {
-		Log.d("ParkView", "disconnectServer");
-		
-		if(clientSocket == null) {
-			clientSocket.disconnect();
-		}		
-	}
-
-	@Override
-	public void finish() {
-		clientSocket.disconnect();
-		
-		super.finish();
+	public TextView getFullScreenUI() {
+		return fullScreenUI;
 	}
 }

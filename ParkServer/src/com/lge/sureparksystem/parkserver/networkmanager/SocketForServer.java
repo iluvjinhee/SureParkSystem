@@ -1,10 +1,12 @@
-package com.lge.sureparksystem.parkserver.socket;
+package com.lge.sureparksystem.parkserver.networkmanager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import com.lge.sureparksystem.parkserver.event.ParkViewEvent;
 
 public class SocketForServer extends Thread {
 	
@@ -32,12 +34,14 @@ public class SocketForServer extends Thread {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 
-			send("Sure Park System");
+			send(ParkViewEvent.WELCOME_SUREPARK.toString());
 
 			while (true) {
 				String input = in.readLine();
 				
-				receive(input.toUpperCase());
+				if(input != null && !input.equals("")) {
+					receive(input.toUpperCase());
+				}
 			}
 		} catch (IOException e) {
 			log("Error handling client# " + clientNumber + ": " + e);

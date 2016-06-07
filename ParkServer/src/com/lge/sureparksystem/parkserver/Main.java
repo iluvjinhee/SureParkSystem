@@ -8,7 +8,8 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lge.sureparksystem.parkserver.socket.SocketForServer;
+import com.lge.sureparksystem.parkserver.event.ParkViewEvent;
+import com.lge.sureparksystem.parkserver.networkmanager.SocketForServer;
 
 public class Main {
 	static List<SocketForServer> socketForServerList = null;
@@ -36,7 +37,7 @@ public class Main {
 						
 						if(keyMsg != null) {						
 							for(SocketForServer socketForServer : socketForServerList) {
-								socketForServer.send(keyMsg);
+								socketForServer.send(mapCommand(Integer.parseInt(keyMsg)).toString());
 							}
 						}
 					} catch (IOException e) {
@@ -57,5 +58,26 @@ public class Main {
 		} finally {
 			serverSocket.close();
 		}
+	}
+	
+	public static ParkViewEvent mapCommand(int commandIndex) {
+		ParkViewEvent parkViewEvent = null;
+		
+		switch(commandIndex) {
+		case 1:
+			parkViewEvent = ParkViewEvent.WELCOME_SUREPARK;
+			break;
+		case 2:
+			parkViewEvent = ParkViewEvent.SCAN_CONFIRM;
+			break;
+		case 3:
+			parkViewEvent = ParkViewEvent.ASSIGN_SLOT;
+			break;
+		default:
+			parkViewEvent = ParkViewEvent.WELCOME_SUREPARK;
+			break;
+		}
+		
+		return parkViewEvent;
 	}
 }

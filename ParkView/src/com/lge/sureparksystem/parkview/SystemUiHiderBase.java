@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.util;
+package com.lge.sureparksystem.parkview;
 
 import android.app.Activity;
 import android.view.View;
