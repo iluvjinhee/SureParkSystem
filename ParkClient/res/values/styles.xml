@@ -4,8 +4,8 @@
 
     <style name="AppTheme" parent="AppBaseTheme"></style>
     <style name="login_text">
-        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
-
+    
 </resources>
