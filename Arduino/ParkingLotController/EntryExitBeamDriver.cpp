@@ -21,12 +21,14 @@
 #include <SPI.h>
 #include "EntryExitBeamDriver.h"
 
+#define CHATTERING_CNT	8
+
 #define EntryBeamRcvr  34 
 #define ExitBeamRcvr   35
 
 
-int EntryBeamState;
-int ExitBeamState;
+static int EntryBeamState;
+static int ExitBeamState;
 
         
 void EntryExitBeamSetup() 
@@ -36,31 +38,97 @@ void EntryExitBeamSetup()
 
   pinMode(ExitBeamRcvr, INPUT);      // Make exit IR rcvr an input
   digitalWrite(ExitBeamRcvr, HIGH);  // enable the built-in pullup
-
-  Serial.begin(9600);
 }
-     
+
 void EntryExitBeamLoop()
 {
-  EntryBeamState = digitalRead(EntryBeamRcvr);  // Here we read the state of the
-                                                // entry beam.
+	static int EntryBeamInput;
+	static int EntryBeamBuff;
+	static int EntryBeamChatCnt=0;
 
-  if (EntryBeamState == LOW)  // if EntryBeamState is LOW the beam is broken
-  {   
-    Serial.println("Entry beam broken");
-  } else {
-    Serial.println("Entry beam is not broken.");
-  }
+	static int ExitBeamInput;
+	static int ExitBeamBuff;
+	static int ExitBeamChatCnt=0;
 
-  ExitBeamState = digitalRead(ExitBeamRcvr);  // Here we read the state of the
-                                              // exit beam.  
-  if (ExitBeamState == LOW)  // if ExitBeamState is LOW the beam is broken
-  {     
-    Serial.println("Exit beam broken");
-  } else {
-    Serial.println("Exit beam is not broken.");
-  }
-  delay(1000);  
+
+	EntryBeamInput = digitalRead(EntryBeamRcvr);  // Here we read the state of the
+	                                            // entry beam.
+	// Entry Gate
+	if (EntryBeamInput != EntryBeamBuff)  //
+	{   
+		EntryBeamChatCnt = 0;
+	}
+	else
+	{
+		EntryBeamChatCnt++;
+	}
+
+	EntryBeamBuff = EntryBeamInput;
+
+	if( EntryBeamChatCnt > CHATTERING_CNT )
+	{
+		if( EntryBeamInput == LOW )
+		{
+			EntryBeamState = BROKEN;
+		}
+		else
+		{
+			EntryBeamState = NOTBROKEN;
+		}
+	}
+	else
+	{
+		;
+	}
+
+
+	// Exit Gate
+	ExitBeamInput = digitalRead(ExitBeamRcvr);  // Here we read the state of the
+	                                          // exit beam.  
+	if (ExitBeamInput != ExitBeamBuff)
+	{
+		ExitBeamChatCnt = 0;
+	}
+	else
+	{
+		ExitBeamChatCnt++;
+	}
+
+	ExitBeamBuff = ExitBeamInput;
+
+
+	if( ExitBeamChatCnt > CHATTERING_CNT )
+	{
+		if( ExitBeamInput == LOW )
+		{
+			ExitBeamState = BROKEN;
+		}
+		else
+		{
+			ExitBeamState = NOTBROKEN;
+		}
+	}
+	else
+	{
+		;
+	}
+	
+	//Serial.println("Exit beam is not broken."); High
+
+
 }
+
+
+int GetEntryGateStatus()
+{
+	return EntryBeamState;
+}
+
+int GetExitGateStatus()
+{
+	return ExitBeamState;
+}
+
+
 
 

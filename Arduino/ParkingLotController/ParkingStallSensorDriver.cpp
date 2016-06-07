@@ -28,44 +28,150 @@
 #include <SPI.h>
 #include "ParkingStallSensorDriver.h"
 
-long ProximityVal(int Pin);
+#define AVG_CNT		4
+#define DEFAULT_OCCUPIED_SENSITIVITY	5
+#define DEFAULT_UNOCCUPIED_SENSITIVITY	5
 
-#define Stall1SensorPin 30
-#define Stall2SensorPin 31
-#define Stall3SensorPin 32
-#define Stall4SensorPin 33
+static long ProximityVal(int Pin);
+
 
 static long  Stall1SensorVal;
 static long  Stall2SensorVal;
 static long  Stall3SensorVal;
 static long  Stall4SensorVal;
 
+static int acStallSensorPin[STALLSENSOR_MAX] = {30, 31, 32, 33};
+static long alStallSensorVal[STALLSENSOR_MAX];
+
+static unsigned int auiStallSensorSum[STALLSENSOR_MAX]={0};
+
+//regulated sensor value
+static unsigned char aucStallSensorCur[STALLSENSOR_MAX]={0};
+static unsigned char aucStallSensorPrev[STALLSENSOR_MAX]={0};
+
+
+//sensitivity
+static unsigned char aucStallSensorOccufiedSensitivity[STALLSENSOR_MAX];
+static unsigned char aucStallSensorUnOccufiedSensitivity[STALLSENSOR_MAX];
+
+
+//final result
+static int aiStallSensorStatus[STALLSENSOR_MAX]={UNOCCUFIED};
+
+static int iStallSensorReady = 0;
+
+
 void ParkingStallSensorSetup()
 {
-    // Debug terminal
-    Serial.begin(9600);
+	SetStallSensorOccufiedSensitivity(STALLSENSOR_001, DEFAULT_OCCUPIED_SENSITIVITY);
+	SetStallSensorOccufiedSensitivity(STALLSENSOR_002, DEFAULT_OCCUPIED_SENSITIVITY);
+	SetStallSensorOccufiedSensitivity(STALLSENSOR_003, DEFAULT_OCCUPIED_SENSITIVITY);
+	SetStallSensorOccufiedSensitivity(STALLSENSOR_004, DEFAULT_OCCUPIED_SENSITIVITY);
+
+	SetStallSensorUnOccufiedSensitivity(STALLSENSOR_001, DEFAULT_UNOCCUPIED_SENSITIVITY);
+	SetStallSensorUnOccufiedSensitivity(STALLSENSOR_002, DEFAULT_UNOCCUPIED_SENSITIVITY);
+	SetStallSensorUnOccufiedSensitivity(STALLSENSOR_003, DEFAULT_UNOCCUPIED_SENSITIVITY);
+	SetStallSensorUnOccufiedSensitivity(STALLSENSOR_004, DEFAULT_UNOCCUPIED_SENSITIVITY);
+
 }
 
 void ParkingStallSensorLoop()
 {
-    Stall1SensorVal = ProximityVal(Stall1SensorPin); //Check parking space 1
-    Serial.print("  Stall 1 = ");
-    Serial.print(Stall1SensorVal);
-    
-    Stall2SensorVal = ProximityVal(Stall2SensorPin); //Check parking space 2
-    Serial.print("  Stall 2 = ");
-    Serial.print(Stall2SensorVal);
+	static int i=0;
+	static int j=0;
+	
+	alStallSensorVal[i] = ProximityVal(acStallSensorPin[i]);
 
-    Stall3SensorVal = ProximityVal(Stall3SensorPin); //Check parking space 3
-    Serial.print("  Stall 3 = ");
-    Serial.print(Stall3SensorVal);
+	auiStallSensorSum[i] += map(alStallSensorVal[i], 0, 1023, 0, 255);
 
-    Stall4SensorVal =  ProximityVal(Stall4SensorPin); //Check parking space 4
-    Serial.print("  Stall 4 = ");
-    Serial.println(Stall4SensorVal);
- 
-    delay(1000);
+	i++;
+
+	// every turn change sensor
+	if( i >= STALLSENSOR_MAX )
+	{
+		i=0;
+		j++;
+	}
+
+	//data smoothing
+	if( j >= AVG_CNT )
+	{
+		j=0;
+
+		for( int k=0 ; k<STALLSENSOR_MAX ; k++ )
+		{
+			aucStallSensorPrev[k] = aucStallSensorCur[k];
+			aucStallSensorCur[k] = auiStallSensorSum[k]/AVG_CNT;
+			auiStallSensorSum[k] = 0;
+
+			switch( aiStallSensorStatus[k] )
+			{
+				case OCCUFIED :
+					aiStallSensorStatus[k] = aucStallSensorPrev[k] - aucStallSensorCur[k] > aucStallSensorOccufiedSensitivity[k] ? UNOCCUFIED : OCCUFIED;
+					break;
+
+				case UNOCCUFIED :
+					aiStallSensorStatus[k] = aucStallSensorCur[k] - aucStallSensorPrev[k] > aucStallSensorUnOccufiedSensitivity[k] ? OCCUFIED : UNOCCUFIED;
+					break;
+
+				default :
+					break;
+			}
+		}
+
+
+#if 0
+		Serial.print(aiStallSensorStatus[0]);
+		Serial.print(", ");
+		Serial.print(aiStallSensorStatus[1]);
+		Serial.print(", ");
+		Serial.print(aiStallSensorStatus[2]);
+		Serial.print(", ");
+		Serial.print(aiStallSensorStatus[3]);
+		Serial.print("\n");
+#endif
+	
+	}
+
 }
+
+int GetStallSensorOccupied(T_StallSensorID t_StallSensorId)
+{
+	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
+	else return aiStallSensorStatus[t_StallSensorId]; 
+}
+
+int SetStallSensorOccufiedSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt)
+{
+	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
+	else
+	{
+		return (int)(aucStallSensorOccufiedSensitivity[t_StallSensorId] = ucSt) ; 
+	}
+}
+
+int SetStallSensorUnOccufiedSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt)
+{
+	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
+	else
+	{
+		return (int)(aucStallSensorUnOccufiedSensitivity[t_StallSensorId] = ucSt) ; 
+	}
+}
+
+int __debug_print_stallsensor(void)
+{
+		Serial.print("StallSensorVal : ");
+		Serial.print(aucStallSensorCur[0]);
+		Serial.print(", ");
+		Serial.print(aucStallSensorCur[1]);
+		Serial.print(", ");
+		Serial.print(aucStallSensorCur[2]);
+		Serial.print(", ");
+		Serial.print(aucStallSensorCur[3]);
+		Serial.println("\n");
+}
+
 
 /*********************************************************************
 * long ProximityVal(int Pin)
@@ -84,7 +190,7 @@ void ParkingStallSensorLoop()
 * Given the closeness of the object in this application you will get
 * 0 if the sensor is covered
 ***********************************************************************/
-long ProximityVal(int Pin)
+static long ProximityVal(int Pin)
 {
     long duration = 0;
     pinMode(Pin, OUTPUT);         // Sets pin as OUTPUT
@@ -99,4 +205,6 @@ long ProximityVal(int Pin)
     }   
     return duration;              // Returns the duration of the pulse
 }
+
+
 

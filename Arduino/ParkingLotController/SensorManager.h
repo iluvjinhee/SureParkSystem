@@ -19,23 +19,32 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _ENTERYEXITBEAMDRIVER_H_
-#define _ENTERYEXITBEAMDRIVER_H_
+#ifndef _SENSORMANAGER_H_
+#define _SENSORMANAGER_H_
 
+#include <SPI.h>
+#include "ParkingStallSensorDriver.h"
+#include "EntryExitBeamDriver.h"
 
 typedef enum
 {
-	BROKEN = 0,	///< Beam Status : Broken
-	NOTBROKEN,	///< Beam Status : Not Broken
-}T_BeamStatus;
+	PARKSLOT_001 = 0,	///< PARK Slot 1
+	PARKSLOT_002,			///< PARK Slot 2
+	PARKSLOT_003,			///< PARK Slot 3
+	PARKSLOT_004,			///< PARK Slot 4
+	PARKSLOT_MAX			///< PARK Slot Max
+}T_ParkingSlotID;
 
-void EntryExitBeamSetup();
-void EntryExitBeamLoop();
-int GetEntryGateStatus();
-int GetExitGateStatus();
+void SensorManagerSetup(void);  
+void SensorManagerLoop(void); 
+int CheckParkSlotOccupied(T_ParkingSlotID t_ParkSlotID);
+int DriverArriveAtEntryGate(void);
+int DriverLeaveAtEntryGate(void);
+int DriverArriveAtExitGate(void);
+int DriverLeaveAtExitGate(void);
 
 
-#endif // _ENTERYEXITBEAMDRIVER_H_
+#endif // _SENSORMANAGER_H_
 
 /* End of File */
 

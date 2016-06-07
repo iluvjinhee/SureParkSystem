@@ -19,23 +19,19 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _ENTERYEXITBEAMDRIVER_H_
-#define _ENTERYEXITBEAMDRIVER_H_
+#ifndef _COMMMANAGER_H_
+#define _COMMMANAGER_H_
 
+#include <SPI.h>
+#include <WiFi.h>
 
-typedef enum
-{
-	BROKEN = 0,	///< Beam Status : Broken
-	NOTBROKEN,	///< Beam Status : Not Broken
-}T_BeamStatus;
+void SetSendToServer(int iOnOff);
+int GetSendToServer(void);
 
-void EntryExitBeamSetup();
-void EntryExitBeamLoop();
-int GetEntryGateStatus();
-int GetExitGateStatus();
+void CommManagerSetup();
+void CommManagerLoop();
 
-
-#endif // _ENTERYEXITBEAMDRIVER_H_
+#endif // _COMMMANAGER_H_
 
 /* End of File */
 

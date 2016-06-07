@@ -19,12 +19,18 @@
 #ifndef _LEDDRIVER_H_
 #define _LEDDRIVER_H_
 
-void InitEntryExitLEDs();
-
+void LEDSetup() ;
+void SetEntryGateLED_Red(void);
+void SetEntryGateLED_Green(void);
+void SetExitGateLED_Red(void);
+void SetExitGateLED_Green(void);
+void SetParkingStallLED(int iIndex, bool bOnOff);
 
 #endif // _LEDDRIVER_H_
 
 /* End of File */
+
+
 
 
 

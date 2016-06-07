@@ -33,18 +33,17 @@ static Servo ExitGateServo;
 
 void GateLiftSetup() 
 { 
- 
-  // Initialize the Serial port:
-  Serial.begin(9600);
-  
   // Map servo to pin
   EntryGateServo.attach(EntryGateServoPin);
   ExitGateServo.attach(ExitGateServoPin);
 
+  EntryGateClose();
+  ExitGateClose();
 } 
 
 void GateLiftLoop() 
 {
+#if 0
   Serial.println( "Close Both Gates" );  //Here we close both gates
   EntryGateServo.write(Close); 
   ExitGateServo.write(Close);  
@@ -65,5 +64,28 @@ void GateLiftLoop()
   Serial.println( "Close Exit Gate" );   //Here we close the exit gate
   ExitGateServo.write(Close);
   delay( delayvalue );
+#endif  
 } 
+
+void EntryGateClose(void)
+{
+	EntryGateServo.write(Close); 
+}
+
+void EntryGateOpen(void)
+{
+	EntryGateServo.write(Open); 
+}
+
+void ExitGateClose(void)
+{
+	ExitGateServo.write(Close);  
+}
+
+void ExitGateOpen(void)
+{
+	ExitGateServo.write(Open);  
+}
+
+
 

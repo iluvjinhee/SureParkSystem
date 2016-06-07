@@ -19,23 +19,15 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _ENTERYEXITBEAMDRIVER_H_
-#define _ENTERYEXITBEAMDRIVER_H_
+#ifndef _CONTROLMANAGER_H_
+#define _CONTROLMANAGER_H_
 
 
-typedef enum
-{
-	BROKEN = 0,	///< Beam Status : Broken
-	NOTBROKEN,	///< Beam Status : Not Broken
-}T_BeamStatus;
-
-void EntryExitBeamSetup();
-void EntryExitBeamLoop();
-int GetEntryGateStatus();
-int GetExitGateStatus();
+void ControlManagerSetup();
+void ControlManagerLoop();
 
 
-#endif // _ENTERYEXITBEAMDRIVER_H_
+#endif // _CONTROLMANAGER_H_
 
 /* End of File */
 

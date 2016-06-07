@@ -25,13 +25,35 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _PARKINGLOTCONTROLLER_H_
-#define _PARKINGLOTCONTROLLER_H_
+#ifndef _PARKINGSTALLSENSORDRIVER_H_
+#define _PARKINGSTALLSENSORDRIVER_H_
 
+typedef enum
+{
+	STALLSENSOR_001 = 0,	///< Stall Sensor 1
+	STALLSENSOR_002,			///< Stall Sensor 2
+	STALLSENSOR_003,			///< Stall Sensor 3
+	STALLSENSOR_004,			///< Stall Sensor 4
+	STALLSENSOR_MAX				///< Stall Sensor Max
+}T_StallSensorID;
 
-#endif // _PARKINGLOTCONTROLLER_H_
+#define OCCUFIED		1
+#define UNOCCUFIED	0
+
+int __debug_print_stallsensor(void);
+
+void ParkingStallSensorSetup();
+void ParkingStallSensorLoop();
+
+int GetStallSensorOccupied(T_StallSensorID t_StallSensorId);
+int SetStallSensorOccufiedSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt);
+int SetStallSensorUnOccufiedSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt);
+
+#endif // _PARKINGSTALLSENSORDRIVER_H_
 
 /* End of File */
+
+
 
 
 
