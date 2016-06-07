@@ -1,8 +1,10 @@
 package com.lge.sureparksystem.parkview.controller;
 
-import java.util.Random;
+import org.json.simple.JSONObject;
 
-import com.lge.sureparksystem.parkserver.event.ParkViewEvent;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.SocketMessage;
 import com.lge.sureparksystem.parkview.FullscreenActivity;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -60,39 +62,48 @@ public class Controller {
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
 				fullScreen.setDisplay(qrcode, 50);
-				clientSocket.sendMsg(qrcode);			
+				
+				JSONObject jsonObject =
+						MessageParser.makeJSONObject(new SocketMessage(MessageType.RESERVATION_NUMBER, qrcode));
+				
+				clientSocket.send(jsonObject);			
 			}
 		}
 	}
 
-	public void welcome(String msg) {
-		fullScreen.setDisplay(msg, 100);				
+	public void welcome() {
+		String msg = "Welcome! Sure Park.";
+		
+		fullScreen.setDisplay(msg, 50);				
 		tts.speak(msg);
 	}
 	
-	public void assignSlot(String msg, int slotIndex) {
-		fullScreen.setDisplay(String.valueOf(slotIndex), 250);				
-		tts.speak(msg + slotIndex);
+	public void assignSlot(int slot) {
+		String msg = "Your Park Slot is ";		
+		
+		fullScreen.setDisplay(String.valueOf(slot), 250);				
+		tts.speak(msg + slot);
 	}
 	
-	public void scanConfirmation(String msg) {
+	public void scanConfirmation() {
+		String msg = "Scan your confirmation number.";	
+	    
 		tts.speak(msg);
 		intentIntegrator.initiateScan();
 	}
 
-	public void parseMessage(String msg) {
-		switch(ParkViewEvent.fromString(msg)) {
+	public void parseJSONMessage(String jsonMessage) {
+		SocketMessage socketMessage = MessageParser.parseJSONMessage(jsonMessage);
+		
+		switch(socketMessage.getMessageType()) {
 		case WELCOME_SUREPARK:
-			welcome(msg);
+			welcome();
 			break;
 		case SCAN_CONFIRM:
-			scanConfirmation(msg);
+			scanConfirmation();
 			break;
 		case ASSIGN_SLOT:
-			Random r = new Random();
-			int slotNumber = r.nextInt(4) + 1;
-			
-			assignSlot(msg, slotNumber);
+			assignSlot(Integer.parseInt(socketMessage.getGlobalValue()));
 			break;
 		default:
 			break;		

@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver;
+package com.lge.sureparksystem.parkserver.communicationmanager;
 
 public class ConsolePrint {
 	public static void send(String message) {

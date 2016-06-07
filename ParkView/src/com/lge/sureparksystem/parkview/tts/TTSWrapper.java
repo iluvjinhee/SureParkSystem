@@ -4,12 +4,16 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
+import android.widget.Toast;
 
 public class TTSWrapper {
 
+	private Context context = null;
 	private TextToSpeech tts = null;
 	
-	public TTSWrapper(Context context) {
+	public TTSWrapper(final Context context) {
+		this.context = context;
+		
 		tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
 			@Override
 			public void onInit(int status) {
