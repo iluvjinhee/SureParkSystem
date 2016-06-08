@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="MS949" standalone="no"?>
 <jardesc>
-    <jar path="ParkServer/ParkViewEvent.jar"/>
+    <jar path="ParkServer/SocketMessage.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/ParkServer/export_jar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
@@ -11,6 +11,6 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=ParkServer/src&lt;com.lge.sureparksystem.parkserver.event"/>
+        <javaElement handleIdentifier="=ParkServer/src&lt;com.lge.sureparksystem.parkserver.message"/>
     </selectedElements>
 </jardesc>

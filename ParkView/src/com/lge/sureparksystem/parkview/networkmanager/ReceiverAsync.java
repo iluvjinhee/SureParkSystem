@@ -31,11 +31,11 @@ public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 			if(socket.isConnected()) {			
 			    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			    
-			    String msg = "";		    
+			    String jsonMessage = "";		    
 			    while(true) {
-			    	msg = in.readLine();
-			    	if(msg != null && !msg.equals("")) {
-						publishProgress(msg);
+			    	jsonMessage = in.readLine();
+			    	if(jsonMessage != null && !jsonMessage.equals("")) {
+						publishProgress(jsonMessage);
 			    	}
 			    }
 			}
@@ -60,8 +60,8 @@ public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 	}
 	
 	@Override
-    protected void onProgressUpdate(String... message) {
-		controller.parseMessage(message[0]);
+    protected void onProgressUpdate(String... jsonMessage) {
+		controller.parseJSONMessage(jsonMessage[0]);
     }
 
 	@Override

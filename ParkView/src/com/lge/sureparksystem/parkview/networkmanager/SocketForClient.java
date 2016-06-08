@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.json.simple.JSONObject;
+
 import com.lge.sureparksystem.parkview.controller.Controller;
 
 import android.util.Log;
@@ -78,7 +80,7 @@ public class SocketForClient {
 		socketThread = null;
 	}
 	
-	public void sendMsg(String msg) {
-		out.println(msg);
+	public void send(JSONObject jsonObject) {
+		out.println(jsonObject.toJSONString());
 	}
 }
