@@ -9,20 +9,36 @@ public class MessageParser {
 		SocketMessage socketMessage = new SocketMessage();
 		
 		JSONParser jsonParser = new JSONParser();
-		JSONObject obj = null;
+		JSONObject jsonObject = null;
 		try {
-			obj = (JSONObject) jsonParser.parse(jsonMessage);
+			jsonObject = (JSONObject) jsonParser.parse(jsonMessage);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		if(obj.get(SocketMessage.MESSAGE_TYPE) != null) {
-			Long l = (Long) obj.get(SocketMessage.MESSAGE_TYPE);			
+		if(jsonObject.get(SocketMessage.MESSAGE_TYPE) != null) {
+			Long l = (Long) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
 			socketMessage.setMessageType(MessageType.fromValue(l.intValue()));
 		}
-		if(obj.get(SocketMessage.GLOBAL_VALUE) != null) {
-			socketMessage.setGlobalValue((String) obj.get(SocketMessage.GLOBAL_VALUE));
+		if(jsonObject.get(SocketMessage.GLOBAL_VALUE) != null) {
+			socketMessage.setGlobalValue((String) jsonObject.get(SocketMessage.GLOBAL_VALUE));
+		}
+		
+		return socketMessage;
+	}
+	
+	public static SocketMessage parseJSONObject(JSONObject jsonObject) {
+		SocketMessage socketMessage = new SocketMessage();
+		
+		JSONParser jsonParser = new JSONParser();
+		
+		if(jsonObject.get(SocketMessage.MESSAGE_TYPE) != null) {
+			Long l = (Long) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
+			socketMessage.setMessageType(MessageType.fromValue(l.intValue()));
+		}
+		if(jsonObject.get(SocketMessage.GLOBAL_VALUE) != null) {
+			socketMessage.setGlobalValue((String) jsonObject.get(SocketMessage.GLOBAL_VALUE));
 		}
 		
 		return socketMessage;
@@ -34,6 +50,7 @@ public class MessageParser {
 		switch(socketMessage.getMessageType()) {
 		case WELCOME_SUREPARK:
 		case SCAN_CONFIRM:
+		case NOT_RESERVED:
 			jsonObject.put(SocketMessage.MESSAGE_TYPE, socketMessage.getMessageType().getValue());
 			break;
 		case RESERVATION_NUMBER:

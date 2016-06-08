@@ -5,7 +5,9 @@ public enum MessageType {
     WELCOME_SUREPARK(1),
     SCAN_CONFIRM(2),
     RESERVATION_NUMBER(3),
-    ASSIGN_SLOT(4);
+    ASSIGN_SLOT(4),
+    NOT_RESERVED(5),
+    NONE(1000);
 	
 	private int value;
 	
@@ -29,6 +31,8 @@ public enum MessageType {
             return RESERVATION_NUMBER;
         case 4:
             return ASSIGN_SLOT;
+        case 5:
+        	return NOT_RESERVED;
         }
         
         return null;

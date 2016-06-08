@@ -61,7 +61,7 @@ public class Controller {
 			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
-				fullScreen.setDisplay(qrcode, 50);
+				//fullScreen.setDisplay(qrcode, 50);
 				
 				JSONObject jsonObject =
 						MessageParser.makeJSONObject(new SocketMessage(MessageType.RESERVATION_NUMBER, qrcode));
@@ -72,17 +72,24 @@ public class Controller {
 	}
 
 	public void welcome() {
-		String msg = "Welcome! Sure Park.";
+		String msg = "Welcome!\n Sure Park.";
 		
 		fullScreen.setDisplay(msg, 50);				
 		tts.speak(msg);
 	}
 	
 	public void assignSlot(int slot) {
-		String msg = "Your Park Slot is ";		
+		String msg = "Hello Diniel, Your Park Slot is ";		
 		
 		fullScreen.setDisplay(String.valueOf(slot), 250);				
 		tts.speak(msg + slot);
+	}
+	
+	public void notReserved() {
+		String msg = "Sorry. You're not reserved.";	
+	    
+		fullScreen.setDisplay("You're not reserved.", 50);	
+		tts.speak(msg);
 	}
 	
 	public void scanConfirmation() {
@@ -104,6 +111,9 @@ public class Controller {
 			break;
 		case ASSIGN_SLOT:
 			assignSlot(Integer.parseInt(socketMessage.getGlobalValue()));
+			break;
+		case NOT_RESERVED:
+			notReserved();
 			break;
 		default:
 			break;		

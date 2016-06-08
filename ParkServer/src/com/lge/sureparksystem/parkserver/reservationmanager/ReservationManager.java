@@ -1,15 +1,31 @@
 package com.lge.sureparksystem.parkserver.reservationmanager;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class ReservationManager {
 	public boolean isValid(String confirmationNumber) {
-		return isValidEmailAddress(confirmationNumber);
-	}
-
-	public static boolean isValidEmailAddress(String email) {
-		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-		java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-		java.util.regex.Matcher m = p.matcher(email);
+		boolean result = false;
 		
-		return m.matches();
+		result = isValidConfirmationNumber_Temporary(confirmationNumber);
+		
+		return result;
+	}
+	
+	boolean isValidConfirmationNumber_Temporary(String confirmationNumber) {
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(confirmationNumber);
+		} catch (ParseException e) {
+			return false;
+		}
+		
+		if(jsonObject.get("Name") != null) {
+			return true;
+		}
+		
+		return false;
 	}
 }

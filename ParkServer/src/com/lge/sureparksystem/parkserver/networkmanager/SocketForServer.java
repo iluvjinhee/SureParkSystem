@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.communicationmanager;
+package com.lge.sureparksystem.parkserver.networkmanager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.lge.sureparksystem.parkserver.communicationmanager.CommunicationManager;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.SocketMessage;
@@ -44,13 +45,13 @@ public class SocketForServer extends Thread {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
-			send(MessageParser.makeJSONObject(new SocketMessage(MessageType.WELCOME_SUREPARK)));
+			//send(MessageParser.makeJSONObject(new SocketMessage(MessageType.WELCOME_SUREPARK)));
 
 			while (true) {
 				String input = in.readLine();
 				
 				if(input != null && !input.equals("")) {
-					receive(input.toUpperCase());
+					receive(input);
 				}
 			}
 		} catch (IOException e) {

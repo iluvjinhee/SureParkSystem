@@ -14,6 +14,8 @@ import org.json.simple.JSONObject;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.SocketMessage;
+import com.lge.sureparksystem.parkserver.networkmanager.ConsolePrint;
+import com.lge.sureparksystem.parkserver.networkmanager.SocketForServer;
 import com.lge.sureparksystem.parkserver.parkinglotcontroller.ParkingLotController;
 import com.lge.sureparksystem.parkserver.reservationmanager.ReservationManager;
 
@@ -114,7 +116,27 @@ public class CommunicationManager {
 		return jsonObject;
 	}
 	
-	void command(JSONObject message) {
+	public void command(JSONObject jsonObject) {
+		SocketMessage socketMessage = MessageParser.parseJSONObject(jsonObject);
 		
+		switch(socketMessage.getMessageType()) {
+		case RESERVATION_NUMBER:
+			boolean isValid = reservationManager.isValid(socketMessage.getGlobalValue());
+			if(isValid) {
+				for(SocketForServer socketForServer : socketForServerList) {
+					socketForServer.send(MessageParser.makeJSONObject(
+							new SocketMessage(MessageType.ASSIGN_SLOT, String.valueOf(parkingLotController.getAvailableSlot()))));
+				}
+			}
+			else {
+				for(SocketForServer socketForServer : socketForServerList) {
+					socketForServer.send(MessageParser.makeJSONObject(
+							new SocketMessage(MessageType.NOT_RESERVED)));
+				}
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }
