@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -16,9 +15,7 @@ import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.SocketMessage;
 
 public class SocketForServer extends Thread {
-	private CommunicationManager communicationManager = null;
-	
-	public static final int PORT = 9898;
+	private CommunicationManager mCommunicationManager = CommunicationManager.getInstance();
 	
 	private Socket socket = null;
 	private int clientNumber;
@@ -26,13 +23,8 @@ public class SocketForServer extends Thread {
 	private BufferedReader in = null;
 	private PrintWriter out = null;	
 
-	public SocketForServer(CommunicationManager communicationManager, Socket socket, int clientNumber) {
-		this.communicationManager = communicationManager;
-		
+	public SocketForServer(Socket socket) {
 		this.socket = socket;
-		this.clientNumber = clientNumber;
-
-		log("New connection with client# " + clientNumber + " at " + socket);
 	}
 	
 	public Socket getSocket() {
@@ -76,7 +68,7 @@ public class SocketForServer extends Thread {
 		System.out.printf("%-20s %40s\n", "[Client#" + clientNumber + "]", jsonMessage);
 		
 		try {
-			communicationManager.command((JSONObject) new JSONParser().parse(jsonMessage));
+			mCommunicationManager.command((JSONObject) new JSONParser().parse(jsonMessage));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

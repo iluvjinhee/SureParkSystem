@@ -1,16 +1,16 @@
 package com.lge.sureparksystem.parkserver;
 
 import com.lge.sureparksystem.parkserver.communicationmanager.CommunicationManager;
+import com.lge.sureparksystem.parkserver.parkinglotcontroller.ParkingLotController;
+import com.lge.sureparksystem.parkserver.reservationmanager.ReservationManager;
 
 public class Main {
-	static CommunicationManager communicationManager = null;
 
 	public static void main(String[] args) throws Exception {
-		communicationManager = new CommunicationManager();
 		
-		communicationManager.showServerInfo();
-		communicationManager.init();
-		
-		communicationManager.start();	
+		CommunicationManager.getInstance().init();
+		new ParkingLotController().testParkView();
+		new ReservationManager();
+				
 	}
 }

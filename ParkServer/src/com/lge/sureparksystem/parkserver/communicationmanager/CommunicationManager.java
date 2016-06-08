@@ -1,10 +1,7 @@
 package com.lge.sureparksystem.parkserver.communicationmanager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,87 +11,95 @@ import org.json.simple.JSONObject;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.SocketMessage;
-import com.lge.sureparksystem.parkserver.parkinglotcontroller.ParkingLotController;
-import com.lge.sureparksystem.parkserver.reservationmanager.ReservationManager;
 
 public class CommunicationManager {
-	private List<SocketForServer> socketForServerList = null;
-	private BufferedReader keyIn = new BufferedReader(new InputStreamReader(System.in));
+		
+	static CommunicationManager mInstance = new CommunicationManager();
 	
-	private ServerSocket serverSocket;
-	private int clientNumber;
+	WaitThreadForConnect mWaitForParkingLot = null;
+	WaitThreadForConnect mWaitForParkView = null;
+	WaitThreadForConnect mWaitForParkHere = null;
+	List<SocketForServer> mParkingLotSocketList = new ArrayList<SocketForServer>();
+	List<SocketForServer> mParkViewSocketList = new ArrayList<SocketForServer>();
+	List<SocketForServer> mParkHereSocketList = new ArrayList<SocketForServer>();
+	InetAddress mIP = null;
 	
-	private ParkingLotController parkingLotController = null;
-	private ReservationManager reservationManager = null;
+    private SocketAcceptListener mSocketAcceptListener = new SocketAcceptListener();
+
+    private class SocketAcceptListener implements ISocketAcceptListener {
+        @Override
+		public void onSocketAccepted(int type, Socket socket) {
+        	SocketForServer socketForServer;
+        	switch (type) {
+			case SocketInfo.SOCKET_PARKINGLOT:
+				socketForServer = new SocketForServer(socket);
+				mParkingLotSocketList.add(socketForServer);
+				socketForServer.start();
+				break;
+			case SocketInfo.SOCKET_PARKVIEW:
+				socketForServer = new SocketForServer(socket);
+				mParkViewSocketList.add(socketForServer);
+				socketForServer.start();
+				break;
+			case SocketInfo.SOCKET_PARKHERE:
+				socketForServer = new SocketForServer(socket);
+				mParkHereSocketList.add(socketForServer);
+				socketForServer.start();
+				break;
+			default:
+				break;
+			}
+		}
+    }
+	
+	private CommunicationManager() {
+		//for single tone
+	}
+	
+	public static CommunicationManager getInstance() {
+		return mInstance;
+	}
 	
 	public void init() {
-		parkingLotController = new ParkingLotController();
-		reservationManager = new ReservationManager();
-		
-		socketForServerList = new ArrayList<SocketForServer>();
-		
-		clientNumber = 0;
+		System.out.println("CommunicationManager::init()");
 		try {
-			serverSocket = new ServerSocket(SocketForServer.PORT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		keyIn = new BufferedReader(new InputStreamReader(System.in));
-	}
-	
-	public void showServerInfo() {
-		InetAddress IP = null;
-		try {
-			IP = InetAddress.getLocalHost();
+			mIP = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.toString());
 			e.printStackTrace();
 		}
-		
-		ConsolePrint.log("IP of my system is := " + IP.getHostAddress());
+		ConsolePrint.log("IP of my system is := " + mIP.getHostAddress());
 		ConsolePrint.log("The server is running.");
+		
+		initParkkingLotSocket();
+		initParkViewSocket();
+		initParkHereSocket();
 	}
 	
-	public void start() throws IOException {
-		Thread thread = new Thread(new Runnable() {
-		    @Override
-		    public void run() {
-		    	String keyMsg;
-		    	while(true) {
-		    		try {
-						keyMsg = keyIn.readLine();
-						
-						if(keyMsg != null) {						
-							for(SocketForServer socketForServer : socketForServerList) {
-								socketForServer.send(mapMessage(Integer.parseInt(keyMsg)));
-							}
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    	}
-		    }
-		});
-		thread.start();
-		
-		try {
-			while (true) {
-				SocketForServer socketForServer = new SocketForServer(this, serverSocket.accept(), clientNumber++);
-				socketForServerList.add(socketForServer);
-				socketForServer.start();
-			}
-		} finally {
-			serverSocket.close();
-		}
-	}	
 	
-	public JSONObject mapMessage(int messageIndex) {
+	
+	private void initParkkingLotSocket() {		
+		mWaitForParkView = new WaitThreadForConnect(SocketInfo.PORT_PARKINGLOT, SocketInfo.SOCKET_PARKINGLOT);
+		mWaitForParkView.setSocketAcceptListener(mSocketAcceptListener);
+		mWaitForParkView.start();		
+	}
+	
+	private void initParkViewSocket() {		
+		mWaitForParkView = new WaitThreadForConnect(SocketInfo.PORT_PARKVIEW, SocketInfo.SOCKET_PARKVIEW);
+		mWaitForParkView.setSocketAcceptListener(mSocketAcceptListener);
+		mWaitForParkView.start();		
+	}
+	
+	private void initParkHereSocket() {		
+		mWaitForParkView = new WaitThreadForConnect(SocketInfo.PORT_PARKHERE, SocketInfo.SOCKET_PARKHERE);
+		mWaitForParkView.setSocketAcceptListener(mSocketAcceptListener);
+		mWaitForParkView.start();		
+	}
+	
+	public JSONObject mapMessage(int messageIndex, String data) {
 		JSONObject jsonObject = null;
-		
-		switch(messageIndex) {
+
+		switch (messageIndex) {
 		case 1:
 			jsonObject = MessageParser.makeJSONObject(new SocketMessage(MessageType.WELCOME_SUREPARK));
 			break;
@@ -102,19 +107,39 @@ public class CommunicationManager {
 			jsonObject = MessageParser.makeJSONObject(new SocketMessage(MessageType.SCAN_CONFIRM));
 			break;
 		case 3:
-			jsonObject = MessageParser.makeJSONObject(
-					new SocketMessage(MessageType.ASSIGN_SLOT,
-							String.valueOf(parkingLotController.getAvailableSlot())));
+			jsonObject = MessageParser.makeJSONObject(new SocketMessage(MessageType.ASSIGN_SLOT, data));
 			break;
 		default:
 			jsonObject = MessageParser.makeJSONObject(new SocketMessage(MessageType.WELCOME_SUREPARK));
 			break;
 		}
-		
+
 		return jsonObject;
 	}
 	
 	void command(JSONObject message) {
 		
+	}
+	
+	public void sendMessage(int clientType, int messageIndex) {
+		sendMessage(clientType, messageIndex, null);
+	}
+	
+	public void sendMessage(int clientType, int messageIndex, String data) {
+		System.out.println("sendMessage : " + "clientType = " + clientType +  ", messageIndex = " + messageIndex + ", data = " + data);
+		
+		switch (clientType) {
+		case SocketInfo.SOCKET_PARKINGLOT:
+			break;
+		case SocketInfo.SOCKET_PARKVIEW:
+			for(SocketForServer socketForServer : mParkViewSocketList) {
+				socketForServer.send(mapMessage(messageIndex, data));
+			}
+			break;
+		case SocketInfo.SOCKET_PARKHERE:
+			break;
+		default:
+			break;
+		}
 	}
 }
