@@ -2,13 +2,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
     android:background="@color/black"
     android:orientation="vertical" >
-    <TextView 
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical|center_horizontal"
-        android:textColor="@color/white"
-        android:text="Driver layout"/>
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_id"
+        android:textColor="@color/white" />
+
+    <Spinner
+        android:id="@+id/park_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/choose_park_id" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/reservation_time"
+        android:textColor="@color/white" />
+
+    <Spinner
+        android:id="@+id/reservation_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/reservation_time" />
+
+    <TextView
+        android:id="@+id/park_position"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_position"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/park_fee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_fee"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/park_grace_period"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_grace_period"
+        android:textColor="@color/white" />
+    
+    <TextView
+        android:id="@+id/park_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_description"
+        android:textColor="@color/white" />
 
 </LinearLayout>

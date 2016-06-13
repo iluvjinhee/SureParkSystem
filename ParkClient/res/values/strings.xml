@@ -10,4 +10,11 @@
     <string name="action_settings">Settings</string>
     <string name="loading">Loading&#8230;</string>
     <string name="create">Create ID</string>
+    <string name="park_id">Choose park where you want you :</string>
+    <string name="choose_park_id">Choose park ID</string>
+    <string name="reservation_time">Choose time :</string>
+    <string name="park_position">Canrnegie Mellon University</string>
+    <string name="park_fee">Park fee : </string>
+    <string name="park_grace_period">Grace period : </string>
+    <string name="park_description">Oh TEAM Sure park system is good!</string>
 </resources>
