@@ -1,9 +1,12 @@
-package com.lge.sureparksystem.parkserver.manager.communicationmanager;
+package com.lge.sureparksystem.parkserver.manager.main;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.lge.sureparksystem.parkserver.manager.ManagerService;
+import com.lge.sureparksystem.parkserver.manager.authenticationmanager.AuthenticationManager;
+import com.lge.sureparksystem.parkserver.manager.communicationmanager.CommunicationManager;
+import com.lge.sureparksystem.parkserver.manager.securitymanager.SecurityManager;
 import com.lge.sureparksystem.parkserver.manager.keyinmanager.KeyboardInManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.NetworkManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkHereNetworkManager;
@@ -22,6 +25,8 @@ public class Main {
 	static ManagerService parkingLotNetworkManagerService = null;
 	static ManagerService KeyboardInManagerService = null;
 	static ManagerService ReservationManagerService = null;
+	static ManagerService AuthenticationManagerService = null;
+	static ManagerService SecurityManagerService = null;
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -34,10 +39,47 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		CommunicationManager communicationManager = new CommunicationManager();
-		communicationManager.init();
-		communicationManagerService = new ManagerService(communicationManager, "CommunicationManager");
+		startKeyboardInManager();
+		startCommunicationManager();
+		startNetworkManager();
+		startReservationManager();
+		startAuthenticationManager();
+		startSecurityManager();
+	}
+
+	private static void startSecurityManager() {
+		SecurityManager securityManager = new SecurityManager();
+		securityManager.init();
+		SecurityManagerService = new ManagerService(securityManager, "SecurityManager");
 		
+		SecurityManagerService.doWork();
+	}
+
+	private static void startAuthenticationManager() {
+		AuthenticationManager authenticationManager = new AuthenticationManager();
+		authenticationManager.init();
+		AuthenticationManagerService = new ManagerService(authenticationManager, "AuthenticationManager");
+		
+		AuthenticationManagerService.doWork();
+	}
+
+	private static void startReservationManager() {
+		ReservationManager reservationManager = new ReservationManager();
+		reservationManager.init();
+		ReservationManagerService = new ManagerService(reservationManager, "ReservationManager");
+		
+		ReservationManagerService.doWork();
+	}
+
+	private static void startKeyboardInManager() {
+		KeyboardInManager keyboardInManager = new KeyboardInManager();
+		keyboardInManager.init();
+		KeyboardInManagerService = new ManagerService(keyboardInManager, "KeyboardInManager");
+		
+		KeyboardInManagerService.doWork();
+	}
+
+	private static void startNetworkManager() {
 		NetworkManager parkViewNetworkManager = new ParkViewNetworkManager(SocketInfo.PORT_PARKVIEW);
 		parkViewNetworkManager.init();
 		parkViewNetworkManagerService = new ManagerService(parkViewNetworkManager, "ParkViewNetworkManager");
@@ -50,19 +92,16 @@ public class Main {
 		parkingLotNetworkManager.init();
 		parkingLotNetworkManagerService = new ManagerService(parkingLotNetworkManager, "ParkingLotNetworkManager");	
 		
-		KeyboardInManager keyboardInManager = new KeyboardInManager();
-		keyboardInManager.init();
-		KeyboardInManagerService = new ManagerService(keyboardInManager, "KeyboardInManager");
-		
-		ReservationManager reservationManager = new ReservationManager();
-		reservationManager.init();
-		ReservationManagerService = new ManagerService(reservationManager, "ReservationManager");
-		
-		communicationManagerService.doWork();
 		parkViewNetworkManagerService.doWork();
 		parkHereNetworkManagerService.doWork();
 		parkingLotNetworkManagerService.doWork();
-		KeyboardInManagerService.doWork();
-		ReservationManagerService.doWork();
+	}
+
+	private static void startCommunicationManager() {
+		CommunicationManager communicationManager = new CommunicationManager();
+		communicationManager.init();
+		communicationManagerService = new ManagerService(communicationManager, "CommunicationManager");
+		
+		communicationManagerService.doWork();
 	}
 }

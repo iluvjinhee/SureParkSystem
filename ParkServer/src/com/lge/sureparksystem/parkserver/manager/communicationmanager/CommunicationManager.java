@@ -51,6 +51,8 @@ public class CommunicationManager extends ManagerTask {
 		case NOT_RESERVED:
 			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
 			break;
+		default:
+			break;
 		}
 	}
 }
