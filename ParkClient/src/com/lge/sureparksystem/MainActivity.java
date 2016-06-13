@@ -4,16 +4,24 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.lge.sureparksystem.control.NetworkManager;
+import com.lge.sureparksystem.control.NetworkToActivity;
 import com.lge.sureparksystem.parkclient.R;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.SocketMessage;
 import com.lge.sureparksystem.util.Utils;
 
-public class MainActivity extends Activity implements OnClickListener {
+import org.json.simple.JSONObject;
+
+public class MainActivity extends Activity implements OnClickListener,
+        NetworkToActivity {
 
     private static String TAG = "ParkClientActivity";
     private View mLoadingView;
@@ -30,7 +38,8 @@ public class MainActivity extends Activity implements OnClickListener {
         setContentView(R.layout.main_activity);
         mLoadingView = findViewById(R.id.loading);
         mLoadingView.setVisibility(View.VISIBLE);
-        // mNetworkManager = new NetworkManager();
+        mNetworkManager = new NetworkManager(Utils.IP_ADDRESS, Utils.PORT, this);
+        mNetworkManager.connect();
         findViewById(R.id.btn_temp).setOnClickListener(this);
         initFactory();
     }
@@ -81,6 +90,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     @Override
     protected void onDestroy() {
+        mNetworkManager.disconnect();
         mLoadingView.setVisibility(View.GONE);
         super.onDestroy();
     }
@@ -130,5 +140,27 @@ public class MainActivity extends Activity implements OnClickListener {
         }
         switchFagment(af, tag);
         mTempNum++;
+    }
+
+    public void sendMessageToServer() {
+        Log.d(TAG, "");
+        JSONObject jsonObject = MessageParser.makeJSONObject(new SocketMessage(MessageType.RESERVATION_NUMBER));
+        // To do divide message
+        mNetworkManager.sendMessage(jsonObject);
+    }
+    @Override
+    public void parseJSONMessage(String jsonMessage) {
+        Log.d(TAG, "parseJSONMessage");
+        SocketMessage socketMessage = MessageParser
+                .parseJSONMessage(jsonMessage);
+        MessageType messageType = socketMessage.getMessageType();
+        Log.d(TAG, "messageType : " + messageType.getValue());
+        switch (messageType) {
+        case UNDEFINED:
+            break;
+        default:
+            break;
+        }
+
     }
 }
