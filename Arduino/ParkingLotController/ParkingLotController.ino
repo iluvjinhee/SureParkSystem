@@ -25,10 +25,8 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
-
-#include <SPI.h>
-#include "CommManager.h"
-#include "ControlManager.h"
+#include "CommManager\CommManager.h"
+#include "ControlManager\ControlManager.h"
 
 void setup()  
 {
