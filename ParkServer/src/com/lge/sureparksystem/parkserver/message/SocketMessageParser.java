@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class MessageParser {
+public class SocketMessageParser {
 	public static SocketMessage parseJSONMessage(String jsonMessage) {
 		SocketMessage socketMessage = new SocketMessage();
 		
@@ -18,8 +18,8 @@ public class MessageParser {
 		}
 		
 		if(jsonObject.get(SocketMessage.MESSAGE_TYPE) != null) {
-			Long l = (Long) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromValue(l.intValue()));
+			String str = (String) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
+			socketMessage.setMessageType(SocketMessageType.fromText(str));
 		}
 		if(jsonObject.get(SocketMessage.GLOBAL_VALUE) != null) {
 			socketMessage.setGlobalValue((String) jsonObject.get(SocketMessage.GLOBAL_VALUE));
@@ -34,8 +34,8 @@ public class MessageParser {
 		JSONParser jsonParser = new JSONParser();
 		
 		if(jsonObject.get(SocketMessage.MESSAGE_TYPE) != null) {
-			Long l = (Long) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromValue(l.intValue()));
+			String str = (String) jsonObject.get(SocketMessage.MESSAGE_TYPE);			
+			socketMessage.setMessageType(SocketMessageType.fromText(str));
 		}
 		if(jsonObject.get(SocketMessage.GLOBAL_VALUE) != null) {
 			socketMessage.setGlobalValue((String) jsonObject.get(SocketMessage.GLOBAL_VALUE));
@@ -51,11 +51,11 @@ public class MessageParser {
 		case WELCOME_SUREPARK:
 		case SCAN_CONFIRM:
 		case NOT_RESERVED:
-			jsonObject.put(SocketMessage.MESSAGE_TYPE, socketMessage.getMessageType().getValue());
+			jsonObject.put(SocketMessage.MESSAGE_TYPE, socketMessage.getMessageType().getText());
 			break;
 		case RESERVATION_NUMBER:
 		case ASSIGN_SLOT:
-			jsonObject.put(SocketMessage.MESSAGE_TYPE, socketMessage.getMessageType().getValue());
+			jsonObject.put(SocketMessage.MESSAGE_TYPE, socketMessage.getMessageType().getText());
 			jsonObject.put(SocketMessage.GLOBAL_VALUE, socketMessage.getGlobalValue());
 			break;
 		default:

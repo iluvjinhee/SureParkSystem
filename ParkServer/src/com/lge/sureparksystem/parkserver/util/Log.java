@@ -1,6 +1,6 @@
-package com.lge.sureparksystem.parkserver.communicationmanager;
+package com.lge.sureparksystem.parkserver.util;
 
-public class ConsolePrint {
+public class Log {
 	public static void send(String message) {
 		System.out.printf("%-20s $%40s\n", "[Server]", message);
 	}

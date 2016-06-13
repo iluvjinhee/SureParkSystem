@@ -4,7 +4,7 @@ public class SocketMessage {
 	public static String MESSAGE_TYPE = "MessageType";
 	public static String GLOBAL_VALUE = "GlobalValue";	
 	
-	MessageType messageType;
+	SocketMessageType messageType;
 	String globalValue;
 	
 	public SocketMessage() {
@@ -12,17 +12,22 @@ public class SocketMessage {
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(MessageType messageType) {
+	public SocketMessage(SocketMessageType messageType) {
 		this.messageType = messageType;
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(MessageType messageType, String globalValue) {
+	public SocketMessage(SocketMessageType messageType, String globalValue) {
 		this.messageType = messageType;
 		this.globalValue = globalValue;
 	}
 
-	public MessageType getMessageType() {
+	public SocketMessage(SocketMessage socketMessage) {
+		this.messageType = socketMessage.messageType;
+		this.globalValue = socketMessage.globalValue;
+	}
+
+	public SocketMessageType getMessageType() {
 		return messageType;
 	}
 
@@ -30,7 +35,7 @@ public class SocketMessage {
 		return globalValue;
 	}
 
-	public void setMessageType(MessageType messageType) {
+	public void setMessageType(SocketMessageType messageType) {
 		this.messageType = messageType;		
 	}
 

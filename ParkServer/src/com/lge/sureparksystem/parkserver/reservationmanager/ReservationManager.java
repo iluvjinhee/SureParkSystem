@@ -4,7 +4,36 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class ReservationManager {
+import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.module.ManagerTask;
+import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
+
+public class ReservationManager extends ManagerTask {
+	public class ReservationManagerListener {
+		@Subscribe
+		public void onSubscribe(ReservationManagerTopic topic) {
+			System.out.println("ReservationManagerListener");
+			System.out.println(topic);
+		}
+	}
+	
+	@Override
+	public void init() {
+		getEventBus().register(new ReservationManagerListener());
+	}
+	
+	@Override
+	public void run() {
+		while(loop) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+	}
+
 	public boolean isValid(String confirmationNumber) {
 		boolean result = false;
 		
@@ -27,5 +56,5 @@ public class ReservationManager {
 		}
 		
 		return false;
-	}
+	}	
 }
