@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkclientfortest.main;
+package com.lge.sureparksystem.parkclientfortest.main.qrcodegeneration;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

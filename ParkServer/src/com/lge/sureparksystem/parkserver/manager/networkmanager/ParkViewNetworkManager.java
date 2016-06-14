@@ -1,7 +1,5 @@
 package com.lge.sureparksystem.parkserver.manager.networkmanager;
 
-import org.json.simple.JSONObject;
-
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
@@ -24,12 +22,6 @@ public class ParkViewNetworkManager extends NetworkManager {
 	
 	public ParkViewNetworkManager(int serverPort) {
 		super(serverPort);
-	}
-	
-	public void send(JSONObject jsonObject) {
-		for(SocketForServer socketForServer : socketList) {
-			socketForServer.send(jsonObject);
-		}
 	}
 	
 	public void run() {

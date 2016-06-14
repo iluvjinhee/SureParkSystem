@@ -29,6 +29,10 @@ public class SocketForServer implements Runnable {
 		this.socket = socket;
 	}
 	
+	public void destroy() {
+		socket = null;
+	}
+	
 	public Socket getSocket() {
 		return socket;
 	}
@@ -67,7 +71,7 @@ public class SocketForServer implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			Log.log("Error handling client: " + e);
+//			Log.log("Error handling client: " + e);
 		} finally {
 			try {
 				socket.close();
@@ -76,6 +80,8 @@ public class SocketForServer implements Runnable {
 			}
 			
 			Log.log("Connection with client closed");
+			
+			manager.removeSocket(this);
 		}
 	}
 }

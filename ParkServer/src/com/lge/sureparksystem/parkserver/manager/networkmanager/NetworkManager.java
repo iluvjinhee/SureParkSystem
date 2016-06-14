@@ -59,8 +59,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 				onSocketAccepted(socket);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(e.toString().contains("Address already in use")) {
+				System.out.println("Server already running !!!");
+			}				
 		} finally {
 			if (socket != null) {
 				try {
@@ -71,12 +72,20 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 				}
 			}
 			System.out.println("serverSocket Close.");
+			System.exit(0);
 		}
 	}
 	
 	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
-			socketForServer.send(jsonObject);
+			if(socketForServer.getSocket().isConnected()) {
+				socketForServer.send(jsonObject);
+			}
 		}
+	}
+
+	public void removeSocket(SocketForServer socketForServer) {
+		socketForServer.destroy();
+		socketList.remove(socketForServer);
 	}
 }

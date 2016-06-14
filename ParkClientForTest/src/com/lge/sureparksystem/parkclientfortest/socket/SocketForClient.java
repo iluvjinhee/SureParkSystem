@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkclientfortest.main;
+package com.lge.sureparksystem.parkclientfortest.socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import com.lge.sureparksystem.parkclientfortest.message.Message;
 import com.lge.sureparksystem.parkclientfortest.message.MessageParser;
 import com.lge.sureparksystem.parkclientfortest.message.MessageType;
 
-public class SocketForClient {
+public abstract class SocketForClient {
 	String dstAddress;
 	int dstPort;
 
@@ -26,6 +26,8 @@ public class SocketForClient {
 		dstAddress = addr;
 		dstPort = port;
 	}
+	
+	public abstract Message process(String jsonMessage);
 
 	public void connect() {
 		if (socketThread == null) {
@@ -44,7 +46,7 @@ public class SocketForClient {
 								while (true) {
 									inJSONMessage = in.readLine();
 									if (inJSONMessage != null && !inJSONMessage.equals("")) {
-										System.out.println(inJSONMessage);
+//										System.out.println(inJSONMessage);
 									}
 									
 									Message outJSONMessage = process(inJSONMessage);
@@ -55,36 +57,12 @@ public class SocketForClient {
 								}
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.out.println("No Server!!!");
 						}
 					}
 				}
 
-				private Message process(String jsonMessage) {
-					Message result = null;
-					
-					MessageType messageType = MessageParser.parseJSONMessage(jsonMessage).getMessageType();
-					switch(messageType) {
-					case WELCOME_SUREPARK:
-					case NOT_RESERVED:
-						System.out.println(messageType.getText());
-						break;
-					case SCAN_CONFIRM:
-						result = new Message(
-								MessageType.RESERVATION_NUMBER,
-								"{\"Name\":\"Daniel\",\"ReservationNumber\":\"1234567890\"}");
-						break;
-					case ASSIGN_SLOT:
-						System.out.println(messageType.getText() +
-								" " +
-								MessageParser.parseJSONMessage(jsonMessage).getGlobalValue());
-						break;
-					default:
-						break;						
-					}
-					
-					return result;
-				}
+				
 			});
 
 			socketThread.start();
@@ -110,4 +88,31 @@ public class SocketForClient {
 	public void send(JSONObject jsonObject) {
 		out.println(jsonObject.toJSONString());
 	}
+	
+	/*
+	private Message process(String jsonMessage) {
+		Message result = null;
+		
+		MessageType messageType = MessageParser.parseJSONMessage(jsonMessage).getMessageType();
+		switch(messageType) {
+		case WELCOME_SUREPARK:
+		case NOT_RESERVED:
+			System.out.println(messageType.getText());
+			break;
+		case SCAN_CONFIRM:
+			result = new Message(
+					MessageType.RESERVATION_NUMBER,
+					"{\"Name\":\"Daniel\",\"ReservationNumber\":\"1234567890\"}");
+			break;
+		case ASSIGN_SLOT:
+			System.out.println(messageType.getText() +
+					" " +
+					MessageParser.parseJSONMessage(jsonMessage).getGlobalValue());
+			break;
+		default:
+			break;						
+		}
+		
+		return result;
+	}*/
 }
