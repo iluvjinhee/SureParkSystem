@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkclientfortest.message;
+package com.lge.sureparksystem.parkserver.message;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,19 +44,19 @@ public class MessageParser {
 		return socketMessage;
 	}
 	
-	public static JSONObject makeJSONObject(Message message) {
+	public static JSONObject makeJSONObject(Message socketMessage) {
 		JSONObject jsonObject = new JSONObject();
 		
-		switch(message.getMessageType()) {
+		switch(socketMessage.getMessageType()) {
 		case WELCOME_SUREPARK:
 		case SCAN_CONFIRM:
 		case NOT_RESERVED:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
 			break;
 		case RESERVATION_NUMBER:
 		case ASSIGN_SLOT:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			jsonObject.put(Message.GLOBAL_VALUE, message.getGlobalValue());
+			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
+			jsonObject.put(Message.GLOBAL_VALUE, socketMessage.getGlobalValue());
 			break;
 		default:
 			break;

@@ -1,6 +1,6 @@
-package com.lge.sureparksystem.parkserver.socketmessage;
+package com.lge.sureparksystem.parkserver.message;
 
-public enum SocketMessageType {
+public enum MessageType {
     WELCOME_SUREPARK("WELCOME SUREPARK"),
     SCAN_CONFIRM("SCAN CONFIRM"),
     RESERVATION_NUMBER("RESERVATION NUMBER"),
@@ -10,7 +10,7 @@ public enum SocketMessageType {
 	
 	private String text;
 	
-	SocketMessageType(String text) {
+	MessageType(String text) {
 		this.text = text;
 	}
 	
@@ -18,9 +18,9 @@ public enum SocketMessageType {
 		return this.text;
 	}
 	
-	public static SocketMessageType fromText(String text) {
+	public static MessageType fromText(String text) {
 		if (text != null) {
-			for (SocketMessageType b : SocketMessageType.values()) {
+			for (MessageType b : MessageType.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
 					return b;
 				}

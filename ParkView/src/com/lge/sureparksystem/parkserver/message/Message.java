@@ -1,33 +1,33 @@
-package com.lge.sureparksystem.parkserver.socketmessage;
+package com.lge.sureparksystem.parkserver.message;
 
-public class SocketMessage {
+public class Message {
 	public static String MESSAGE_TYPE = "MessageType";
 	public static String GLOBAL_VALUE = "GlobalValue";	
 	
-	SocketMessageType messageType;
+	MessageType messageType;
 	String globalValue;
 	
-	public SocketMessage() {
+	public Message() {
 		this.messageType = null;
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(SocketMessageType messageType) {
+	public Message(MessageType messageType) {
 		this.messageType = messageType;
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(SocketMessageType messageType, String globalValue) {
+	public Message(MessageType messageType, String globalValue) {
 		this.messageType = messageType;
 		this.globalValue = globalValue;
 	}
 
-	public SocketMessage(SocketMessage socketMessage) {
+	public Message(Message socketMessage) {
 		this.messageType = socketMessage.messageType;
 		this.globalValue = socketMessage.globalValue;
 	}
 
-	public SocketMessageType getMessageType() {
+	public MessageType getMessageType() {
 		return messageType;
 	}
 
@@ -35,7 +35,7 @@ public class SocketMessage {
 		return globalValue;
 	}
 
-	public void setMessageType(SocketMessageType messageType) {
+	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;		
 	}
 
@@ -45,6 +45,6 @@ public class SocketMessage {
 
 	@Override
 	public String toString() {
-		return "SocketMessage [messageType=" + messageType + ", globalValue=" + globalValue + "]";
+		return "Message [messageType=" + messageType + ", globalValue=" + globalValue + "]";
 	}
 }

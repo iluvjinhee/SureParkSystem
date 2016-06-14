@@ -2,15 +2,19 @@ package com.lge.sureparksystem.parkserver.topic;
 
 import org.json.simple.JSONObject;
 
-public class NetworkManagerTopic extends ManagerTopic {
+import com.lge.sureparksystem.parkserver.message.Message;
 
+public class NetworkManagerTopic extends ManagerTopic {
 	public NetworkManagerTopic(JSONObject jsonObject) {
 		super(jsonObject);
-		// TODO Auto-generated constructor stub
+	}
+
+	public NetworkManagerTopic(Message message) {
+		super(message);
 	}
 
 	@Override
 	public String toString() {
-		return "NetworkManagerTopic [jsonObject=" + jsonObject + "]";
+		return "NetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
 	}
 }

@@ -10,9 +10,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessage;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageParser;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageType;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Log;
@@ -43,7 +43,8 @@ public class SocketForServer implements Runnable {
 		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
 		try {
-			manager.getEventBus().post(new CommunicationManagerTopic(((JSONObject) new JSONParser().parse(jsonMessage))));
+			JSONObject jsonObject = (JSONObject) new JSONParser().parse(jsonMessage);
+			manager.getEventBus().post(new CommunicationManagerTopic(jsonObject));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,7 +57,7 @@ public class SocketForServer implements Runnable {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
-			send(SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.WELCOME_SUREPARK)));
+			send(MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK)));
 
 			while (true) {
 				String input = in.readLine();

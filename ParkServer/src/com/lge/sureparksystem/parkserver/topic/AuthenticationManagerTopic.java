@@ -2,15 +2,19 @@ package com.lge.sureparksystem.parkserver.topic;
 
 import org.json.simple.JSONObject;
 
-public class AuthenticationManagerTopic extends ManagerTopic {
+import com.lge.sureparksystem.parkserver.message.Message;
 
+public class AuthenticationManagerTopic extends ManagerTopic {
 	public AuthenticationManagerTopic(JSONObject jsonObject) {
 		super(jsonObject);
-		// TODO Auto-generated constructor stub
+	}
+
+	public AuthenticationManagerTopic(Message message) {
+		super(message);
 	}
 
 	@Override
 	public String toString() {
-		return "AuthenticationManagerTopic [jsonObject=" + jsonObject + "]";
+		return "AuthenticationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
 	}
 }

@@ -1,3 +1,4 @@
+package com.lge.sureparksystem.parkclientfortest.main;
 
 public class Main {
 	public static final String IP_ADDRESS = "localhost";
@@ -5,8 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		SocketForClient socketForClient = new SocketForClient(IP_ADDRESS, PORT);
-		
+
 		socketForClient.connect();
 	}
-
 }

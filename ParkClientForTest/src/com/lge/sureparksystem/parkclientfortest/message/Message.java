@@ -1,28 +1,28 @@
 package com.lge.sureparksystem.parkclientfortest.message;
 
-public class SocketMessage {
+public class Message {
 	public static String MESSAGE_TYPE = "MessageType";
 	public static String GLOBAL_VALUE = "GlobalValue";	
 	
 	MessageType messageType;
 	String globalValue;
 	
-	public SocketMessage() {
+	public Message() {
 		this.messageType = null;
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(MessageType messageType) {
+	public Message(MessageType messageType) {
 		this.messageType = messageType;
 		this.globalValue = "";
 	}
 	
-	public SocketMessage(MessageType messageType, String globalValue) {
+	public Message(MessageType messageType, String globalValue) {
 		this.messageType = messageType;
 		this.globalValue = globalValue;
 	}
 
-	public SocketMessage(SocketMessage socketMessage) {
+	public Message(Message socketMessage) {
 		this.messageType = socketMessage.messageType;
 		this.globalValue = socketMessage.globalValue;
 	}
@@ -45,6 +45,6 @@ public class SocketMessage {
 
 	@Override
 	public String toString() {
-		return "SocketMessage [messageType=" + messageType + ", globalValue=" + globalValue + "]";
+		return "Message [messageType=" + messageType + ", globalValue=" + globalValue + "]";
 	}
 }
