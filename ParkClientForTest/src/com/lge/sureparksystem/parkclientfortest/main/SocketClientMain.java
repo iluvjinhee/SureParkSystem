@@ -1,6 +1,6 @@
 package com.lge.sureparksystem.parkclientfortest.main;
 
-public class Main {
+public class SocketClientMain {
 	public static final String IP_ADDRESS = "localhost";
 	public static final int PORT = 9898;
 
