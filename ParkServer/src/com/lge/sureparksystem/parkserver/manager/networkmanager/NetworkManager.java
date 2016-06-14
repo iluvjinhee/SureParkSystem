@@ -10,7 +10,11 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.util.Log;
 
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
 	private int serverPort;
@@ -55,7 +59,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 			
 			while (loop) {
 				socket = serverSocket.accept();
-				System.out.println("Connected...");
+				
+				showConnectionInfo(socket.getLocalPort());
+				
 				onSocketAccepted(socket);
 			}
 		} catch (IOException e) {
@@ -76,6 +82,21 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 	
+	private void showConnectionInfo(int i) {
+		if(i == SocketInfo.PORT_PARKVIEW) {
+			Log.log("Connected to ParkView!");
+		}
+		else if(i == SocketInfo.PORT_PARKHERE) {
+			Log.log("Connected to ParkHere!");
+		}
+		else if(i == SocketInfo.PORT_PARKINGLOT) {
+			Log.log("Connected to ParkingLot!");
+		}
+		else {
+			Log.log("Connected...");
+		}		
+	}
+
 	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {

@@ -14,7 +14,6 @@ import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Log;
 
 public class SocketForServer implements Runnable {
@@ -61,8 +60,6 @@ public class SocketForServer implements Runnable {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
-			send(MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK)));
-
 			while (true) {
 				String input = in.readLine();
 				
@@ -79,9 +76,24 @@ public class SocketForServer implements Runnable {
 				Log.log("Couldn't close a socket.");
 			}
 			
-			Log.log("Connection with client closed");
+			showDisconnectionInfo();
 			
 			manager.removeSocket(this);
 		}
+	}
+
+	private void showDisconnectionInfo() {
+		if(manager instanceof ParkViewNetworkManager) {
+			System.out.println("Connection with ParkView closed!");
+		}
+		else if(manager instanceof ParkHereNetworkManager) {
+			System.out.println("Connection with ParkHere closed!");
+		}
+		else if(manager instanceof ParkingLotNetworkManager) {
+			System.out.println("Connection with ParkingLot closed!");
+		}
+		else {
+			Log.log("Connection with client closed!");
+		}		
 	}
 }
