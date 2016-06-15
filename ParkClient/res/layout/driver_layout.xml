@@ -21,19 +21,26 @@
         android:drawSelectorOnTop="true"
         android:prompt="@string/choose_park_id" />
 
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/arrived_time"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:text="@string/reservation_time"
-        android:textColor="@color/white" />
+        android:orientation="vertical">
 
-    <Spinner
-        android:id="@+id/reservation_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-        android:prompt="@string/reservation_time" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@string/reservation_time"
+            android:textColor="@color/white" />
+
+        <Spinner
+            android:id="@+id/reservation_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true"
+            android:prompt="@string/reservation_time" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/park_position"
@@ -58,7 +65,7 @@
         android:gravity="start"
         android:text="@string/park_grace_period"
         android:textColor="@color/white" />
-    
+
     <TextView
         android:id="@+id/park_description"
         android:layout_width="match_parent"

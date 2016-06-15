@@ -4,11 +4,24 @@
     android:layout_height="match_parent"
     android:background="@android:color/holo_blue_light"
     android:orientation="vertical" >
-    <TextView 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_id"
+        android:textColor="@color/white" />
+
+    <Spinner
+        android:id="@+id/park_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/choose_park_id" />
+
+    <ImageView 
+        android:id="@+id/park_state"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical|center_horizontal"
-        android:textColor="@color/white"
-        android:text="Attendant layout"/>
-
+        android:scaleType="fitXY"
+        android:src="@drawable/architecture_bg"/>
 </LinearLayout>
