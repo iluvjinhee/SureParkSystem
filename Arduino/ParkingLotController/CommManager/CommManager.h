@@ -22,41 +22,40 @@
 #ifndef _COMMMANAGER_H_
 #define _COMMMANAGER_H_
 
-enum ServerToClientMsg {
-	OPEN_ENTRY_GATE = 0,
-	OPEN_EXIT_GATE,
-	CLOSE_ENTRY_GATE,
-	CLOSE_EXIT_GATE,
-	SET_ENTRY_GATE_LED_GREEN,
-	SET_ENTRY_GATE_LED_RED,
-	SET_EXIT_GATE_LED_GREEN,
-	SET_EXIT_GATE_LED_RED,
-	SET_SLOT_LED_ON,
-	SET_SLOT_LED_OFF,
-	SERVERTOCLIENTMSG_MAX
+enum ClientToServerMsg{
+	CS_Authentification_Request = 0,
+	CS_Parkinglot_Information,
+	CS_Parkingslot_Sensor,
+	CS_Parkingslot_LED,
+	CS_EntryGate_Servo,
+	CS_ExitGate_Servo,
+	CS_EntryGate_LED,
+	CS_ExitGate_LED,
+	CS_EntryGate_Arrive,
+	CS_EntryGate_PassBy,
+	CS_ExitGate_Arrive,
+	CS_ExitGate_PassBy,
+	CS_IamAlive,
+	CS_Parkinglot_Status,
+	CS_SERVERTOCLIENTMSG_MAX
 };
 
-enum ClientToServerMsg {
-	PARKINGLOT_STATUS = 0,
-	DRIVER_ARRIVED_ATENTRYGATE,
-	DRIVER_LEAVE_ATENTRYGATE,
-	DRIVER_ARRIVED_ATEXITGATE,
-	DRIVER_LEAVE_ATEXITGATE,
-	DRIVERATRIVED_SLOT1,
-	DRIVERATRIVED_SLOT2,
-	DRIVERATRIVED_SLOT3,
-	DRIVERATRIVED_SLOT4,	
-	DRIVERLEAVED_SLOT1,
-	DRIVERLEAVED_SLOT2,
-	DRIVERLEAVED_SLOT3,
-	DRIVERLEAVED_SLOT4,	
-	CLIENTTOSERVERMSG_MAX
+enum ServerToClientMsg  {
+	SC_Authentification_Response = 0,
+	SC_EntryGate_Control,
+	SC_ExitGate_Control,
+	SC_EntryGate_LED,
+	SC_ExitGate_LED,
+	SC_Parkingslot_LED,
+	SC_CLIENTTOSERVERMSG_MAX
 };
 
 
 void SetMsgNumber(int iMsgIndex);
 void SetSendToServer(int iOnOff);
 int GetSendToServer(void);
+
+int GetServerConnected(void);
 
 void CommManagerSetup();
 void CommManagerLoop();

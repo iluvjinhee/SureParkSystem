@@ -19,31 +19,21 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _SENSORMANAGER_H_
-#define _SENSORMANAGER_H_
+#ifndef _CONTROLMANAGER_H_
+#define _CONTROLMANAGER_H_
 
-#include "..\DeviceDriver\ParkingStallSensorDriver.h"
-#include "..\DeviceDriver\EntryExitBeamDriver.h"
+#define NOT	(-1)
 
-typedef enum
-{
-	PARKSLOT_001 = 0,	///< PARK Slot 1
-	PARKSLOT_002,			///< PARK Slot 2
-	PARKSLOT_003,			///< PARK Slot 3
-	PARKSLOT_004,			///< PARK Slot 4
-	PARKSLOT_MAX			///< PARK Slot Max
-}T_ParkingSlotID;
+void ControlManagerSetup();
+void ControlManagerLoop();
+int GetChangedSlot(void);
+int ClrChangedSlot(void);
 
-void SensorManagerSetup(void);  
-void SensorManagerLoop(void); 
-int CheckParkSlotOccupied(T_ParkingSlotID t_ParkSlotID);
-int DriverArriveAtEntryGate(void);
-int DriverLeaveAtEntryGate(void);
-int DriverArriveAtExitGate(void);
-int DriverLeaveAtExitGate(void);
+int GetRequestedLed(void);
+int SetRequestedLed(int iSlot);
+int ClrRequestedLed(void);
 
-
-#endif // _SENSORMANAGER_H_
+#endif // _CONTROLMANAGER_H_
 
 /* End of File */
 

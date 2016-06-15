@@ -48,6 +48,7 @@ void ParkingStallSensorLoop();
 int GetStallSensorReady(void);
 int GetStallSensorOccupied(T_StallSensorID t_StallSensorId);
 int GetStallSensorChanged(T_StallSensorID t_StallSensorId);
+int SetStallSensorChanged(T_StallSensorID t_StallSensorId, int iStatus);
 int SetStallSensorSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt);
 
 #endif // _PARKINGSTALLSENSORDRIVER_H_

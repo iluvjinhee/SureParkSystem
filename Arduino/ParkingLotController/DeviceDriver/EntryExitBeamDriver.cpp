@@ -21,7 +21,7 @@
 #include <SPI.h>
 #include "EntryExitBeamDriver.h"
 
-#define CHATTERING_CNT	200
+#define CHATTERING_CNT	0xff
 
 #define EntryBeamRcvr  34 
 #define ExitBeamRcvr   35
@@ -33,26 +33,35 @@ static int ExitBeamState;
         
 void EntryExitBeamSetup() 
 {
-  pinMode(EntryBeamRcvr, INPUT);     // Make entry IR rcvr an input
-  digitalWrite(EntryBeamRcvr, HIGH); // enable the built-in pullup
+	pinMode(ExitBeamRcvr, INPUT);      // Make exit IR rcvr an input
+	digitalWrite(ExitBeamRcvr, HIGH);  // enable the built-in pullup
 
-  pinMode(ExitBeamRcvr, INPUT);      // Make exit IR rcvr an input
-  digitalWrite(ExitBeamRcvr, HIGH);  // enable the built-in pullup
+	pinMode(EntryBeamRcvr, INPUT);     // Make entry IR rcvr an input
+	digitalWrite(EntryBeamRcvr, HIGH); // enable the built-in pullup
+
+
+	EntryBeamState = NOTBROKEN;
+	ExitBeamState = NOTBROKEN;
 }
 
 void EntryExitBeamLoop()
 {
-	static int EntryBeamInput;
+	int EntryBeamInput;
 	static int EntryBeamBuff;
 	static int EntryBeamChatCnt=0;
 
-	static int ExitBeamInput;
+	int ExitBeamInput;
 	static int ExitBeamBuff;
 	static int ExitBeamChatCnt=0;
 
 
 	EntryBeamInput = digitalRead(EntryBeamRcvr);  // Here we read the state of the
 	                                            // entry beam.
+	// Exit Gate
+	ExitBeamInput = digitalRead(ExitBeamRcvr);  // Here we read the state of the
+	                                          // exit beam.  
+
+
 	// Entry Gate
 	if (EntryBeamInput != EntryBeamBuff)  //
 	{   
@@ -75,6 +84,7 @@ void EntryExitBeamLoop()
 		{
 			EntryBeamState = NOTBROKEN;
 		}
+		EntryBeamChatCnt = 0;
 	}
 	else
 	{
@@ -82,9 +92,6 @@ void EntryExitBeamLoop()
 	}
 
 
-	// Exit Gate
-	ExitBeamInput = digitalRead(ExitBeamRcvr);  // Here we read the state of the
-	                                          // exit beam.  
 	if (ExitBeamInput != ExitBeamBuff)
 	{
 		ExitBeamChatCnt = 0;
@@ -107,15 +114,12 @@ void EntryExitBeamLoop()
 		{
 			ExitBeamState = NOTBROKEN;
 		}
+		ExitBeamChatCnt = 0;
 	}
 	else
 	{
 		;
 	}
-	
-	//Serial.println("Exit beam is not broken."); High
-
-
 }
 
 

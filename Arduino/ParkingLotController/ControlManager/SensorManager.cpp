@@ -25,6 +25,7 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
+#include <SPI.h>
 #include "SensorManager.h"
 
 static bool bEnterDriver;
@@ -38,8 +39,8 @@ void SensorManagerSetup(void)
 
 void SensorManagerLoop(void) 
 {
-	ParkingStallSensorLoop();
 	EntryExitBeamLoop();
+	ParkingStallSensorLoop();
 } //  LOOP
 
 
@@ -54,7 +55,7 @@ int DriverArriveAtEntryGate(void)
 {
 	int iDriverArrived=0;
 	int iGateState;
-	static int iPrevGateState;
+	static int iPrevGateState = NOTBROKEN;
 	
 	iGateState = GetEntryGateStatus();
 
@@ -72,8 +73,8 @@ int DriverLeaveAtEntryGate(void)
 {
 	int iDriverLeave=0;
 	int iGateState;
-	static int iPrevGateState;
-	
+	static int iPrevGateState = NOTBROKEN;	
+
 	iGateState = GetEntryGateStatus();
 
 	if( iGateState == NOTBROKEN && iPrevGateState == BROKEN ) 
@@ -91,7 +92,7 @@ int DriverArriveAtExitGate(void)
 {
 	int iDriverArrived=0;
 	int iGateState;
-	static int iPrevGateState;
+	static int iPrevGateState = NOTBROKEN;
 	
 	iGateState = GetExitGateStatus();
 
@@ -109,8 +110,8 @@ int DriverLeaveAtExitGate(void)
 {
 	int iDriverLeave=0;
 	int iGateState;
-	static int iPrevGateState;
-	
+	static int iPrevGateState = NOTBROKEN;
+
 	iGateState = GetExitGateStatus();
 
 	if( iGateState == NOTBROKEN && iPrevGateState == BROKEN ) 

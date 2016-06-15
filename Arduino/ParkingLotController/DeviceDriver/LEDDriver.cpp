@@ -36,6 +36,11 @@ static int aiParkingStallLED[]={
 	ParkingStall4LED,
 };
 
+static int aiParkingStallLEDStatus[STALL_LED_MAX];
+static int iEntryGateLEDStatus;
+static int iExitGateLEDStatus;
+
+
 static void InitEntryExitLEDs();
 
 void LEDSetup() 
@@ -53,14 +58,19 @@ void LEDSetup()
 	pinMode(ParkingStall4LED, OUTPUT);
 
 	digitalWrite(EntryGateGreenLED, HIGH);  // The gate LEDs are turned off by setting their pins
-	digitalWrite(EntryGateRedLED, HIGH);    // high. The reason for this is that they are
+	digitalWrite(EntryGateRedLED, LOW);    // high. The reason for this is that they are
 	digitalWrite(ExitGateGreenLED, HIGH);   // 3 color LEDs with a common annode (+). So setting
-	digitalWrite(ExitGateRedLED, HIGH);     // any of the other 3 legs low turns on the LED.
+	digitalWrite(ExitGateRedLED, LOW);     // any of the other 3 legs low turns on the LED.
 
 	digitalWrite(ParkingStall1LED, LOW);    // Standard LEDs are used for the parking stall
 	digitalWrite(ParkingStall2LED, LOW);    // LEDs. Set the pin high and they light.
 	digitalWrite(ParkingStall3LED, LOW);
 	digitalWrite(ParkingStall4LED, LOW);
+
+	for( int i=0 ; i<STALL_LED_MAX ; i++ ) SetParkingStallLED(i, OFF);
+
+	iEntryGateLEDStatus = RED;
+	iExitGateLEDStatus = RED;
 
 } 
 
@@ -116,12 +126,14 @@ void SetEntryGateLED_Red(void)
 {
 	digitalWrite(EntryGateRedLED, LOW);
 	digitalWrite(EntryGateGreenLED, HIGH);
+	iEntryGateLEDStatus = RED;
 }
 
 void SetEntryGateLED_Green(void)
 {
 	digitalWrite(EntryGateRedLED, HIGH);
 	digitalWrite(EntryGateGreenLED, LOW);
+	iEntryGateLEDStatus = GRN;
 }
 
 
@@ -129,16 +141,32 @@ void SetExitGateLED_Red(void)
 {
 	digitalWrite(ExitGateRedLED, LOW);
 	digitalWrite(ExitGateGreenLED, HIGH);
+	iExitGateLEDStatus = RED;
 }
 
 void SetExitGateLED_Green(void)
 {
 	digitalWrite(ExitGateRedLED, HIGH);
 	digitalWrite(ExitGateGreenLED, LOW);
+	iExitGateLEDStatus = GRN;
 }
+
+int GetEntryGateLED(void)
+{
+	return iEntryGateLEDStatus;
+}
+
+int GetExitGateLED(void)
+{
+	return iExitGateLEDStatus;
+}
+
+
 
 void SetParkingStallLED(int iIndex, bool bOnOff)
 {
+	aiParkingStallLEDStatus[iIndex] = bOnOff;
+
 	if( bOnOff == true )
 	{
 		digitalWrite(aiParkingStallLED[iIndex], HIGH);
@@ -147,6 +175,11 @@ void SetParkingStallLED(int iIndex, bool bOnOff)
 	{
 		digitalWrite(aiParkingStallLED[iIndex], LOW);
 	}
+}
+
+int GetParkingStallLED(int iIndex)
+{
+	return aiParkingStallLEDStatus[iIndex];
 }
 
 
