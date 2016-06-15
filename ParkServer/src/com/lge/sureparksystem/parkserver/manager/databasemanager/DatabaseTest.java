@@ -1,5 +1,6 @@
 package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class DatabaseTest {
