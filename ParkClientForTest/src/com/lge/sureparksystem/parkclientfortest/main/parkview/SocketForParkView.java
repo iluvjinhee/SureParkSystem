@@ -15,8 +15,8 @@ public class SocketForParkView extends SocketForClient {
 	public Message process(String jsonMessage) {
 		Message result = null;
 
-		MessageType messageType = MessageParser.parseJSONMessage(jsonMessage).getMessageType();
-		switch (messageType) {
+		MessageType messageType = MessageParser.getMessageType(jsonMessage);
+		switch (MessageParser.getMessageType(jsonMessage)) {
 		case WELCOME_SUREPARK:
 		case NOT_RESERVED:
 			System.out.println(messageType.getText());
@@ -27,7 +27,7 @@ public class SocketForParkView extends SocketForClient {
 			break;
 		case ASSIGN_SLOT:
 			System.out.println(
-					messageType.getText() + " " + MessageParser.parseJSONMessage(jsonMessage).getGlobalValue());
+					messageType.getText() + " " + MessageParser.makeMessage(jsonMessage).getGlobalValue());
 			break;
 		default:
 			break;
