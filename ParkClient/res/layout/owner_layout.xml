@@ -4,11 +4,42 @@
     android:layout_height="match_parent"
     android:background="@android:color/holo_red_light"
     android:orientation="vertical" >
-    <TextView 
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/white"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="Owner layout"/>
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/park_id"
+        android:textColor="@color/white" />
+
+    <Spinner
+        android:id="@+id/park_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/choose_park_id" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/choose_period"
+        android:textColor="@color/white" />
+
+    <Spinner
+        android:id="@+id/period_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:prompt="@string/duration" />
+
+    <Button
+        android:id="@+id/btn_ok"
+        style="?android:attr/buttonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:text="@string/ok"
+        android:textColor="@color/white" />
 
 </LinearLayout>
