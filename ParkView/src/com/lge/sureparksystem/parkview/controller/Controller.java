@@ -2,6 +2,7 @@ package com.lge.sureparksystem.parkview.controller;
 
 import org.json.simple.JSONObject;
 
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
@@ -61,8 +62,9 @@ public class Controller {
 			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
-				JSONObject jsonObject =
-						MessageParser.makeJSONObject(new Message(MessageType.RESERVATION_NUMBER, qrcode));
+				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_CODE);
+				dataMessage.setReservationCode(qrcode);
+				JSONObject jsonObject = MessageParser.makeJSONObject(dataMessage);				
 				
 				clientSocket.send(jsonObject);			
 			}
@@ -107,8 +109,8 @@ public class Controller {
 		case SCAN_CONFIRM:
 			scanConfirmation();
 			break;
-		case ASSIGN_SLOT:
-			assignSlot(Integer.parseInt(message.getGlobalValue()));
+		case ASSIGNED_SLOT:
+			assignSlot(Integer.parseInt(((DataMessage) message).getAssignedSlot()));
 			break;
 		case NOT_RESERVED:
 			notReserved();

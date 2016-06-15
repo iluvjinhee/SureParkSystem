@@ -2,6 +2,8 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 
 import java.net.Socket;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;

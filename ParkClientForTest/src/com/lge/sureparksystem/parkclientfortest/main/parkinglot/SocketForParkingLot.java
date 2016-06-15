@@ -1,9 +1,9 @@
 package com.lge.sureparksystem.parkclientfortest.main.parkinglot;
 
-import com.lge.sureparksystem.parkclientfortest.message.Message;
-import com.lge.sureparksystem.parkclientfortest.message.MessageParser;
-import com.lge.sureparksystem.parkclientfortest.message.MessageType;
 import com.lge.sureparksystem.parkclientfortest.socket.SocketForClient;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 
 public class SocketForParkingLot extends SocketForClient {
 

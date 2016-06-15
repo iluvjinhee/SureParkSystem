@@ -42,10 +42,10 @@ public class CommunicationManager extends ManagerTask {
 		Message socketMessage = MessageParser.makeMessage(jsonObject);
 
 		switch (socketMessage.getMessageType()) {
-		case RESERVATION_NUMBER:
+		case RESERVATION_CODE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
-		case ASSIGN_SLOT:
+		case ASSIGNED_SLOT:
 			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
 			break;
 		case NOT_RESERVED:

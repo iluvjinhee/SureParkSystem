@@ -7,14 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.message.TimestampMessage;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
@@ -123,10 +121,10 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	private void process(JSONObject jsonObject) {
 		switch(MessageParser.getMessageType(jsonObject)) {
 		case ACKNOWLEDGE:
-			if(jsonObject.get(TimestampMessage.TIMESTAMP) != null) {
-				int timestamp = (int) jsonObject.get(TimestampMessage.TIMESTAMP);
+			if(jsonObject.get(Message.TIMESTAMP) != null) {
+				int timestamp = (int) jsonObject.get(Message.TIMESTAMP);
 				JSONObject ackJSONObject = MessageParser.makeJSONObject(
-						new TimestampMessage(MessageType.ACKNOWLEDGE, timestamp));
+						new Message(MessageType.ACKNOWLEDGE, timestamp));
 				
 				send(ackJSONObject);
 			}

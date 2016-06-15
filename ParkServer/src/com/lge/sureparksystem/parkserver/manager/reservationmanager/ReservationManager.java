@@ -8,8 +8,8 @@ import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
-import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -21,17 +21,15 @@ public class ReservationManager extends ManagerTask {
 			System.out.println("ReservationManagerListener");
 			System.out.println(topic);
 			
-			String reservationCode = MessageParser.makeMessage(topic.getJsonObject()).getGlobalValue();
+			String reservationCode = (String) topic.getJsonObject().get("ReservationCode");
 			if(isValid(reservationCode)) {
-				getEventBus().post(
-						new ParkViewNetworkManagerTopic(
-								new Message(
-										MessageType.ASSIGN_SLOT, String.valueOf(getAvailableSlot()))));
+				DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+				dataMessage.setAssignedSlot(String.valueOf(getAvailableSlot()));
+				
+				getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
 			}
 			else {
-				getEventBus().post(
-						new ParkViewNetworkManagerTopic(
-								new Message(MessageType.NOT_RESERVED)));
+				getEventBus().post(new ParkViewNetworkManagerTopic(new Message(MessageType.NOT_RESERVED)));
 			}
 		}
 	}

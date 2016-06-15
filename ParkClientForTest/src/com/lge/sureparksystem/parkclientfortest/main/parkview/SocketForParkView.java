@@ -1,9 +1,10 @@
 package com.lge.sureparksystem.parkclientfortest.main.parkview;
 
-import com.lge.sureparksystem.parkclientfortest.message.Message;
-import com.lge.sureparksystem.parkclientfortest.message.MessageParser;
-import com.lge.sureparksystem.parkclientfortest.message.MessageType;
 import com.lge.sureparksystem.parkclientfortest.socket.SocketForClient;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 
 public class SocketForParkView extends SocketForClient {
 
@@ -13,7 +14,7 @@ public class SocketForParkView extends SocketForClient {
 
 	@Override
 	public Message process(String jsonMessage) {
-		Message result = null;
+		Message message = null;
 
 		MessageType messageType = MessageParser.getMessageType(jsonMessage);
 		switch (MessageParser.getMessageType(jsonMessage)) {
@@ -22,17 +23,17 @@ public class SocketForParkView extends SocketForClient {
 			System.out.println(messageType.getText());
 			break;
 		case SCAN_CONFIRM:
-			result = new Message(MessageType.RESERVATION_NUMBER,
-					"{\"Name\":\"Daniel\",\"ReservationNumber\":\"1234567890\"}");
+			message = new DataMessage(MessageType.RESERVATION_CODE);
+			((DataMessage) message).setReservationCode("{\"Name\":\"Daniel\",\"ReservationCode\":\"1234567890\"}");
 			break;
-		case ASSIGN_SLOT:
+		case ASSIGNED_SLOT:
 			System.out.println(
-					messageType.getText() + " " + MessageParser.makeMessage(jsonMessage).getGlobalValue());
+					messageType.getText() + " " + ((DataMessage) MessageParser.makeMessage(jsonMessage)).getAssignedSlot());
 			break;
 		default:
 			break;
 		}
 
-		return result;
+		return message;
 	}
 }

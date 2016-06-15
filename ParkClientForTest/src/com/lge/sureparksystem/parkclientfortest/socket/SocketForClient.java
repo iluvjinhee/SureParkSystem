@@ -8,9 +8,8 @@ import java.net.Socket;
 
 import org.json.simple.JSONObject;
 
-import com.lge.sureparksystem.parkclientfortest.message.Message;
-import com.lge.sureparksystem.parkclientfortest.message.MessageParser;
-import com.lge.sureparksystem.parkclientfortest.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
 
 public abstract class SocketForClient {
 	String dstAddress;

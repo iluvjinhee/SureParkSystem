@@ -6,8 +6,6 @@ import org.json.simple.parser.ParseException;
 
 public class MessageParser {
 	public static Message makeMessage(String jsonMessage) {
-		Message message = new Message();
-		
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
 		try {
@@ -17,15 +15,7 @@ public class MessageParser {
 			e.printStackTrace();
 		}
 		
-		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
-			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
-			message.setMessageType(MessageType.fromText(str));
-		}
-		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			message.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
-		}
-		
-		return message;
+		return makeMessage(jsonObject);
 	}
 	
 	public static Message makeMessage(JSONObject jsonObject) {
@@ -35,11 +25,44 @@ public class MessageParser {
 			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
 			message.setMessageType(MessageType.fromText(str));
 		}
-		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			message.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
+		if(jsonObject.get(Message.TIMESTAMP) != null) {
+			message.setTimestamp((int) jsonObject.get(Message.TIMESTAMP));
+		}
+		if(jsonObject.get(DataMessage.RESERVATION_CODE) != null) {
+			((DataMessage) message).setReservationCode((String) jsonObject.get(DataMessage.RESERVATION_CODE));
+		}
+		if(jsonObject.get(DataMessage.ASSIGNED_SLOT) != null) {
+			((DataMessage) message).setAssignedSlot((String) jsonObject.get(DataMessage.ASSIGNED_SLOT));
 		}
 		
 		return message;
+	}
+	
+	public static JSONObject makeJSONObject(Message message) {
+		JSONObject jsonObject = new JSONObject();
+		
+		switch(message.getMessageType()) {
+		case WELCOME_SUREPARK:
+		case SCAN_CONFIRM:
+		case NOT_RESERVED:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			break;
+		case RESERVATION_CODE:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
+			break;
+		case ASSIGNED_SLOT:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.ASSIGNED_SLOT, ((DataMessage) message).getAssignedSlot());
+			break;
+		default:
+			break;
+		}
+			
+		return jsonObject;
 	}
 	
 	public static MessageType getMessageType(JSONObject jsonObject) {
@@ -57,41 +80,5 @@ public class MessageParser {
 		Message message = makeMessage(jsonString);
 		
 		return message.getMessageType();
-	}
-	
-	public static JSONObject makeJSONObject(Message message) {
-		JSONObject jsonObject = new JSONObject();
-		
-		switch(message.getMessageType()) {
-		case WELCOME_SUREPARK:
-		case SCAN_CONFIRM:
-		case NOT_RESERVED:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			break;
-		case RESERVATION_NUMBER:
-		case ASSIGN_SLOT:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			jsonObject.put(Message.GLOBAL_VALUE, message.getGlobalValue());
-			break;
-		default:
-			break;
-		}
-			
-		return jsonObject;
-	}
-	
-	public static JSONObject makeJSONObject(TimestampMessage timestampMessage) {
-		JSONObject jsonObject = new JSONObject();
-		
-		switch(timestampMessage.getMessageType()) {
-		case ACKNOWLEDGE:
-			jsonObject.put(TimestampMessage.MESSAGE_TYPE, timestampMessage.getMessageType().getText());
-			jsonObject.put(TimestampMessage.TIMESTAMP, timestampMessage.getTimestamp());
-			break;
-		default:
-			break;
-		}
-			
-		return jsonObject;
 	}
 }
