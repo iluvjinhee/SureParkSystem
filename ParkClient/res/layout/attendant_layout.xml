@@ -22,6 +22,6 @@
         android:id="@+id/park_state"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:src="@drawable/architecture_bg"/>
+        android:scaleType="centerInside"
+        android:src="@drawable/parking_view"/>
 </LinearLayout>
