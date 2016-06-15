@@ -2,9 +2,9 @@ package com.lge.sureparksystem.parkview.controller;
 
 import org.json.simple.JSONObject;
 
+import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.message.SocketMessage;
 import com.lge.sureparksystem.parkview.FullscreenActivity;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -61,10 +61,8 @@ public class Controller {
 			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
-				//fullScreen.setDisplay(qrcode, 50);
-				
 				JSONObject jsonObject =
-						MessageParser.makeJSONObject(new SocketMessage(MessageType.RESERVATION_NUMBER, qrcode));
+						MessageParser.makeJSONObject(new Message(MessageType.RESERVATION_NUMBER, qrcode));
 				
 				clientSocket.send(jsonObject);			
 			}
@@ -100,7 +98,7 @@ public class Controller {
 	}
 
 	public void parseJSONMessage(String jsonMessage) {
-		SocketMessage socketMessage = MessageParser.parseJSONMessage(jsonMessage);
+		Message socketMessage = MessageParser.parseJSONMessage(jsonMessage);
 		
 		switch(socketMessage.getMessageType()) {
 		case WELCOME_SUREPARK:
