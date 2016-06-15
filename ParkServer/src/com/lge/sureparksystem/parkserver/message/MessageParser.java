@@ -46,16 +46,19 @@ public class MessageParser {
 		case SCAN_CONFIRM:
 		case NOT_RESERVED:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			break;
 		case RESERVATION_CODE:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
 			break;
 		case ASSIGNED_SLOT:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.ASSIGNED_SLOT, ((DataMessage) message).getAssignedSlot());
 			break;
 		default:
