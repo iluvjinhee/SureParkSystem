@@ -16,7 +16,7 @@ public class AESTest {
 	}
 
 	@Test
-	public void test() {
+	public void trueTest() {
 		String plaintext = "test text 123\0\0\0";
 		String encryptionKey = "0123456789abcdef";
 		
@@ -30,5 +30,21 @@ public class AESTest {
 		}
 
 		Assert.assertTrue(plaintext.equals(decrypted));
+	}
+	
+	@Test
+	public void falseTest() {
+		String plaintext = "{\"EventType\":\"OPEN_THE_GATE\"";
+		String encryptionKey = "1234567890";
+		
+		String decrypted = null;
+		try {
+			byte[] cipher = AES.encrypt(plaintext, encryptionKey);
+			decrypted = AES.decrypt(cipher, encryptionKey);
+		} catch (Exception e) {
+			;
+		}
+
+		Assert.assertFalse(plaintext.equals(decrypted));
 	}
 }
