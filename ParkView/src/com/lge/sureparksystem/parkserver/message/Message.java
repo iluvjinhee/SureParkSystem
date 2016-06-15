@@ -2,21 +2,21 @@ package com.lge.sureparksystem.parkserver.message;
 
 public class Message {
 	public static String MESSAGE_TYPE = "MessageType";
-	public static String GLOBAL_VALUE = "GlobalValue";	
-	
+	public static String GLOBAL_VALUE = "GlobalValue";
+
 	MessageType messageType;
 	String globalValue;
-	
+
 	public Message() {
 		this.messageType = null;
 		this.globalValue = "";
 	}
-	
+
 	public Message(MessageType messageType) {
 		this.messageType = messageType;
 		this.globalValue = "";
 	}
-	
+
 	public Message(MessageType messageType, String globalValue) {
 		this.messageType = messageType;
 		this.globalValue = globalValue;
@@ -36,11 +36,11 @@ public class Message {
 	}
 
 	public void setMessageType(MessageType messageType) {
-		this.messageType = messageType;		
+		this.messageType = messageType;
 	}
 
 	public void setGlobalValue(String globalValue) {
-		this.globalValue = globalValue;	
+		this.globalValue = globalValue;
 	}
 
 	@Override

@@ -1,11 +1,16 @@
 package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
+	ACKNOWLEDGE("ACK"),
+	
+	// Park View
     WELCOME_SUREPARK("WELCOME SUREPARK"),
     SCAN_CONFIRM("SCAN CONFIRM"),
     RESERVATION_NUMBER("RESERVATION NUMBER"),
     ASSIGN_SLOT("ASSIGN SLOT"),
     NOT_RESERVED("NOT RESERVED"),
+    
+    // Parking Lot
     NONE("NONE");
 	
 	private String text;

@@ -98,9 +98,9 @@ public class Controller {
 	}
 
 	public void parseJSONMessage(String jsonMessage) {
-		Message socketMessage = MessageParser.parseJSONMessage(jsonMessage);
+		Message message = MessageParser.makeMessage(jsonMessage);
 		
-		switch(socketMessage.getMessageType()) {
+		switch(message.getMessageType()) {
 		case WELCOME_SUREPARK:
 			welcome();
 			break;
@@ -108,7 +108,7 @@ public class Controller {
 			scanConfirmation();
 			break;
 		case ASSIGN_SLOT:
-			assignSlot(Integer.parseInt(socketMessage.getGlobalValue()));
+			assignSlot(Integer.parseInt(message.getGlobalValue()));
 			break;
 		case NOT_RESERVED:
 			notReserved();

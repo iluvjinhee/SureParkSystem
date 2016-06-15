@@ -39,7 +39,7 @@ public class CommunicationManager extends ManagerTask {
 	}
 	
 	public void process(JSONObject jsonObject) {
-		Message socketMessage = MessageParser.parseJSONObject(jsonObject);
+		Message socketMessage = MessageParser.makeMessage(jsonObject);
 
 		switch (socketMessage.getMessageType()) {
 		case RESERVATION_NUMBER:

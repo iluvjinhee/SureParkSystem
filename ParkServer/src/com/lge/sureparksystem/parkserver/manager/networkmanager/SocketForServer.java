@@ -13,8 +13,9 @@ import org.json.simple.parser.ParseException;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.TimestampMessage;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Log;
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class SocketForServer implements Runnable {
 	private NetworkManager manager = null;
@@ -46,11 +47,10 @@ public class SocketForServer implements Runnable {
 		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
 		try {
-			JSONObject jsonObject = (JSONObject) new JSONParser().parse(jsonMessage);
-			manager.getEventBus().post(new CommunicationManagerTopic(jsonObject));
-		} catch (ParseException e) {
+			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
+		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 	}
 
@@ -73,7 +73,7 @@ public class SocketForServer implements Runnable {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				Log.log("Couldn't close a socket.");
+				Logger.log("Couldn't close a socket.");
 			}
 			
 			showDisconnectionInfo();
@@ -93,7 +93,7 @@ public class SocketForServer implements Runnable {
 			System.out.println("Connection with ParkingLot closed!");
 		}
 		else {
-			Log.log("Connection with client closed!");
+			Logger.log("Connection with client closed!");
 		}		
 	}
 }

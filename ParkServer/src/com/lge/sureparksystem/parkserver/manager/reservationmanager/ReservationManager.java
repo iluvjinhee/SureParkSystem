@@ -21,7 +21,7 @@ public class ReservationManager extends ManagerTask {
 			System.out.println("ReservationManagerListener");
 			System.out.println(topic);
 			
-			String reservationCode = MessageParser.parseJSONObject(topic.getJsonObject()).getGlobalValue();
+			String reservationCode = MessageParser.makeMessage(topic.getJsonObject()).getGlobalValue();
 			if(isValid(reservationCode)) {
 				getEventBus().post(
 						new ParkViewNetworkManagerTopic(

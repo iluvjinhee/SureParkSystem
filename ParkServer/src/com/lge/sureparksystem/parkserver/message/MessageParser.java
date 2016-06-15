@@ -5,8 +5,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class MessageParser {
-	public static Message parseJSONMessage(String jsonMessage) {
-		Message socketMessage = new Message();
+	public static Message makeMessage(String jsonMessage) {
+		Message message = new Message();
 		
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
@@ -19,44 +19,74 @@ public class MessageParser {
 		
 		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
 			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromText(str));
+			message.setMessageType(MessageType.fromText(str));
 		}
 		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			socketMessage.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
+			message.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
 		}
 		
-		return socketMessage;
+		return message;
 	}
 	
-	public static Message parseJSONObject(JSONObject jsonObject) {
-		Message socketMessage = new Message();
-		
-		JSONParser jsonParser = new JSONParser();
+	public static Message makeMessage(JSONObject jsonObject) {
+		Message message = new Message();
 		
 		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
 			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromText(str));
+			message.setMessageType(MessageType.fromText(str));
 		}
 		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			socketMessage.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
+			message.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
 		}
 		
-		return socketMessage;
+		return message;
 	}
 	
-	public static JSONObject makeJSONObject(Message socketMessage) {
+	public static MessageType getMessageType(JSONObject jsonObject) {
+		MessageType messageType = MessageType.NONE;
+		
+		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
+			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
+			messageType = MessageType.fromText(str);
+		}
+		
+		return messageType;
+	}
+	
+	public static MessageType getMessageType(String jsonString) {
+		Message message = makeMessage(jsonString);
+		
+		return message.getMessageType();
+	}
+	
+	public static JSONObject makeJSONObject(Message message) {
 		JSONObject jsonObject = new JSONObject();
 		
-		switch(socketMessage.getMessageType()) {
+		switch(message.getMessageType()) {
 		case WELCOME_SUREPARK:
 		case SCAN_CONFIRM:
 		case NOT_RESERVED:
-			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 			break;
 		case RESERVATION_NUMBER:
 		case ASSIGN_SLOT:
-			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
-			jsonObject.put(Message.GLOBAL_VALUE, socketMessage.getGlobalValue());
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			jsonObject.put(Message.GLOBAL_VALUE, message.getGlobalValue());
+			break;
+		default:
+			break;
+		}
+			
+		return jsonObject;
+	}
+	
+	public static JSONObject makeJSONObject(TimestampMessage timestampMessage) {
+		JSONObject jsonObject = new JSONObject();
+		
+		switch(timestampMessage.getMessageType()) {
+		case ACKNOWLEDGE:
+			jsonObject.put(TimestampMessage.MESSAGE_TYPE, timestampMessage.getMessageType().getText());
+			jsonObject.put(TimestampMessage.TIMESTAMP, timestampMessage.getTimestamp());
 			break;
 		default:
 			break;

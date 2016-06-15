@@ -7,14 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.TimestampMessage;
+import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Log;
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
 	private int serverPort;
@@ -77,6 +80,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 					e.printStackTrace();
 				}
 			}
+			
 			System.out.println("serverSocket Close.");
 			System.exit(0);
 		}
@@ -84,19 +88,24 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	
 	private void showConnectionInfo(int i) {
 		if(i == SocketInfo.PORT_PARKVIEW) {
-			Log.log("Connected to ParkView!");
+			Logger.log("Connected to ParkView!");
 		}
 		else if(i == SocketInfo.PORT_PARKHERE) {
-			Log.log("Connected to ParkHere!");
+			Logger.log("Connected to ParkHere!");
 		}
 		else if(i == SocketInfo.PORT_PARKINGLOT) {
-			Log.log("Connected to ParkingLot!");
+			Logger.log("Connected to ParkingLot!");
 		}
 		else {
-			Log.log("Connected...");
+			Logger.log("Connected...");
 		}		
 	}
 
+	public void removeSocket(SocketForServer socketForServer) {
+		socketForServer.destroy();
+		socketList.remove(socketForServer);
+	}
+	
 	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {
@@ -105,8 +114,25 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	public void removeSocket(SocketForServer socketForServer) {
-		socketForServer.destroy();
-		socketList.remove(socketForServer);
+	public void receive(JSONObject jsonObject) {
+		getEventBus().post(new CommunicationManagerTopic(jsonObject));
+		
+		process(jsonObject);
+	}
+
+	private void process(JSONObject jsonObject) {
+		switch(MessageParser.getMessageType(jsonObject)) {
+		case ACKNOWLEDGE:
+			if(jsonObject.get(TimestampMessage.TIMESTAMP) != null) {
+				int timestamp = (int) jsonObject.get(TimestampMessage.TIMESTAMP);
+				JSONObject ackJSONObject = MessageParser.makeJSONObject(
+						new TimestampMessage(MessageType.ACKNOWLEDGE, timestamp));
+				
+				send(ackJSONObject);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }
