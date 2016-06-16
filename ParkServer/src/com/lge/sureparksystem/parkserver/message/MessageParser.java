@@ -26,7 +26,7 @@ public class MessageParser {
 			message.setMessageType(MessageType.fromText(str));
 		}
 		if(jsonObject.get(Message.TIMESTAMP) != null) {
-			message.setTimestamp((int) jsonObject.get(Message.TIMESTAMP));
+			message.setTimestamp(((Long) jsonObject.get(Message.TIMESTAMP)).intValue());
 		}
 		if(jsonObject.get(DataMessage.RESERVATION_CODE) != null) {
 			((DataMessage) message).setReservationCode((String) jsonObject.get(DataMessage.RESERVATION_CODE));
@@ -83,5 +83,21 @@ public class MessageParser {
 		Message message = makeMessage(jsonString);
 		
 		return message.getMessageType();
+	}
+	
+	public static int getTimestamp(JSONObject jsonObject) {
+		int timestamp = -1;
+		
+		if(jsonObject.get(Message.TIMESTAMP) != null) {
+			timestamp = ((Long) jsonObject.get(Message.TIMESTAMP)).intValue();
+		}
+		
+		return timestamp;
+	}
+	
+	public static int getTimestamp(String jsonString) {
+		Message message = makeMessage(jsonString);
+		
+		return message.getTimestamp();
 	}
 }

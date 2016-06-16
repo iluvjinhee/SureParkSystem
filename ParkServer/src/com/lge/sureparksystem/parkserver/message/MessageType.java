@@ -11,7 +11,7 @@ public enum MessageType {
     NOT_RESERVED("NOT RESERVED"),
     
     // Parking Lot
-    
+    HEARTBEAT("HeartBeat"),
     
     NONE("NONE");
 	

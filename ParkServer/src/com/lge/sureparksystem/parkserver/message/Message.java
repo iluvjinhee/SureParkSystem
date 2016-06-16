@@ -2,7 +2,7 @@ package com.lge.sureparksystem.parkserver.message;
 
 public class Message {
 	public static String MESSAGE_TYPE = "MessageType";
-	public static String TIMESTAMP = "Timestamp";
+	public static String TIMESTAMP = "TimeStamp";
 
 	MessageType messageType;
 	int timestamp;

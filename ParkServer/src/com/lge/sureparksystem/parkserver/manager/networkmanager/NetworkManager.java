@@ -120,9 +120,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 
 	private void process(JSONObject jsonObject) {
 		switch(MessageParser.getMessageType(jsonObject)) {
-		case ACKNOWLEDGE:
-			if(jsonObject.get(Message.TIMESTAMP) != null) {
-				int timestamp = (int) jsonObject.get(Message.TIMESTAMP);
+		case HEARTBEAT:
+			int timestamp = MessageParser.getTimestamp(jsonObject);
+			if(timestamp != -1) {
 				JSONObject ackJSONObject = MessageParser.makeJSONObject(
 						new Message(MessageType.ACKNOWLEDGE, timestamp));
 				
