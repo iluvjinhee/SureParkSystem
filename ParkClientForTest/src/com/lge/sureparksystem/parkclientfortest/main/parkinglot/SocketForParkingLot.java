@@ -24,4 +24,22 @@ public class SocketForParkingLot extends SocketForClient {
 		return result;
 	}
 
+	@Override
+	public void testSend() {
+		Thread t = new Thread() {
+		    public void run() {
+		    	while(true) {
+		    		out.println(TestMessage.getTestMessage());
+		    		
+		    		try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
+		    }
+		};
+		t.start();
+	}
 }

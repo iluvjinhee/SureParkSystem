@@ -24,4 +24,9 @@ public class SocketForParkHere extends SocketForClient {
 		return result;
 	}
 
+	@Override
+	public void testSend() {
+		// TODO Auto-generated method stub
+		
+	}
 }

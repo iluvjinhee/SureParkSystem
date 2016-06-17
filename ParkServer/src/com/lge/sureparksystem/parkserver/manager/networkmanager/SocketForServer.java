@@ -57,6 +57,9 @@ public class SocketForServer implements Runnable {
 			
 			while (true) {
 				String input = in.readLine();
+				System.out.println(input);
+				
+				input = input.toUpperCase();
 				
 				if(input != null && !input.equals("")) {
 					receive(input);

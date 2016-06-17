@@ -7,8 +7,8 @@ public class ParkingLotForTest {
 	public static final String IP_ADDRESS = "localhost";
 
 	public static void main(String[] args) {
-		SocketForClient parkHere = new SocketForParkingLot(IP_ADDRESS, SocketInfo.PORT_PARKINGLOT);
+		SocketForClient parkingLot = new SocketForParkingLot(IP_ADDRESS, SocketInfo.PORT_PARKINGLOT);
 
-		parkHere.connect();
+		parkingLot.connect(); 
 	}
 }
