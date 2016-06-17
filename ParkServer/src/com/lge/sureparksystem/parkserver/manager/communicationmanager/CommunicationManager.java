@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -39,9 +40,23 @@ public class CommunicationManager extends ManagerTask {
 	}
 	
 	public void process(JSONObject jsonObject) {
-		Message socketMessage = MessageParser.makeMessage(jsonObject);
+		Message message = MessageParser.makeMessage(jsonObject);
 
-		switch (socketMessage.getMessageType()) {
+		if(message == null) 
+			return;
+		
+		MessageType messageType = message.getMessageType();
+		
+		if(messageType == null) {
+			System.out.println("");
+			System.out.println("NOT PARSABLE MESSAGE TYPE !!!!!:");
+			System.out.println(jsonObject.toJSONString());
+			System.out.println("");
+			
+			return;
+		}
+		
+		switch (messageType) {
 		case RESERVATION_CODE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;

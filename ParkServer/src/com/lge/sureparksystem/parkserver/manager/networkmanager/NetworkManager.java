@@ -119,7 +119,18 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	}
 
 	private void process(JSONObject jsonObject) {
-		switch(MessageParser.getMessageType(jsonObject)) {
+		MessageType messageType = MessageParser.getMessageType(jsonObject);
+		
+		if(messageType == null) {
+			System.out.println("");
+			System.out.println("NOT PARSABLE MESSAGE TYPE !!!!! :");
+			System.out.println(jsonObject.toJSONString());
+			System.out.println("");
+			
+			return;
+		}
+		
+		switch(messageType) {
 		case HEARTBEAT:
 			int timestamp = MessageParser.getTimestamp(jsonObject);
 			if(timestamp != -1) {

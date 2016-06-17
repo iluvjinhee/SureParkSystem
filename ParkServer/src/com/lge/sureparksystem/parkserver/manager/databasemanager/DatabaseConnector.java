@@ -36,7 +36,9 @@ public class DatabaseConnector {
             // Load the JDBC driver
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost/sureparkdb?" +
-                    "user=team5&password=team5");
+                    "user=ohteam&password=ohteamchoigo");
+//            conn = DriverManager.getConnection("jdbc:mysql://128.237.202.85/sureparkdb?" +
+//                    "user=ohteam&password=ohteamchoigo");
             LogHelper.log(TAG, "conn = " + conn.toString());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
