@@ -99,8 +99,15 @@ public class MessageParser {
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
-			//jsonObject.put(DataMessage.SLOT_STATUS, ((DataMessage) message).getSlotStatus());
-			//jsonObject.put(DataMessage.LED_STATUS, ((DataMessage) message).getLedStatus());
+			
+			JSONArray array = new JSONArray();
+			array.addAll(((DataMessage) message).getSlotStatus());
+			jsonObject.put(DataMessage.SLOT_STATUS, array);
+			
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getLedStatus());
+			jsonObject.put(DataMessage.LED_STATUS, array);
+			
 			jsonObject.put(DataMessage.ENTRYGATE_STATUS, ((DataMessage) message).getEntrygateStatus());
 			jsonObject.put(DataMessage.EXITGATE_STATUS, ((DataMessage) message).getExitgateStatus());
 			jsonObject.put(DataMessage.ENTRYGATELED_STATUS, ((DataMessage) message).getEntrygateledStatus());
@@ -189,6 +196,6 @@ public class MessageParser {
 	        }
 		}
         
-		return null;
+		return resultList;
 	}
 }

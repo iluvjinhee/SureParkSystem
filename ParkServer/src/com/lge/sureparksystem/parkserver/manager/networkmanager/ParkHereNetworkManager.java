@@ -10,8 +10,7 @@ public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkHereNetworkManagerTopic topic) {
-			System.out.println("ParkHereNetworkManagerListener");
-			System.out.println(topic);
+			System.out.println("ParkHereNetworkManagerListener: " + topic);
 		}
 	}
 	

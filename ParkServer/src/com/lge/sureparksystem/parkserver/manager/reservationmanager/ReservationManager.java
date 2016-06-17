@@ -10,7 +10,9 @@ import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
@@ -18,19 +20,9 @@ public class ReservationManager extends ManagerTask {
 	public class ReservationManagerListener {
 		@Subscribe
 		public void onSubscribe(ReservationManagerTopic topic) {
-			System.out.println("ReservationManagerListener");
-			System.out.println(topic);
+			System.out.println("ReservationManagerListener: " + topic);
 			
-			String reservationCode = (String) topic.getJsonObject().get("ReservationCode");
-			if(isValid(reservationCode)) {
-				DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
-				dataMessage.setAssignedSlot(String.valueOf(getAvailableSlot()));
-				
-				getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
-			}
-			else {
-				getEventBus().post(new ParkViewNetworkManagerTopic(new Message(MessageType.NOT_RESERVED)));
-			}
+			process(topic);
 		}
 	}
 	
@@ -83,5 +75,32 @@ public class ReservationManager extends ManagerTask {
 	
 	private int getSlotSize() {
 		return 4;
+	}
+
+	@Override
+	protected void process(ManagerTopic topic) {
+		JSONObject jsonObject = topic.getJsonObject();
+		
+		switch(MessageParser.getMessageType(jsonObject)) {
+		case RESERVATION_CODE:
+			processVerification(jsonObject);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void processVerification(JSONObject jsonObject) {
+		String reservationCode = MessageParser.getString(jsonObject, "ReservationCode");
+		
+		if(isValid(reservationCode)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+			dataMessage.setAssignedSlot(String.valueOf(getAvailableSlot()));
+			
+			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
+		}
+		else {
+			getEventBus().post(new ParkViewNetworkManagerTopic(new Message(MessageType.NOT_RESERVED)));
+		}
 	}
 }

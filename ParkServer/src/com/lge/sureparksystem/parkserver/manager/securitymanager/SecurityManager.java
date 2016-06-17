@@ -2,14 +2,16 @@ package com.lge.sureparksystem.parkserver.manager.securitymanager;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.SecurityManagerTopic;
 
 public class SecurityManager extends ManagerTask {
 	public class SecurityManagerListener {
 		@Subscribe
 		public void onSubscribe(SecurityManagerTopic topic) {
-			System.out.println("SecurityManagerListener");
-			System.out.println(topic);
+			System.out.println("SecurityManagerListener: " + topic);
+			
+			process(topic);
 		}
 	}
 	
@@ -28,5 +30,11 @@ public class SecurityManager extends ManagerTask {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	protected void process(ManagerTopic topic) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

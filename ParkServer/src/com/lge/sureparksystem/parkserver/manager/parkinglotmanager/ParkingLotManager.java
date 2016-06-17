@@ -2,14 +2,16 @@ package com.lge.sureparksystem.parkserver.manager.parkinglotmanager;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotManagerTopic;
 
 public class ParkingLotManager extends ManagerTask {
 	public class ParkingLotManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkingLotManagerTopic topic) {
-			System.out.println("ParkingLotManagerListener");
-			System.out.println(topic);
+			System.out.println("ParkingLotManagerListener: " + topic);
+			
+			process(topic);
 		}
 	}
 	
@@ -28,5 +30,11 @@ public class ParkingLotManager extends ManagerTask {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	protected void process(ManagerTopic topic) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

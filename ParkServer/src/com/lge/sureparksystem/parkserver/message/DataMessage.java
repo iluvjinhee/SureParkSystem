@@ -177,4 +177,15 @@ public class DataMessage extends Message {
 	public void setSlotNumber(int slot_number) {
 		this.slot_number = slot_number;
 	}
+
+	@Override
+	public String toString() {
+		return "DataMessage [assignedSlot=" + assignedSlot + ", reservationCode=" + reservationCode + ", led_status="
+				+ led_status + ", slot_status=" + slot_status + ", entrygate_arrive=" + entrygate_arrive
+				+ ", entrygate_status=" + entrygate_status + ", entrygateled_status=" + entrygateled_status
+				+ ", exitgate_arrive=" + exitgate_arrive + ", exitgate_status=" + exitgate_status
+				+ ", exitgateled_status=" + exitgateled_status + ", id=" + id + ", pwd=" + pwd + ", status=" + status
+				+ ", led_number=" + led_number + ", sensor_number=" + sensor_number + ", slot_number=" + slot_number
+				+ ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+	}
 }
