@@ -11,8 +11,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 	public class ParkingLotNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkingLotNetworkManagerTopic topic) {
-			System.out.println("ParkingLotNetworkManagerListener");
-			System.out.println(topic);
+			System.out.println("ParkingLotNetworkManagerListener: " + topic);
 		}
 	}
 	

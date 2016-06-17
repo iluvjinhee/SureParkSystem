@@ -10,6 +10,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class SocketForServer implements Runnable {
@@ -41,11 +44,28 @@ public class SocketForServer implements Runnable {
 	private void receive(String jsonMessage) {
 		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
+		Message message = MessageParser.makeMessage(jsonMessage);
+		
+		if(message != null &&
+		   message.getMessageType() != null &&
+		   message.getMessageType() == MessageType.HEARTBEAT) {
+			sendAck(message);
+		}
+		
 		try {
 			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+	}
+
+	private void sendAck(Message message) {
+		int timestamp = message.getTimestamp();
+		if (timestamp != -1) {
+			JSONObject ackJSONObject = MessageParser.makeJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
+
+			send(ackJSONObject);
 		}
 	}
 

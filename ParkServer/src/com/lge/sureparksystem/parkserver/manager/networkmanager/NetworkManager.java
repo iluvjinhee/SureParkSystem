@@ -10,10 +10,10 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -25,8 +25,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	public class NetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(NetworkManagerTopic topic) {
-			System.out.println("NetworkManagerListener");
-			System.out.println(topic);
+			System.out.println("NetworkManagerListener: " + topic);
+			
+			process(topic);
 		}
 	}
 	
@@ -117,13 +118,18 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		
 		process(jsonObject);
 	}
+	
+	@Override
+	protected void process(ManagerTopic topic) {
+		process(topic.getJsonObject());
+	}
 
-	private void process(JSONObject jsonObject) {
+	protected void process(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
 		if(messageType == null) {
 			System.out.println("");
-			System.out.println("NOT PARSABLE MESSAGE TYPE !!!!! :");
+			System.out.println("NOT PARSABLE MESSAGE TYPE !!!!!:");
 			System.out.println(jsonObject.toJSONString());
 			System.out.println("");
 			
@@ -131,15 +137,6 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 		
 		switch(messageType) {
-		case HEARTBEAT:
-			int timestamp = MessageParser.getTimestamp(jsonObject);
-			if(timestamp != -1) {
-				JSONObject ackJSONObject = MessageParser.makeJSONObject(
-						new Message(MessageType.ACKNOWLEDGE, timestamp));
-				
-				send(ackJSONObject);
-			}
-			break;
 		default:
 			break;
 		}
