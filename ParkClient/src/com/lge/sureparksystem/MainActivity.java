@@ -12,16 +12,18 @@ import android.view.View.OnClickListener;
 
 import com.lge.sureparksystem.control.NetworkManager;
 import com.lge.sureparksystem.control.NetworkToActivity;
+import com.lge.sureparksystem.message.MessageParser;
+import com.lge.sureparksystem.message.MessageType;
+import com.lge.sureparksystem.message.SocketMessage;
 import com.lge.sureparksystem.parkclient.R;
-import com.lge.sureparksystem.parkserver.message.MessageParser;
-import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.message.SocketMessage;
 import com.lge.sureparksystem.util.Utils;
+import com.lge.sureparksystem.view.BaseView;
+import com.lge.sureparksystem.view.RequestData;
 
 import org.json.simple.JSONObject;
 
 public class MainActivity extends Activity implements OnClickListener,
-        NetworkToActivity {
+        NetworkToActivity, BaseView {
 
     private static String TAG = "ParkClientActivity";
     private View mLoadingView;
@@ -66,7 +68,7 @@ public class MainActivity extends Activity implements OnClickListener,
     protected void onStart() {
         super.onStart();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_area, (Fragment)mLoginFactory.mBaseView,
+        ft.replace(R.id.fragment_area, (Fragment)mLoginFactory.mBaseFragment,
                 Utils.TAG_LOGIN_FRAGMENT);
         ft.commitAllowingStateLoss();
         findViewById(R.id.fragment_area).setVisibility(View.VISIBLE);
@@ -112,7 +114,7 @@ public class MainActivity extends Activity implements OnClickListener,
 
     private void switchFagment(AbstractFactory factory, String fragment_tag, String viewName) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_area, (Fragment)factory.mBaseView,
+        ft.replace(R.id.fragment_area, (Fragment)factory.mBaseFragment,
                 fragment_tag);
         ft.commitAllowingStateLoss();
         getActionBar().setTitle(viewName);
@@ -168,5 +170,19 @@ public class MainActivity extends Activity implements OnClickListener,
             break;
         }
 
+    }
+
+    @Override
+    public void requsetServer(RequestData rd, String data) {
+        Log.d(TAG, "requsetServer : " + rd);
+        switch (rd) {
+        case CREATE_NEW_DRIVER:
+            break;
+        case LOGIN_DRIVER:
+            break;
+
+        default:
+            break;
+        }
     }
 }

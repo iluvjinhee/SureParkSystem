@@ -25,5 +25,6 @@
     <string name="park_confirmation_info">"123456789"</string>
     <string name="choose_period">Choose duration</string>
     <string name="duration">Duration</string>
+    <string name="create_id">Input new ID and Password</string>
 
 </resources>

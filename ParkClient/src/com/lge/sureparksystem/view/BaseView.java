@@ -1,6 +1,5 @@
 package com.lge.sureparksystem.view;
 
 public interface BaseView {
-//    void setContentView(int ResourceID);
-
+    void requsetServer(RequestData rd, String data);
 }

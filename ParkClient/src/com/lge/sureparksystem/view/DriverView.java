@@ -1,6 +1,5 @@
 package com.lge.sureparksystem.view;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import com.lge.sureparksystem.parkclient.R;
 import com.lge.sureparksystem.util.Utils;
 
-public class DriverView extends Fragment implements BaseView {
+public class DriverView extends BaseFragment {
 
     private static final String TAG = "DriverView";
     private Spinner mParkIDSppiner;
@@ -135,4 +134,5 @@ public class DriverView extends Fragment implements BaseView {
         // TODO Auto-generated method stub
         super.onDestroy();
     }
+
 }

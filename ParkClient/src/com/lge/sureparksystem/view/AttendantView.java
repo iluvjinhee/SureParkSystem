@@ -14,7 +14,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.lge.sureparksystem.parkclient.R;
 import com.lge.sureparksystem.util.Utils;
 
-public class AttendantView  extends Fragment implements BaseView {
+public class AttendantView  extends BaseFragment implements BaseView {
     private static final String TAG = "AttendantView";
     private Spinner mParkIDSppiner;
 
@@ -83,5 +83,11 @@ public class AttendantView  extends Fragment implements BaseView {
     public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
+    }
+
+    @Override
+    public void requsetServer(RequestData rd, String data) {
+        // TODO Auto-generated method stub
+        
     }
 }

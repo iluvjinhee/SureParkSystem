@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.message;
+package com.lge.sureparksystem.message;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

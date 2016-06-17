@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.message;
+package com.lge.sureparksystem.message;
 
 public enum MessageType {
 	UNDEFINED(0),
