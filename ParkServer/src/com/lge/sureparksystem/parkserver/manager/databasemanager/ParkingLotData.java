@@ -5,15 +5,15 @@ public class ParkingLotData {
     private String loginId;
     private String loginPw;
     private String lotName;
-    private Float fee;
-    private int gracePeriod;
+    private String fee;
+    private String gracePeriod;
     private String userEmail;
 
     public ParkingLotData() {
     }
 
-    public ParkingLotData(int id, String loginId, String loginPw, String lotName, Float fee,
-            int gracePeriod, String userEmail) {
+    public ParkingLotData(int id, String loginId, String loginPw, String lotName, String fee,
+            String gracePeriod, String userEmail) {
         super();
         this.id = id;
         this.loginId = loginId;
@@ -56,19 +56,19 @@ public class ParkingLotData {
         this.lotName = lotName;
     }
 
-    public Float getFee() {
+    public String getFee() {
         return fee;
     }
 
-    public void setFee(Float fee) {
+    public void setFee(String fee) {
         this.fee = fee;
     }
 
-    public int getGracePeriod() {
+    public String getGracePeriod() {
         return gracePeriod;
     }
 
-    public void setGracePeriod(int gracePeriod) {
+    public void setGracePeriod(String gracePeriod) {
         this.gracePeriod = gracePeriod;
     }
 

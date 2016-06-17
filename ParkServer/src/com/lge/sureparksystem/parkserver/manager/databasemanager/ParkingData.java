@@ -5,15 +5,15 @@ import java.util.Date;
 public class ParkingData {
     private int parkingId;
     private int reservationId;
-    private int assigned_slot;
-    private int parked_slot;
+    private String assigned_slot;
+    private String parked_slot;
     private Date parkingTime;
     private Date unparkingTime;
 
     public ParkingData() {
     }
 
-    public ParkingData(int parkingId, int reservationId, int assigned_slot, int parked_slot,
+    public ParkingData(int parkingId, int reservationId, String assigned_slot, String parked_slot,
             Date parkingTime, Date unparkingTime) {
         super();
         this.parkingId = parkingId;
@@ -40,19 +40,19 @@ public class ParkingData {
         this.reservationId = reservationId;
     }
 
-    public int getAssigned_slot() {
+    public String getAssigned_slot() {
         return assigned_slot;
     }
 
-    public void setAssigned_slot(int asigned_slot) {
-        this.assigned_slot = asigned_slot;
+    public void setAssigned_slot(String assigned_slot) {
+        this.assigned_slot = assigned_slot;
     }
 
-    public int getParked_slot() {
+    public String getParked_slot() {
         return parked_slot;
     }
 
-    public void setParked_slot(int parked_slot) {
+    public void setParked_slot(String parked_slot) {
         this.parked_slot = parked_slot;
     }
 
