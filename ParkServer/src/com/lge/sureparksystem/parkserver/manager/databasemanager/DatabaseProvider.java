@@ -25,6 +25,8 @@ public class DatabaseProvider {
     private static DatabaseProvider mDatabaseProvider = null;
     private static Connection mDBConn = null;
     private static DateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static String encryptionKey = "SureparksystemByOhteam";
+    private static int HASH_LENGTH = 256;
 
     private DatabaseProvider() {
         mDBConn = DatabaseConnector.getInstance().getDatabaseConnection();
@@ -37,6 +39,114 @@ public class DatabaseProvider {
             }
         }
         return mDatabaseProvider;
+    }
+
+    private String getSqlStringForEncryption(String orgStr) {
+        StringBuilder builder = new StringBuilder("AES_ENCRYPT");
+        builder.append("('" + orgStr + "', ");
+        builder.append("UNHEX(SHA2('" + encryptionKey + "'," + HASH_LENGTH + ")))");
+        return builder.toString();
+    }
+
+    private int doExecUpdateSQL(String tableName, String setvalue, String whereclause) {
+        PreparedStatement pstmt = null;
+        int count = -1;
+        try {
+            String sql = "update " + tableName + setvalue + whereclause;
+            LogHelper.log(TAG, "sql = " + sql);
+
+            synchronized (mDataLock) {
+                pstmt = mDBConn.prepareStatement(sql);
+                count = pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LogHelper.log(TAG, "count = " + count);
+        return count;
+    }
+
+    private int doExecInsertSQL(String tableName, String columnsString, String valuesString) {
+        PreparedStatement pstmt = null;
+        boolean result = false;
+        int count = -1;
+        try {
+            String sql = null;
+            if (columnsString != null) {
+                sql = "insert into " + tableName + " (" + columnsString + ")" + " values("
+                        + valuesString + ")";
+            } else {
+                sql = "insert into " + tableName + " values(" + valuesString + ")";
+            }
+            LogHelper.log(TAG, "sql = " + sql);
+
+            synchronized (mDataLock) {
+                pstmt = mDBConn.prepareStatement(sql);
+                result = pstmt.execute();
+                if (result == false) {
+                    count = pstmt.getUpdateCount();
+                    LogHelper.log(TAG, "count = " + count);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LogHelper.log(TAG, "count = " + count);
+        return count;
+    }
+
+    private int doExecGetCountSQL(String tableName, String whereString) {
+        int count = -1;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "select  count(*) from " + tableName + whereString;
+            LogHelper.log(TAG, "sql = " + sql);
+            pstmt = mDBConn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                do {
+                    count = rs.getInt(1);
+                    LogHelper.log(TAG, "count = " + count);
+                } while (rs.next());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return count;
     }
 
     /*************************************************************************************/
@@ -85,7 +195,7 @@ public class DatabaseProvider {
         try {
             StringBuilder where = new StringBuilder(" where ");
             where.append(User.Columns.EMAIL + "='" + email + "'");
-            where.append(" AND " + User.Columns.PW + "='" + password + "'");
+            where.append(" AND " + User.Columns.PW + "=" + getSqlStringForEncryption(password));
             String sql = "select  count(*) from " + User.USER_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
             pstmt = mDBConn.prepareStatement(sql);
@@ -131,7 +241,7 @@ public class DatabaseProvider {
             StringBuilder values = new StringBuilder();
             values.append("'" + newuser.getUsername() + "'");
             values.append(", '" + newuser.getEmail() + "'");
-            values.append(", '" + newuser.getPassword() + "'");
+            values.append(", " + getSqlStringForEncryption(newuser.getPassword()));
             values.append(", '" + mDateFormat.format(newuser.getCreateTime()) + "'");
             values.append(", " + newuser.getAuthorityId());
 
@@ -166,6 +276,47 @@ public class DatabaseProvider {
         return result;
     }
 
+    //if not exist, return -1
+    public int getUserAuthority(String email) {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int userAuthority = -1;
+        try {
+            StringBuilder where = new StringBuilder(" where ");
+            where.append(User.Columns.EMAIL + "='" + email + "'");
+            String sql = "select " + User.Columns.AUTHORITY + " from " + User.USER_TABLE
+                    + where.toString();
+            LogHelper.log(TAG, "sql = " + sql);
+            pstmt = mDBConn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                userAuthority = rs.getInt(User.Columns.AUTHORITY);
+                if (rs.next()) {
+                    LogHelper.log(TAG, "Warning :: result is not one.");
+                }
+            } else {
+                LogHelper.log(TAG, "matched user is not exist.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LogHelper.log(TAG, "userAuthority = " + userAuthority);
+        return userAuthority;
+    }
+
     //if not exist, return null
     @Nullable
     public UserAccountData getUserInfo(String email) {
@@ -183,7 +334,7 @@ public class DatabaseProvider {
                 account = new UserAccountData();
                 account.setEmail(email);
                 account.setUsername(rs.getString(User.Columns.USERNAME));
-                account.setPassword(rs.getString(User.Columns.PW));
+                //                account.setPassword(rs.getString(User.Columns.PW)); //Do not expose password
                 try {
                     account.setCreateTime(mDateFormat.parse(rs.getString(User.Columns.TIME)));
                 } catch (ParseException e) {
@@ -280,8 +431,8 @@ public class DatabaseProvider {
             values.append(", '" + newreservation.getPaymentInfo() + "'");
             values.append(", '" + newreservation.getConfirmationCode() + "'");
             values.append(", " + newreservation.getState());
-            values.append(", " + newreservation.getFee());
-            values.append(", " + newreservation.getGracePeriod());
+            values.append(", '" + newreservation.getFee() + "'");
+            values.append(", '" + newreservation.getGracePeriod() + "'");
 
             String sql = "insert into " + Reservation.RESERVATION_TABLE + " (" + columns.toString()
                     + ")" + " values(" + values.toString() + ")";
@@ -344,8 +495,8 @@ public class DatabaseProvider {
                     reservation.setPaymentInfo(rs.getString(Reservation.Columns.PAYMENT));
                     reservation.setConfirmationCode(rs.getString(Reservation.Columns.CONFIRM_CODE));
                     reservation.setState(rs.getInt(Reservation.Columns.STATE));
-                    reservation.setFee(rs.getFloat(Reservation.Columns.FEE));
-                    reservation.setGracePeriod(rs.getInt(Reservation.Columns.GRACE_PERIOD));
+                    reservation.setFee(rs.getString(Reservation.Columns.FEE));
+                    reservation.setGracePeriod(rs.getString(Reservation.Columns.GRACE_PERIOD));
                     reservationList.add(reservation);
                 } while (rs.next());
                 LogHelper.log(TAG, "reservation = " + reservation.toString());
@@ -471,10 +622,10 @@ public class DatabaseProvider {
 
             StringBuilder values = new StringBuilder();
             values.append("'" + newlot.getLoginId() + "'");
-            values.append(", '" + newlot.getLoginPw() + "'");
+            values.append(", " + getSqlStringForEncryption(newlot.getLoginPw()));
             values.append(", '" + newlot.getLotName() + "'");
-            values.append(", " + newlot.getFee());
-            values.append(", " + newlot.getGracePeriod());
+            values.append(", '" + newlot.getFee() + "'");
+            values.append(", '" + newlot.getGracePeriod() + "'");
             values.append(", '" + newlot.getUserEmail() + "'");
 
             String sql = "insert into " + Reservation.RESERVATION_TABLE + " (" + columns.toString()
@@ -525,10 +676,10 @@ public class DatabaseProvider {
                     parkinglot = new ParkingLotData();
                     parkinglot.setId(rs.getInt(ParkingLot.Columns.ID));
                     parkinglot.setLoginId(rs.getString(ParkingLot.Columns.LOGINID));
-                    parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));
+                    //                    parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));  //Do not expose
                     parkinglot.setLotName(rs.getString(ParkingLot.Columns.NAME));
-                    parkinglot.setFee(rs.getFloat(ParkingLot.Columns.FEE));
-                    parkinglot.setGracePeriod(rs.getInt(ParkingLot.Columns.GRACEPERIOD));
+                    parkinglot.setFee(rs.getString(ParkingLot.Columns.FEE));
+                    parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACEPERIOD));
                     parkinglot.setUserEmail(rs.getString(ParkingLot.Columns.USEREMAIL));
 
                     parkingLotDataList.add(parkinglot);
@@ -575,10 +726,10 @@ public class DatabaseProvider {
                 parkinglot = new ParkingLotData();
                 parkinglot.setId(rs.getInt(ParkingLot.Columns.ID));
                 parkinglot.setLoginId(rs.getString(ParkingLot.Columns.LOGINID));
-                parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));
+                //                parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));      //Do not expose
                 parkinglot.setLotName(rs.getString(ParkingLot.Columns.NAME));
-                parkinglot.setFee(rs.getFloat(ParkingLot.Columns.FEE));
-                parkinglot.setGracePeriod(rs.getInt(ParkingLot.Columns.GRACEPERIOD));
+                parkinglot.setFee(rs.getString(ParkingLot.Columns.FEE));
+                parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACEPERIOD));
                 parkinglot.setUserEmail(rs.getString(ParkingLot.Columns.USEREMAIL));
 
                 if (rs.next()) {
@@ -640,68 +791,89 @@ public class DatabaseProvider {
         return result;
     }
 
-    public boolean updateParkingLotFee(int id, float fee) {
-        return updateParkingLotInfo(id, fee, -1, null);
+    public boolean updateParkingLotFee(int id, String fee) {
+        boolean result = false;
+        int count = 0;
+
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
     }
 
-    public boolean updateParkingLotGracePeriod(int id, int gracePeriod) {
-        return updateParkingLotInfo(id, -1.0f, gracePeriod, null);
+    public boolean updateParkingLotGracePeriod(int id, String gracePeriod) {
+        boolean result = false;
+        int count = 0;
+
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
     }
 
     public boolean updateParkingLotUserEmail(int id, String email) {
-        return updateParkingLotInfo(id, -1.0f, -1, email);
-    }
-
-    public boolean updateParkingLotInfo(int id, float fee, int gracePeriod,
-            String email) {
-        PreparedStatement pstmt = null;
         boolean result = false;
         int count = 0;
-        int valueCnt = 0;
-        try {
-            StringBuilder set = new StringBuilder(" set ");
-            if (fee > 0) {
-                set.append(ParkingLot.Columns.FEE + "=" + fee);
-                valueCnt++;
-            }
-            if (gracePeriod > 0) {
-                if (valueCnt > 0) {
-                    set.append(", ");
-                }
-                set.append(ParkingLot.Columns.GRACEPERIOD + "=" + gracePeriod);
-                valueCnt++;
-            }
-            if (email != null) {
-                if (valueCnt > 0) {
-                    set.append(", ");
-                }
-                set.append(ParkingLot.Columns.USEREMAIL + "='" + email + "'");
-            }
 
-            StringBuilder where = new StringBuilder(" where ");
-            where.append(ParkingLot.Columns.ID + "=" + id);
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
-            String sql = "update " + ParkingLot.PARKINGLOT_TABLE + set.toString()
-                    + where.toString();
-            LogHelper.log(TAG, "sql = " + sql);
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
 
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                count = pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
+    public boolean updateParkingLotInfo(int id, String fee, String gracePeriod) {
+        boolean result = false;
+        int count = 0;
+
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
+        set.append(", " + ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
+    public boolean updateParkingLotInfo(int id, String fee, String gracePeriod, String email) {
+        boolean result = false;
+        int count = 0;
+
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
+        set.append(", " + ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+        set.append(", " + ParkingLot.Columns.USEREMAIL + "='" + email + "'");
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
@@ -710,95 +882,67 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Parking
     /*************************************************************************************/
+    public boolean isExistingParkingData(int reservationId) {
+        int count = 0;
+        boolean result = false;
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(Parking.Columns.RSERVATION_ID + "=" + reservationId);
+
+        count = doExecGetCountSQL(Parking.PARKING_TABLE, where.toString());
+        LogHelper.log(TAG, "count = " + count);
+
+        result = (count > 0) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
     public boolean createParkingData(ParkingData newparking) {
-        PreparedStatement pstmt = null;
+        if (isExistingParkingData(newparking.getReservationId())) {
+            LogHelper.log(TAG, "Error : Alreay is exist.");
+            return false;
+        }
         boolean result = false;
         int count = 0;
-        try {
-            StringBuilder columns = new StringBuilder();
-            columns.append(Parking.Columns.RSERVATION_ID);
-            columns.append(", " + Parking.Columns.ASSIGNED_SLOT);
-            columns.append(", " + Parking.Columns.PARKED_SLOT);
-            columns.append(", " + Parking.Columns.PARKING_TIME);
-            columns.append(", " + Parking.Columns.UNPARKING_TIME);
+        StringBuilder columns = new StringBuilder();
+        columns.append(Parking.Columns.RSERVATION_ID);
+        columns.append(", " + Parking.Columns.ASSIGNED_SLOT);
+        columns.append(", " + Parking.Columns.PARKED_SLOT);
+        columns.append(", " + Parking.Columns.PARKING_TIME);
+        columns.append(", " + Parking.Columns.UNPARKING_TIME);
 
-            StringBuilder values = new StringBuilder();
-            values.append(newparking.getReservationId());
-            values.append(", " + newparking.getAssigned_slot());
-            values.append(", " + newparking.getParked_slot());
-            values.append(", '" + mDateFormat.format(newparking.getParkingTime()) + "'");
-            values.append(", '" + mDateFormat.format(newparking.getUnparkingTime()) + "'");
+        StringBuilder values = new StringBuilder();
+        values.append(newparking.getReservationId());
+        values.append(", '" + newparking.getAssigned_slot() + "'");
+        values.append(", '" + newparking.getParked_slot() + "'");
+        values.append(", '" + mDateFormat.format(newparking.getParkingTime()) + "'");
+        values.append(", '" + mDateFormat.format(newparking.getUnparkingTime()) + "'");
 
-            String sql = "insert into " + Parking.PARKING_TABLE + " (" + columns.toString()
-                    + ")" + " values(" + values.toString() + ")";
-            LogHelper.log(TAG, "sql = " + sql);
+        count = doExecInsertSQL(Parking.PARKING_TABLE, columns.toString(), values.toString());
 
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                result = pstmt.execute();
-                if (result == false) {
-                    count = pstmt.getUpdateCount();
-                    LogHelper.log(TAG, "count = " + count);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
     }
 
-    public boolean createParkingData(int reservationId, int assignedSlot, Date parkingTime) {
-        PreparedStatement pstmt = null;
+    public boolean createParkingData(int reservationId, String assignedSlot, Date parkingTime) {
+        if (isExistingParkingData(reservationId)) {
+            LogHelper.log(TAG, "Error : Alreay is exist.");
+            return false;
+        }
         boolean result = false;
         int count = 0;
-        try {
-            StringBuilder columns = new StringBuilder();
-            columns.append(Parking.Columns.RSERVATION_ID);
-            columns.append(", " + Parking.Columns.ASSIGNED_SLOT);
-            columns.append(", " + Parking.Columns.PARKING_TIME);
+        StringBuilder columns = new StringBuilder();
+        columns.append(Parking.Columns.RSERVATION_ID);
+        columns.append(", " + Parking.Columns.ASSIGNED_SLOT);
+        columns.append(", " + Parking.Columns.PARKING_TIME);
 
-            StringBuilder values = new StringBuilder();
-            values.append(reservationId);
-            values.append(", " + assignedSlot);
-            values.append(", '" + mDateFormat.format(parkingTime) + "'");
+        StringBuilder values = new StringBuilder();
+        values.append(reservationId);
+        values.append(", '" + assignedSlot + "'");
+        values.append(", '" + mDateFormat.format(parkingTime) + "'");
 
-            String sql = "insert into " + Parking.PARKING_TABLE + " (" + columns.toString()
-                    + ")" + " values(" + values.toString() + ")";
-            LogHelper.log(TAG, "sql = " + sql);
+        count = doExecInsertSQL(Parking.PARKING_TABLE, columns.toString(), values.toString());
 
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                result = pstmt.execute();
-                if (result == false) {
-                    count = pstmt.getUpdateCount();
-                    LogHelper.log(TAG, "count = " + count);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
@@ -822,8 +966,8 @@ public class DatabaseProvider {
                 parking = new ParkingData();
                 parking.setParkingId(rs.getInt(Parking.Columns.ID));
                 parking.setReservationId(rs.getInt(Parking.Columns.RSERVATION_ID));
-                parking.setAssigned_slot(rs.getInt(Parking.Columns.ASSIGNED_SLOT));
-                parking.setAssigned_slot(rs.getInt(Parking.Columns.PARKED_SLOT));
+                parking.setAssigned_slot(rs.getString(Parking.Columns.ASSIGNED_SLOT));
+                parking.setParked_slot(rs.getString(Parking.Columns.PARKED_SLOT));
                 try {
                     String time = rs.getString(Parking.Columns.PARKING_TIME);
                     if (time != null) {
@@ -865,58 +1009,37 @@ public class DatabaseProvider {
         return parking;
     }
 
-    public boolean updateParkingParkedSlot(int paringId, int parkedSlot) {
+    public boolean updateParkingParkedSlot(int paringId, String parkedSlot) {
         return updateParkingInfo(paringId, parkedSlot, null);
     }
 
     public boolean updateParkingUnparkedTime(int paringId, Date unparkingTime) {
-        return updateParkingInfo(paringId, -1, unparkingTime);
+        return updateParkingInfo(paringId, null, unparkingTime);
     }
 
-    public boolean updateParkingInfo(int paringId, int parkedSlot, Date unparkingTime) {
-        PreparedStatement pstmt = null;
+    public boolean updateParkingInfo(int paringId, String parkedSlot, Date unparkingTime) {
         boolean result = false;
         int count = 0;
         int valueCnt = 0;
-        try {
-            StringBuilder set = new StringBuilder(" set ");
-            if (parkedSlot > 0) {
-                set.append(Parking.Columns.PARKED_SLOT + "=" + parkedSlot);
-                valueCnt++;
-            }
-
-            if (unparkingTime != null) {
-                if (valueCnt > 0) {
-                    set.append(", ");
-                }
-                set.append(Parking.Columns.UNPARKING_TIME + "='" + mDateFormat.format(unparkingTime)
-                        + "'");
-            }
-
-            StringBuilder where = new StringBuilder(" where ");
-            where.append(Parking.Columns.ID + "=" + paringId);
-
-            String sql = "update " + Parking.PARKING_TABLE + set.toString()
-                    + where.toString();
-            LogHelper.log(TAG, "sql = " + sql);
-
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                count = pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        StringBuilder set = new StringBuilder(" set ");
+        if (parkedSlot != null) {
+            set.append(Parking.Columns.PARKED_SLOT + "='" + parkedSlot + "'");
+            valueCnt++;
         }
+
+        if (unparkingTime != null) {
+            if (valueCnt > 0) {
+                set.append(", ");
+            }
+            set.append(Parking.Columns.UNPARKING_TIME + "='" + mDateFormat.format(unparkingTime)
+                    + "'");
+        }
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(Parking.Columns.ID + "=" + paringId);
+
+        count = doExecUpdateSQL(Parking.PARKING_TABLE, set.toString(), where.toString());
+
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
