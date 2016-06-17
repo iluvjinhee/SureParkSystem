@@ -3,8 +3,9 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
-import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 
 public class ParkingLotNetworkManager extends NetworkManager {
@@ -12,6 +13,8 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		@Subscribe
 		public void onSubscribe(ParkingLotNetworkManagerTopic topic) {
 			System.out.println("ParkingLotNetworkManagerListener: " + topic);
+			
+			process(topic);
 		}
 	}
 	
@@ -30,7 +33,20 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		}
 	}
 	
-	public void run() {
-		super.run();
+	protected void process(JSONObject jsonObject) {
+		MessageType messageType = MessageParser.getMessageType(jsonObject);
+		
+		switch(messageType) {
+		case PARKINGLOT_INFORMATION:
+			DataMessage dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
+		default:
+			break;
+		}
+	}
+	
+	protected void process(ParkingLotNetworkManagerTopic topic) {
+		super.process(topic);
+		
+		process(topic.getJsonObject());		
 	}
 }

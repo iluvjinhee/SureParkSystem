@@ -16,7 +16,14 @@ public class SocketForParkingLot extends SocketForClient {
 		Message result = null;
 
 		MessageType messageType = MessageParser.getMessageType(jsonMessage);
-		switch (MessageParser.getMessageType(jsonMessage)) {
+		
+		if(messageType == null) {
+			return null;
+		}
+		
+		switch (messageType) {
+		case ACKNOWLEDGE:
+			break;
 		default:
 			break;
 		}
@@ -32,7 +39,7 @@ public class SocketForParkingLot extends SocketForClient {
 		    		out.println(TestMessage.getTestMessage());
 		    		
 		    		try {
-						Thread.sleep(5000);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

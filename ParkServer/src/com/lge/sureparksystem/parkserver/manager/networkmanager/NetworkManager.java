@@ -20,7 +20,6 @@ import com.lge.sureparksystem.parkserver.util.Logger;
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
 	private int serverPort;
 	protected List<SocketForServer> socketList = new ArrayList<SocketForServer>();
-	JSONObject jsonObject = null;
 	
 	public class NetworkManagerListener {
 		@Subscribe
@@ -114,8 +113,6 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	}
 
 	public void receive(JSONObject jsonObject) {
-		getEventBus().post(new CommunicationManagerTopic(jsonObject));
-		
 		process(jsonObject);
 	}
 	
