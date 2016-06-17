@@ -1,11 +1,17 @@
 package com.lge.sureparksystem.parkserver.manager.reservationmanager;
 
+import java.util.Random;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class ReservationManager extends ManagerTask {
@@ -14,6 +20,17 @@ public class ReservationManager extends ManagerTask {
 		public void onSubscribe(ReservationManagerTopic topic) {
 			System.out.println("ReservationManagerListener");
 			System.out.println(topic);
+			
+			String reservationCode = (String) topic.getJsonObject().get("ReservationCode");
+			if(isValid(reservationCode)) {
+				DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+				dataMessage.setAssignedSlot(String.valueOf(getAvailableSlot()));
+				
+				getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
+			}
+			else {
+				getEventBus().post(new ParkViewNetworkManagerTopic(new Message(MessageType.NOT_RESERVED)));
+			}
 		}
 	}
 	
@@ -34,19 +51,19 @@ public class ReservationManager extends ManagerTask {
 		}		
 	}
 
-	public boolean isValid(String confirmationNumber) {
+	public boolean isValid(String reservationCode) {
 		boolean result = false;
 		
-		result = isValidConfirmationNumber_Temporary(confirmationNumber);
+		result = isValidConfirmationNumber_Temporary(reservationCode);
 		
 		return result;
 	}
 	
-	boolean isValidConfirmationNumber_Temporary(String confirmationNumber) {
+	boolean isValidConfirmationNumber_Temporary(String reservationCode) {
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(confirmationNumber);
+			jsonObject = (JSONObject) jsonParser.parse(reservationCode);
 		} catch (ParseException e) {
 			return false;
 		}
@@ -56,5 +73,15 @@ public class ReservationManager extends ManagerTask {
 		}
 		
 		return false;
-	}	
+	}
+	
+	public int getAvailableSlot() {
+		Random r = new Random();
+
+		return r.nextInt(getSlotSize()) + 1;
+	}
+	
+	private int getSlotSize() {
+		return 4;
+	}
 }

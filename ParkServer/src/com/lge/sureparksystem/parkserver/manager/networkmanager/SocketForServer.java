@@ -10,12 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessage;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageParser;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageType;
-import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Log;
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class SocketForServer implements Runnable {
 	private NetworkManager manager = null;
@@ -27,6 +22,10 @@ public class SocketForServer implements Runnable {
 	public SocketForServer(NetworkManager manager, Socket socket) {
 		this.manager = manager;
 		this.socket = socket;
+	}
+	
+	public void destroy() {
+		socket = null;
 	}
 	
 	public Socket getSocket() {
@@ -43,10 +42,10 @@ public class SocketForServer implements Runnable {
 		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
 		try {
-			manager.getEventBus().post(new CommunicationManagerTopic(((JSONObject) new JSONParser().parse(jsonMessage))));
-		} catch (ParseException e) {
+			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
+		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 	}
 
@@ -56,8 +55,6 @@ public class SocketForServer implements Runnable {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
-			send(SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.WELCOME_SUREPARK)));
-
 			while (true) {
 				String input = in.readLine();
 				
@@ -66,15 +63,32 @@ public class SocketForServer implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-			Log.log("Error handling client: " + e);
+//			Log.log("Error handling client: " + e);
 		} finally {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				Log.log("Couldn't close a socket.");
+				Logger.log("Couldn't close a socket.");
 			}
 			
-			Log.log("Connection with client closed");
+			showDisconnectionInfo();
+			
+			manager.removeSocket(this);
 		}
+	}
+
+	private void showDisconnectionInfo() {
+		if(manager instanceof ParkViewNetworkManager) {
+			System.out.println("Connection with ParkView closed!");
+		}
+		else if(manager instanceof ParkHereNetworkManager) {
+			System.out.println("Connection with ParkHere closed!");
+		}
+		else if(manager instanceof ParkingLotNetworkManager) {
+			System.out.println("Connection with ParkingLot closed!");
+		}
+		else {
+			Logger.log("Connection with client closed!");
+		}		
 	}
 }

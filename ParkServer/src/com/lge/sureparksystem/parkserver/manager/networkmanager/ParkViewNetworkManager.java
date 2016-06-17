@@ -1,8 +1,13 @@
 package com.lge.sureparksystem.parkserver.manager.networkmanager;
 
+import java.net.Socket;
+
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 
 public class ParkViewNetworkManager extends NetworkManager {
@@ -11,6 +16,8 @@ public class ParkViewNetworkManager extends NetworkManager {
 		public void onSubscribe(ParkViewNetworkManagerTopic topic) {
 			System.out.println("ParkViewNetworkManagerListener");
 			System.out.println(topic);
+			
+			send(MessageParser.makeJSONObject(topic.getMessage()));
 		}
 	}
 	
@@ -23,13 +30,14 @@ public class ParkViewNetworkManager extends NetworkManager {
 		super(serverPort);
 	}
 	
-	public void send(JSONObject jsonObject) {
-		for(SocketForServer socketForServer : socketList) {
-			socketForServer.send(jsonObject);
-		}
-	}
-	
 	public void run() {
 		super.run();
+	}
+	
+	@Override
+	public void onSocketAccepted(Socket socket) {
+		super.onSocketAccepted(socket);
+		
+		send(MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK)));
 	}
 }

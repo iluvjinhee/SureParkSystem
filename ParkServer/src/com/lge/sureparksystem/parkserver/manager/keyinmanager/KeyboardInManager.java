@@ -3,15 +3,14 @@ package com.lge.sureparksystem.parkserver.manager.keyinmanager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Random;
 
 import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.manager.networkmanager.SocketType;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessage;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageParser;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageType;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 
 public class KeyboardInManager extends ManagerTask {
@@ -21,16 +20,6 @@ public class KeyboardInManager extends ManagerTask {
 		super();
 		
 		keyIn = new BufferedReader(new InputStreamReader(System.in));
-	}
-	
-	public int getAvailableSlot() {
-		Random r = new Random();
-
-		return r.nextInt(getSlotSize()) + 1;
-	}
-	
-	private int getSlotSize() {
-		return 4;
 	}
 	
 	@Override
@@ -48,18 +37,16 @@ public class KeyboardInManager extends ManagerTask {
 				switch(KeyboardInType.fromValue(Integer.parseInt(keyMsg))) {
 				case KEYBOARD_1:
 					getEventBus().post(
-							new ParkViewNetworkManagerTopic(
-									SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.WELCOME_SUREPARK))));
+							new ParkViewNetworkManagerTopic(new Message(MessageType.WELCOME_SUREPARK)));
 					break;
 				case KEYBOARD_2:
 					getEventBus().post(
-							new ParkViewNetworkManagerTopic(
-									SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.SCAN_CONFIRM))));
+							new ParkViewNetworkManagerTopic(new Message(MessageType.SCAN_CONFIRM)));
 					break;
 				case KEYBOARD_3:
-					getEventBus().post(
-							new ParkViewNetworkManagerTopic(
-									SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.ASSIGN_SLOT, String.valueOf(getAvailableSlot())))));
+					DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+					dataMessage.setAssignedSlot("3");
+					getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
 					break;
 				default:
 					break;
@@ -73,16 +60,18 @@ public class KeyboardInManager extends ManagerTask {
 
 		switch (messageIndex) {
 		case 1:
-			jsonObject = SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.WELCOME_SUREPARK));
+			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
 			break;
 		case 2:
-			jsonObject = SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.SCAN_CONFIRM));
+			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.SCAN_CONFIRM));
 			break;
 		case 3:
-			jsonObject = SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.ASSIGN_SLOT, data));
+			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+			dataMessage.setAssignedSlot(data);
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 			break;
 		default:
-			jsonObject = SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.WELCOME_SUREPARK));
+			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
 			break;
 		}
 

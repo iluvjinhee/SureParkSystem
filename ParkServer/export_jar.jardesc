@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="MS949" standalone="no"?>
 <jardesc>
-    <jar path="ParkServer/socketmessage.jar"/>
+    <jar path="ParkServer/message.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/ParkServer/export_jar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>

@@ -2,9 +2,10 @@ package com.lge.sureparksystem.parkview.controller;
 
 import org.json.simple.JSONObject;
 
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessage;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageParser;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageType;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkview.FullscreenActivity;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -61,8 +62,9 @@ public class Controller {
 			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
-				JSONObject jsonObject =
-						SocketMessageParser.makeJSONObject(new SocketMessage(SocketMessageType.RESERVATION_NUMBER, qrcode));
+				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_CODE);
+				dataMessage.setReservationCode(qrcode);
+				JSONObject jsonObject = MessageParser.makeJSONObject(dataMessage);				
 				
 				clientSocket.send(jsonObject);			
 			}
@@ -98,17 +100,17 @@ public class Controller {
 	}
 
 	public void parseJSONMessage(String jsonMessage) {
-		SocketMessage socketMessage = SocketMessageParser.parseJSONMessage(jsonMessage);
+		Message message = MessageParser.makeMessage(jsonMessage);
 		
-		switch(socketMessage.getMessageType()) {
+		switch(message.getMessageType()) {
 		case WELCOME_SUREPARK:
 			welcome();
 			break;
 		case SCAN_CONFIRM:
 			scanConfirmation();
 			break;
-		case ASSIGN_SLOT:
-			assignSlot(Integer.parseInt(socketMessage.getGlobalValue()));
+		case ASSIGNED_SLOT:
+			assignSlot(Integer.parseInt(((DataMessage) message).getAssignedSlot()));
 			break;
 		case NOT_RESERVED:
 			notReserved();

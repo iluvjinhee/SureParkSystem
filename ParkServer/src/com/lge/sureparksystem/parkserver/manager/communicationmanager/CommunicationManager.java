@@ -4,8 +4,8 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessage;
-import com.lge.sureparksystem.parkserver.socketmessage.SocketMessageParser;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -39,17 +39,19 @@ public class CommunicationManager extends ManagerTask {
 	}
 	
 	public void process(JSONObject jsonObject) {
-		SocketMessage socketMessage = SocketMessageParser.parseJSONObject(jsonObject);
+		Message socketMessage = MessageParser.makeMessage(jsonObject);
 
 		switch (socketMessage.getMessageType()) {
-		case RESERVATION_NUMBER:
+		case RESERVATION_CODE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
-		case ASSIGN_SLOT:
+		case ASSIGNED_SLOT:
 			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
 			break;
 		case NOT_RESERVED:
 			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
+			break;
+		default:
 			break;
 		}
 	}
