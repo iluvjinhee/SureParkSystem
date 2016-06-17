@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import com.lge.sureparksystem.parkserver.manager.ManagerService;
 import com.lge.sureparksystem.parkserver.manager.authenticationmanager.AuthenticationManager;
 import com.lge.sureparksystem.parkserver.manager.communicationmanager.CommunicationManager;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseTest;
 import com.lge.sureparksystem.parkserver.manager.securitymanager.SecurityManager;
 import com.lge.sureparksystem.parkserver.manager.keyinmanager.KeyboardInManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.NetworkManager;
@@ -14,7 +15,7 @@ import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkViewNetworkM
 import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkingLotNetworkManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.SocketInfo;
 import com.lge.sureparksystem.parkserver.manager.reservationmanager.ReservationManager;
-import com.lge.sureparksystem.parkserver.util.Log;
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class Main {
 	private static InetAddress mIP = null;
@@ -29,23 +30,26 @@ public class Main {
 	static ManagerService SecurityManagerService = null;
 
 	public static void main(String[] args) throws Exception {
-		try {
-			mIP = InetAddress.getLocalHost();
-			
-			Log.log("IP of my system is := " + mIP.getHostAddress());
-			Log.log("The server is running.");
-		} catch (UnknownHostException e) {
-			System.out.println(e.toString());
-			e.printStackTrace();
-		}
-		
-		startKeyboardInManager();
-		startCommunicationManager();
-		startNetworkManager();
-		startReservationManager();
-		startAuthenticationManager();
-		startSecurityManager();
-	}
+        try {
+            mIP = InetAddress.getLocalHost();
+
+            Logger.log("IP of my system is := " + mIP.getHostAddress());
+            Logger.log("The server is running.");
+        } catch (UnknownHostException e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+        }
+
+        		startKeyboardInManager();
+        		startCommunicationManager();
+        		startNetworkManager();
+        		startReservationManager();
+        		startAuthenticationManager();
+        		startSecurityManager();
+
+//        DatabaseTest mDBtest = new DatabaseTest();
+//        mDBtest.testRun(mDBtest);
+    }
 
 	private static void startSecurityManager() {
 		SecurityManager securityManager = new SecurityManager();

@@ -5,9 +5,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class MessageParser {
-	public static Message parseJSONMessage(String jsonMessage) {
-		Message socketMessage = new Message();
-		
+	public static Message makeMessage(String jsonMessage) {
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
 		try {
@@ -17,51 +15,89 @@ public class MessageParser {
 			e.printStackTrace();
 		}
 		
-		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
-			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromText(str));
-		}
-		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			socketMessage.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
-		}
-		
-		return socketMessage;
+		return makeMessage(jsonObject);
 	}
 	
-	public static Message parseJSONObject(JSONObject jsonObject) {
-		Message socketMessage = new Message();
-		
-		JSONParser jsonParser = new JSONParser();
+	public static Message makeMessage(JSONObject jsonObject) {
+		Message message = new Message();
 		
 		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
 			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
-			socketMessage.setMessageType(MessageType.fromText(str));
+			message.setMessageType(MessageType.fromText(str));
 		}
-		if(jsonObject.get(Message.GLOBAL_VALUE) != null) {
-			socketMessage.setGlobalValue((String) jsonObject.get(Message.GLOBAL_VALUE));
+		if(jsonObject.get(Message.TIMESTAMP) != null) {
+			message.setTimestamp(((Long) jsonObject.get(Message.TIMESTAMP)).intValue());
+		}
+		if(jsonObject.get(DataMessage.RESERVATION_CODE) != null) {
+			((DataMessage) message).setReservationCode((String) jsonObject.get(DataMessage.RESERVATION_CODE));
+		}
+		if(jsonObject.get(DataMessage.ASSIGNED_SLOT) != null) {
+			((DataMessage) message).setAssignedSlot((String) jsonObject.get(DataMessage.ASSIGNED_SLOT));
 		}
 		
-		return socketMessage;
+		return message;
 	}
 	
-	public static JSONObject makeJSONObject(Message socketMessage) {
+	public static JSONObject makeJSONObject(Message message) {
 		JSONObject jsonObject = new JSONObject();
 		
-		switch(socketMessage.getMessageType()) {
+		switch(message.getMessageType()) {
 		case WELCOME_SUREPARK:
 		case SCAN_CONFIRM:
 		case NOT_RESERVED:
-			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			break;
-		case RESERVATION_NUMBER:
-		case ASSIGN_SLOT:
-			jsonObject.put(Message.MESSAGE_TYPE, socketMessage.getMessageType().getText());
-			jsonObject.put(Message.GLOBAL_VALUE, socketMessage.getGlobalValue());
+		case RESERVATION_CODE:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
+			break;
+		case ASSIGNED_SLOT:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			if(message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.ASSIGNED_SLOT, ((DataMessage) message).getAssignedSlot());
 			break;
 		default:
 			break;
 		}
 			
 		return jsonObject;
+	}
+	
+	public static MessageType getMessageType(JSONObject jsonObject) {
+		MessageType messageType = MessageType.NONE;
+		
+		if(jsonObject.get(Message.MESSAGE_TYPE) != null) {
+			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);			
+			messageType = MessageType.fromText(str);
+		}
+		
+		return messageType;
+	}
+	
+	public static MessageType getMessageType(String jsonString) {
+		Message message = makeMessage(jsonString);
+		
+		return message.getMessageType();
+	}
+	
+	public static int getTimestamp(JSONObject jsonObject) {
+		int timestamp = -1;
+		
+		if(jsonObject.get(Message.TIMESTAMP) != null) {
+			timestamp = ((Long) jsonObject.get(Message.TIMESTAMP)).intValue();
+		}
+		
+		return timestamp;
+	}
+	
+	public static int getTimestamp(String jsonString) {
+		Message message = makeMessage(jsonString);
+		
+		return message.getTimestamp();
 	}
 }
