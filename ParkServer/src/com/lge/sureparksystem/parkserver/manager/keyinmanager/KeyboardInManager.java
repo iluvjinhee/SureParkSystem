@@ -54,20 +54,55 @@ public class KeyboardInManager extends ManagerTask {
 		JSONObject jsonObject = null;
 		
 		if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
+			dataMessage.setCommand("1");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseEntryGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
+			dataMessage.setCommand("0");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenExitGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+			dataMessage.setCommand("up");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseExitGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+			dataMessage.setCommand("down");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnEntryGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+			dataMessage.setCommand("up");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffEntryGateLED)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnExitGateLED)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffExitGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+			dataMessage.setCommand("down");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedExitGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+			dataMessage.setCommand("red");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnGreenExitGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+			dataMessage.setCommand("green");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnSlotLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
+			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			dataMessage.setCommand("on");			
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffSlotLED)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.RequestParkingLotInfo)) {
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.ResponseAuthetication)) {
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
+			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			dataMessage.setCommand("off");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthetication)) {
+			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("ok");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.FailAuthetication)) {
+			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("nok");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		}
 		
 		return jsonObject;

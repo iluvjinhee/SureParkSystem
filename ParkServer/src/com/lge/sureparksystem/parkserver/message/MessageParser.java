@@ -29,13 +29,13 @@ public class MessageParser {
 		((DataMessage) message).setReservationCode(MessageParser.getString(jsonObject, DataMessage.RESERVATION_CODE));
 		((DataMessage) message).setAssignedSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGNED_SLOT));
 		((DataMessage) message).setEntrygateArrive(MessageParser.getString(jsonObject, DataMessage.ENTRYGATE_ARRIVE));
-		((DataMessage) message).setEntrygateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATE_STATUS));
-		((DataMessage) message).setEntrygateledStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATELED_STATUS));
+		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATE_STATUS));
+		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATELED_STATUS));
 		((DataMessage) message).setExitgateArrive(MessageParser.getString(jsonObject, DataMessage.EXITGATE_ARRIVE));
-		((DataMessage) message).setExitgateStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATE_STATUS));
-		((DataMessage) message).setExitgateledStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATELED_STATUS));
+		((DataMessage) message).setExitGateStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATE_STATUS));
+		((DataMessage) message).setExitGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATELED_STATUS));
 		((DataMessage) message).setId(MessageParser.getString(jsonObject, DataMessage.ID));
-		((DataMessage) message).setPwd(MessageParser.getString(jsonObject, DataMessage.PWD));
+		((DataMessage) message).setPwd(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
 		((DataMessage) message).setStatus(MessageParser.getString(jsonObject, DataMessage.STATUS));
 		
 		((DataMessage) message).setLedNumber(MessageParser.getInt(jsonObject, DataMessage.LED_NUMBER));
@@ -83,12 +83,12 @@ public class MessageParser {
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getId());
-			jsonObject.put(DataMessage.PWD, ((DataMessage) message).getPwd());
+			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPwd());
 			break;
-		case ENTRYGATE_LED:
-		case ENTRYGATE_SERVO:
-		case EXITGATE_LED:
-		case EXITGATE_SERVO:
+		case ENTRY_GATE_LED_STATUS:
+		case ENTRY_GATE_STATUS:
+		case EXIT_GATE_LED_STATUS:
+		case EXIT_GATE_STATUS:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
@@ -115,8 +115,8 @@ public class MessageParser {
 			jsonObject.put(DataMessage.ENTRYGATE_ARRIVE, ((DataMessage) message).getEntrygateArrive());
 			jsonObject.put(DataMessage.EXITGATE_ARRIVE, ((DataMessage) message).getExitgateArrive());
 			break;
-		case PARKINGSLOT_LED:
-		case PARKINGSLOT_SENSOR:
+		case SLOT_LED_STATUS:
+		case SLOT_SENSOR_STATUS:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
