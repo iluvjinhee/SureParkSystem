@@ -17,6 +17,7 @@ public class DataMessage extends Message {
 	public static String LED_STATUS = "led_status";
 	public static String PASSWORD = "pwd";
 	public static String SENSOR_NUMBER = "sensor_number";
+	public static String SLOT_COUNT = "slot_count";
 	public static String SLOT_NUMBER = "slot_number";
 	public static String SLOT_STATUS = "slot_status";
 	public static String STATUS = "status";

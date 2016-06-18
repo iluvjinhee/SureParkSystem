@@ -94,11 +94,26 @@ public class MessageParser {
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
 			break;
+		case ENTRY_GATE_LED_CONTROL:
+		case ENTRY_GATE_CONTROL:
+		case EXIT_GATE_CONTROL:
+		case EXIT_GATE_LED_CONTROL:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			if (message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.COMMAND, ((DataMessage) message).getCommand());
+			break;
+		case SLOT_LED_CONTROL:
+			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+			if (message.getTimestamp() != -1)
+				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
+			break;
 		case PARKINGLOT_INFORMATION:
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
-			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
+			jsonObject.put(DataMessage.SLOT_COUNT, ((DataMessage) message).getSlotNumber());
 			
 			JSONArray array = new JSONArray();
 			array.addAll(((DataMessage) message).getSlotStatus());
@@ -120,7 +135,7 @@ public class MessageParser {
 			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 			if (message.getTimestamp() != -1)
 				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
-			jsonObject.put(DataMessage.SENSOR_NUMBER, ((DataMessage) message).getSensorNumber());
+			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
 			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
 			break;
 		default:
