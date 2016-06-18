@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ParkView</string>
+    <string name="welcome_button">Welcome</string>
+    <string name="qrcode_read_button">QR Code Reader</string>
+    <string name="visual_parking_guide_button">Visual Parking Guide</string>
+    <string name="audio_parking_guide_button">Audio Parking Guide</string>
+    <string name="dummy_content">SURE\nPARK</string>
+
+</resources>

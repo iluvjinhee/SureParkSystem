@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Oh!! SureParkSystem</string>
+    <string name="hello_sure_park">This is a sure park!</string>
+    <string name="loginText">Please insert your information!!</string>
+    <string name="id">ID</string>
+    <string name="password">Password</string>
+	<string name="ok">Ok</string>
+    <string name="action_settings">Settings</string>
+</resources>
