@@ -27,13 +27,18 @@
 * Internal Methods: None
 *
 ******************************************************************************************************************/
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
-
+import java.util.Iterator;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 public class ServerJson  extends Thread
 {
 	
@@ -58,16 +63,22 @@ public class ServerJson  extends Thread
 	        		switch(myint)
 	        		{
 	        			case 1:
-	        				SC_Authentification_Response();
+	        				SC_Authentication_Response();
 	        				break;
 	        			case 2:
-	        				System.out.println("22222222222");
+	        				SC_Parkinglot_Status_Request();
 	        				break;
 	        			case 3:
-	        				System.out.println("33333333333333");
+	        				SC_LED2_Control_on();
 	        				break;
 	        			case 4:
-	        				System.out.println("4444444444");
+	        				SC_LED2_Control_off();
+	        				break;
+	        			case 5:
+	        				SC_EntryGate_Control_on();
+	        				break;
+	        			case 6:
+	        				SC_EntryGate_Control_off();
 	        				break;
 	        			default:
 	        				System.out.println("Nop!!");
@@ -80,17 +91,84 @@ public class ServerJson  extends Thread
 //        System.out.println(this.seq+" thread end.");
     }
 	
-	public void SC_Authentification_Response() throws IOException
+	public void SC_Authentication_Response() throws IOException
 	{
  		JSONObject msgRuleManager = new JSONObject();
- 		msgRuleManager.put("Authentification_Response","my_key"); 		
- /*		
- 		JSONArray jarrayRuleManager = new JSONArray(); 		
- 		jarrayRuleManager.add("UI");
- 		jarrayRuleManager.add("node");
- 		msgRuleManager.put("Targets",jarrayRuleManager);
-*/ 		
- 		String sendMsgPacket = msgRuleManager.toString() + ";";
+ 		msgRuleManager.put("messagetype","Authentication_Response");
+ 		msgRuleManager.put("result","ok");
+	
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
+ 
+		System.out.println( "Sending message to client...." ); 		
+ 		System.out.println ("sendMsgJSON:" + sendMsgPacket);
+ 		out.write( sendMsgPacket, 0, sendMsgPacket.length() ); 	
+		out.flush(); 		
+	}
+
+	public void SC_Parkinglot_Status_Request() throws IOException
+	{
+ 		JSONObject msgRuleManager = new JSONObject();
+ 		msgRuleManager.put("messagetype","ParkInfo_Request"); 		
+ 		
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
+ 
+		System.out.println( "Sending message to client...." ); 		
+ 		System.out.println ("sendMsgJSON:" + sendMsgPacket);
+ 		out.write( sendMsgPacket, 0, sendMsgPacket.length() ); 	
+		out.flush(); 		
+	}
+
+	public void SC_LED2_Control_on() throws IOException
+	{
+ 		JSONObject msgRuleManager = new JSONObject();
+ 		msgRuleManager.put("messagetype","Parkingslot_LED");
+ 		msgRuleManager.put("slot_number", 2);
+ 		msgRuleManager.put("command", "on");
+ 		
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
+ 
+		System.out.println( "Sending message to client...." ); 		
+ 		System.out.println ("sendMsgJSON:" + sendMsgPacket);
+ 		out.write( sendMsgPacket, 0, sendMsgPacket.length() ); 	
+		out.flush(); 		
+	}
+
+	public void SC_LED2_Control_off() throws IOException
+	{
+ 		JSONObject msgRuleManager = new JSONObject();
+ 		msgRuleManager.put("messagetype","Parkingslot_LED");
+ 		msgRuleManager.put("slot_number", 6);
+ 		msgRuleManager.put("command", "off");
+  		
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
+ 
+		System.out.println( "Sending message to client...." ); 		
+ 		System.out.println ("sendMsgJSON:" + sendMsgPacket);
+ 		out.write( sendMsgPacket, 0, sendMsgPacket.length() ); 	
+		out.flush(); 		
+	}
+
+	public void SC_EntryGate_Control_on() throws IOException
+	{
+ 		JSONObject msgRuleManager = new JSONObject();
+ 		msgRuleManager.put("messagetype","EntryGate_Control");
+ 		msgRuleManager.put("command", "up");
+ 
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
+ 
+		System.out.println( "Sending message to client...." ); 		
+ 		System.out.println ("sendMsgJSON:" + sendMsgPacket);
+ 		out.write( sendMsgPacket, 0, sendMsgPacket.length() ); 	
+		out.flush(); 		
+	}
+	
+	public void SC_EntryGate_Control_off() throws IOException
+	{
+ 		JSONObject msgRuleManager = new JSONObject();
+ 		msgRuleManager.put("messagetype","EntryGate_Control");
+ 		msgRuleManager.put("command", "down");
+		
+ 		String sendMsgPacket = msgRuleManager.toString() + "\n";
  
 		System.out.println( "Sending message to client...." ); 		
  		System.out.println ("sendMsgJSON:" + sendMsgPacket);
@@ -192,8 +270,11 @@ public class ServerJson  extends Thread
 
       	 	    	try
       	 	    	{
-      	 				//System.out.println( "Sending message to client...." );
-      	   				//out.write( sendMsgPacket, 0, sendMsgPacket.length() );
+//     	 				System.out.println( "Sending message to client...." );
+      	 				
+//     	 				String sendMsgPacket = inputLine + "\n";
+      	 				
+//      	   				out.write( sendMsgPacket, 0, sendMsgPacket.length() );
       	   				//out.write( serverMsg[0], 0, serverMsg[0].length() );
       				} catch (Exception e) {
 

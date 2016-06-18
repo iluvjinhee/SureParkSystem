@@ -30,6 +30,7 @@
 #include "..\CommManager\CommManager.h"
 
 #include "SensorManager.h"
+#include "ConfigManager.h"
 #include "..\DeviceDriver\LEDDriver.h"
 #include "..\DeviceDriver\EntryExitBeamDriver.h"
 #include "..\DeviceDriver\GateLiftDriver.h"
@@ -56,6 +57,8 @@ void ControlManagerSetup()
 					   
 	SensorManagerSetup();  
 
+	ConfigManagerSetup();  
+
 	ClrChangedSlot();
 	ClrRequestedLed();
 }
@@ -66,6 +69,7 @@ void ControlManagerLoop()
 	static int iSlot=0;
 
 	SensorManagerLoop();
+	ConfigManagerLoop();
 
 	if( GetStallSensorReady() )
 	{

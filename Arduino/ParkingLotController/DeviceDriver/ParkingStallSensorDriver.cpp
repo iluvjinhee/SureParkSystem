@@ -36,7 +36,7 @@
 
 #define AUTO_CALI_ENSITIVITY			5	// sensor average/AUTO_CALI_ENSITIVITY
 #define AUTO_CALI_ENSITIVITY_MAX		10	// 
-#define AUTO_CALI_ENSITIVITY_MIN		1	//
+#define AUTO_CALI_ENSITIVITY_MIN		3	//
 
 #define STALLSENSOR_INITCNT_MAX			10
 #define STALLSENSOR_UNOCCUFIED_MIN		19
@@ -156,25 +156,7 @@ void StallSensorSampling(void)
 
 					if( aiStallSensorStatusPrev[k] != aiStallSensorStatus[k] )
 					{
-/*
-						if( aiStallSensorStatus[k] == OCCUFIED ) Serial.print("StallSensor_Occufied:");
-						else Serial.print("StallSensor_UnOccufied:");
-						Serial.print(aucStallSensorSensitivity[k]);
-						Serial.print(":");
-						Serial.print(aucStallSensorCur[k]);
-						Serial.print(":");
-						Serial.println(aucStallSensorPrev[k]);
-*/					
 						aiStallSensorStatusChanged[k] = true;
-
-						if( aiStallSensorStatus[k] == OCCUFIED )
-						{
-							SetStallSensorSensitivity((T_StallSensorID)k, aucStallSensorSensitivity[k]);			
-						}
-						else
-						{
-							SetStallSensorSensitivity((T_StallSensorID)k, constrain(aucStallSensorPrev[k]/AUTO_CALI_ENSITIVITY, AUTO_CALI_ENSITIVITY_MIN, AUTO_CALI_ENSITIVITY_MAX));			
-						}
 					}
 					else
 					{
@@ -182,6 +164,16 @@ void StallSensorSampling(void)
 					}
 
 					aiStallSensorStatusPrev[k] = aiStallSensorStatus[k];
+
+
+					if( aiStallSensorStatus[k] == OCCUFIED )
+					{
+						SetStallSensorSensitivity((T_StallSensorID)k, AUTO_CALI_ENSITIVITY);			
+					}
+					else
+					{
+						SetStallSensorSensitivity((T_StallSensorID)k, constrain(aucStallSensorCur[k]/AUTO_CALI_ENSITIVITY, AUTO_CALI_ENSITIVITY_MIN, AUTO_CALI_ENSITIVITY_MAX));			
+					}
 					
 				}
 
@@ -252,7 +244,7 @@ int SetStallSensorSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucS
 int __debug_print_stallsensor(void)
 {
 	Serial.println();
-	Serial.print("StallSensorVal : ");
+	Serial.print("-- StallSensorVal : ");
 	Serial.print(aucStallSensorCur[0]);
 	Serial.print(", ");
 	Serial.print(aucStallSensorCur[1]);
@@ -260,7 +252,7 @@ int __debug_print_stallsensor(void)
 	Serial.print(aucStallSensorCur[2]);
 	Serial.print(", ");
 	Serial.println(aucStallSensorCur[3]);
-	Serial.print("Sensitivity : ");
+	Serial.print("-- Sensitivity    : ");
 	Serial.print(aucStallSensorSensitivity[0]);
 	Serial.print(", ");
 	Serial.print(aucStallSensorSensitivity[1]);
@@ -268,7 +260,7 @@ int __debug_print_stallsensor(void)
 	Serial.print(aucStallSensorSensitivity[2]);
 	Serial.print(", ");
 	Serial.print(aucStallSensorSensitivity[3]);
-	Serial.println("\n");
+	Serial.println();
 }
 
 

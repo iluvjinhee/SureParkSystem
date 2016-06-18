@@ -23,7 +23,7 @@
 #define _COMMMANAGER_H_
 
 enum ClientToServerMsg{
-	CS_Authentification_Request = 0,
+	CS_Authentication_Request = 0,
 	CS_Parkinglot_Information,
 	CS_Parkingslot_Sensor,
 	CS_Parkingslot_LED,
@@ -35,18 +35,19 @@ enum ClientToServerMsg{
 	CS_EntryGate_PassBy,
 	CS_ExitGate_Arrive,
 	CS_ExitGate_PassBy,
-	CS_IamAlive,
-	CS_Parkinglot_Status,
+	CS_HeartBeat,
 	CS_SERVERTOCLIENTMSG_MAX
 };
 
 enum ServerToClientMsg  {
-	SC_Authentification_Response = 0,
+	SC_Authentication_Response = 0,
+	SC_ParkInfo_Request,	
 	SC_EntryGate_Control,
 	SC_ExitGate_Control,
 	SC_EntryGate_LED,
 	SC_ExitGate_LED,
 	SC_Parkingslot_LED,
+	SC_Ack,
 	SC_CLIENTTOSERVERMSG_MAX
 };
 

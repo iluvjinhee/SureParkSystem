@@ -1,9 +1,3 @@
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WiFiServer.h>
-#include <WiFiUdp.h>
-
-
 /**************************************************************
 * File: ClientDemo
 * Project: LG Exec Ed Program
@@ -31,26 +25,49 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
-#include "CommManager\CommManager.h"
-#include "ControlManager\ControlManager.h"
+#include <SPI.h>
 
-void setup()  
+static int incomingByte = 0;   // for incoming serial data
+
+void ConfigManagerSetup(void)  
 {
-  Serial.begin(9600);
-  
-  CommManagerSetup();
-	
-	ControlManagerSetup();
-
-	// Initialize a serial terminal for debug messages.
 
 }
 
-void loop() 
+void ConfigManagerLoop(void) 
 {
-	CommManagerLoop();	
-	ControlManagerLoop();
+	static char s_cmd[0xff];
+	static int read_cnt = 0;
+	static int iCmdReady = 0;
+	
+	String cmd;
+
+	char c = ' ';
+	while( Serial.available() )
+	{
+		c = Serial.read();
+		if( c != '\n' ) s_cmd[read_cnt++] = c;
+		else
+		{
+			s_cmd[read_cnt] = '\n';
+			cmd = String(s_cmd);
+			iCmdReady = true;
+		}
+	}
+
+	if( iCmdReady == true )
+	{
+		Serial.println();
+        Serial.print("I received: ");
+		Serial.println(cmd);
+
+		iCmdReady = false;
+		read_cnt = 0;
+		s_cmd[0] = '\n';
+		cmd = "";
+	}
 } //  LOOP
+
 
 
 

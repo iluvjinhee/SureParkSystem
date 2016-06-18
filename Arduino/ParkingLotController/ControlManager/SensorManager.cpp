@@ -54,17 +54,17 @@ int CheckParkSlotOccupied(T_ParkingSlotID t_ParkSlotID)
 int DriverArriveAtEntryGate(void)
 {
 	int iDriverArrived=0;
-	int iGateState;
+	int iBeamState;
 	static int iPrevGateState = NOTBROKEN;
 	
-	iGateState = GetEntryGateStatus();
+	iBeamState = GetEntryBeamStatus();
 
-	if( iGateState == BROKEN && iPrevGateState == NOTBROKEN ) 
+	if( iBeamState == BROKEN && iPrevGateState == NOTBROKEN ) 
 	{
 		iDriverArrived = 1;
 	}
 
-	iPrevGateState = iGateState;
+	iPrevGateState = iBeamState;
 	
 	return iDriverArrived;
 }
@@ -72,17 +72,17 @@ int DriverArriveAtEntryGate(void)
 int DriverLeaveAtEntryGate(void)
 {
 	int iDriverLeave=0;
-	int iGateState;
+	int iBeamState;
 	static int iPrevGateState = NOTBROKEN;	
 
-	iGateState = GetEntryGateStatus();
+	iBeamState = GetEntryBeamStatus();
 
-	if( iGateState == NOTBROKEN && iPrevGateState == BROKEN ) 
+	if( iBeamState == NOTBROKEN && iPrevGateState == BROKEN ) 
 	{
 		iDriverLeave = 1;
 	}
 
-	iPrevGateState = iGateState;
+	iPrevGateState = iBeamState;
 	
 	return iDriverLeave;
 }
@@ -91,17 +91,17 @@ int DriverLeaveAtEntryGate(void)
 int DriverArriveAtExitGate(void)
 {
 	int iDriverArrived=0;
-	int iGateState;
+	int iBeamState;
 	static int iPrevGateState = NOTBROKEN;
 	
-	iGateState = GetExitGateStatus();
+	iBeamState = GetExitBeamStatus();
 
-	if( iGateState == BROKEN && iPrevGateState == NOTBROKEN ) 
+	if( iBeamState == BROKEN && iPrevGateState == NOTBROKEN ) 
 	{
 		iDriverArrived = 1;
 	}
 
-	iPrevGateState = iGateState;
+	iPrevGateState = iBeamState;
 	
 	return iDriverArrived;
 }
@@ -109,17 +109,17 @@ int DriverArriveAtExitGate(void)
 int DriverLeaveAtExitGate(void)
 {
 	int iDriverLeave=0;
-	int iGateState;
+	int iBeamState;
 	static int iPrevGateState = NOTBROKEN;
 
-	iGateState = GetExitGateStatus();
+	iBeamState = GetExitBeamStatus();
 
-	if( iGateState == NOTBROKEN && iPrevGateState == BROKEN ) 
+	if( iBeamState == NOTBROKEN && iPrevGateState == BROKEN ) 
 	{
 		iDriverLeave = 1;
 	}
 
-	iPrevGateState = iGateState;
+	iPrevGateState = iBeamState;
 	
 	return iDriverLeave;
 }

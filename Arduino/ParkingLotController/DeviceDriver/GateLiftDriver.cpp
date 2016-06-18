@@ -23,8 +23,6 @@
 
 #define EntryGateServoPin 5
 #define ExitGateServoPin 6
-#define Open  90
-#define Close 0
 
 static int delayvalue = 1000;
 static Servo EntryGateServo;

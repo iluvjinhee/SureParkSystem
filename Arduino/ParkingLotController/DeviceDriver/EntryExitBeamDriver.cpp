@@ -123,12 +123,12 @@ void EntryExitBeamLoop()
 }
 
 
-int GetEntryGateStatus()
+int GetEntryBeamStatus()
 {
 	return EntryBeamState;
 }
 
-int GetExitGateStatus()
+int GetExitBeamStatus()
 {
 	return ExitBeamState;
 }
