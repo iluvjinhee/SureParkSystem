@@ -35,12 +35,18 @@ public final class DatabaseInfo {
      */
     public static final class Authority {
         public static final String AUTHORITY_TABLE = "authority";
-        public static final int OWNER_ID = 1;
-        public static final int ATTENDANT_ID = 2;
-        public static final int DRIVER_ID = 3;
         public static final String OWNER_TYPE = "OWNER";
         public static final String ATTENDANT_TYPE = "ATTENDANT";
         public static final String DRIVER_TYPE = "DRIVER";
+
+        /**
+         * Values for authority type.
+         */
+        public interface ID_TYPE {
+            public static final int OWNER = 1;
+            public static final int ATTENDANT = 2;
+            public static final int DRIVER = 3;
+        }
 
         /**
          * Columns for authority.
@@ -62,11 +68,11 @@ public final class DatabaseInfo {
          */
         public interface Columns {
             public static final String ID = "id";
-            public static final String NAME = "name";
+            public static final String ADDRESS = "address";
             public static final String LOGINID = "login_id";
             public static final String LOGINPW = "login_pw";
             public static final String FEE = "fee";
-            public static final String GRACEPERIOD = "graceperiod";
+            public static final String GRACE_PERIOD = "grace_period";
             public static final String USEREMAIL = "user_email";
         }
     }
@@ -93,13 +99,14 @@ public final class DatabaseInfo {
         public interface Columns {
             public static final String ID = "id";
             public static final String USER_EMAIL = "user_email";
-            public static final String RESERVED_TIME = "datetime";
+            public static final String RESERVATION_TIME = "reservation_time";
             public static final String LOT_ID = "parkinglot_id";
+            public static final String CREDIT_INFO = "credit_info";
+            public static final String CONFIRM_INFO = "confirmation_info";
+            public static final String PARKING_FEE = "parking_fee";
+            public static final String GRACE_PERIOD = "grace_period";
+            public static final String RESERVATION_STATE = "reservation_state";
             public static final String PAYMENT = "payment";
-            public static final String CONFIRM_CODE = "confirmation";
-            public static final String STATE = "state";
-            public static final String FEE = "fee";
-            public static final String GRACE_PERIOD = "graceperiod";
         }
     }
 
@@ -119,6 +126,31 @@ public final class DatabaseInfo {
             public static final String PARKED_SLOT = "parked_slot";
             public static final String PARKING_TIME = "parking_time";
             public static final String UNPARKING_TIME = "unparking_time";
+        }
+    }
+
+    /**
+     * Container for changing history.
+     */
+    public static final class ChangingHistory {
+        public static final String HISTORY_TABLE = "change_history";
+
+        /**
+         * Values for changed type.
+         */
+        public interface CHANGED_TYPE {
+            public static final int FEE = 1;
+            public static final int GRACE_PERIOD = 2;
+        }
+
+        /**
+         * Columns for ChangingHistory.
+         */
+        public interface Columns {
+            public static final String PARKINGLOT_ID = "parkinglot_id";
+            public static final String CHANGED_TIME = "changed_time";
+            public static final String CHANGED_TYPE = "changed_type";
+            public static final String CHANGED_VALUE = "changed_value";
         }
     }
 }

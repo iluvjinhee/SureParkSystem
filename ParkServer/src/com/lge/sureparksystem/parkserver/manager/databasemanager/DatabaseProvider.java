@@ -8,9 +8,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.ChangingHistory;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Parking;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.ParkingLot;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Reservation;
@@ -152,7 +154,7 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For User
     /*************************************************************************************/
-    boolean isExistingUser(String email) {
+    public boolean isExistingUser(String email) {
         int count = 0;
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -187,7 +189,7 @@ public class DatabaseProvider {
         return result;
     }
 
-    boolean isValidUser(String email, String password) {
+    public boolean verifyUser(String email, String password) {
         int count = 0;
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -229,7 +231,7 @@ public class DatabaseProvider {
         return result;
     }
 
-    boolean createUserAccount(UserAccountData newuser) {
+    public boolean createUserAccount(UserAccountData newuser) {
         if (isExistingUser(newuser.getEmail())) {
             LogHelper.log(TAG, "Error : email is alreday exist.");
             return false;
@@ -369,8 +371,8 @@ public class DatabaseProvider {
     }
 
     public boolean removeUserAccount(String email) {
-        if (isExistingUser(email)) {
-            LogHelper.log(TAG, "Error : email is alreday exist.");
+        if (!isExistingUser(email)) {
+            LogHelper.log(TAG, "Error : email is not exist.");
             return false;
         }
         PreparedStatement pstmt = null;
@@ -409,96 +411,75 @@ public class DatabaseProvider {
     // For Reservation
     /*************************************************************************************/
     public boolean createReservation(ReservationData newreservation) {
-
-        PreparedStatement pstmt = null;
         boolean result = false;
         int count = 0;
-        try {
-            StringBuilder columns = new StringBuilder();
-            columns.append(Reservation.Columns.USER_EMAIL);
-            columns.append(", " + Reservation.Columns.RESERVED_TIME);
-            columns.append(", " + Reservation.Columns.LOT_ID);
-            columns.append(", " + Reservation.Columns.PAYMENT);
-            columns.append(", " + Reservation.Columns.CONFIRM_CODE);
-            columns.append(", " + Reservation.Columns.STATE);
-            columns.append(", " + Reservation.Columns.FEE);
-            columns.append(", " + Reservation.Columns.GRACE_PERIOD);
 
-            StringBuilder values = new StringBuilder();
-            values.append("'" + newreservation.getUserEmail() + "'");
-            values.append(", '" + mDateFormat.format(newreservation.getReservedTime()) + "'");
-            values.append(", " + newreservation.getParkinglotId());
-            values.append(", '" + newreservation.getPaymentInfo() + "'");
-            values.append(", '" + newreservation.getConfirmationCode() + "'");
-            values.append(", " + newreservation.getState());
-            values.append(", '" + newreservation.getFee() + "'");
-            values.append(", '" + newreservation.getGracePeriod() + "'");
+        StringBuilder columns = new StringBuilder();
+        columns.append(Reservation.Columns.USER_EMAIL);
+        columns.append(", " + Reservation.Columns.RESERVATION_TIME);
+        columns.append(", " + Reservation.Columns.LOT_ID);
+        columns.append(", " + Reservation.Columns.CREDIT_INFO);
+        columns.append(", " + Reservation.Columns.CONFIRM_INFO);
+        columns.append(", " + Reservation.Columns.PARKING_FEE);
+        columns.append(", " + Reservation.Columns.GRACE_PERIOD);
+        columns.append(", " + Reservation.Columns.RESERVATION_STATE);
+        columns.append(", " + Reservation.Columns.PAYMENT);
 
-            String sql = "insert into " + Reservation.RESERVATION_TABLE + " (" + columns.toString()
-                    + ")" + " values(" + values.toString() + ")";
-            LogHelper.log(TAG, "sql = " + sql);
+        StringBuilder values = new StringBuilder();
+        values.append("'" + newreservation.getUserEmail() + "'");
+        values.append(", '" + mDateFormat.format(newreservation.getReservationTime()) + "'");
+        values.append(", " + newreservation.getParkinglotId());
+        values.append(", " + getSqlStringForEncryption(newreservation.getCreditInfo()));
+        values.append(", '" + newreservation.getConfirmInfo() + "'");
+        values.append(", '" + newreservation.getParkingFee() + "'");
+        values.append(", '" + newreservation.getGracePeriod() + "'");
+        values.append(", " + newreservation.getReservationState());
+        values.append(", " + newreservation.getPayment());
 
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                result = pstmt.execute();
-                if (result == false) {
-                    count = pstmt.getUpdateCount();
-                    LogHelper.log(TAG, "count = " + count);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        count = doExecInsertSQL(Reservation.RESERVATION_TABLE, columns.toString(),
+                values.toString());
+
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
     }
 
     //if not exist, size of list is zero
-    public List<ReservationData> getReservationInfo(String email) {
-        List<ReservationData> reservationList = new ArrayList<ReservationData>();
+    public ReservationData getReservationInfo(String email) {
         ReservationData reservation = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             StringBuilder where = new StringBuilder(" where ");
             where.append(Reservation.Columns.USER_EMAIL + "='" + email + "' AND ");
-            where.append("(" + Reservation.Columns.STATE + "=" + Reservation.STATE_TYPE.RESERVED);
             where.append(
-                    " OR " + Reservation.Columns.STATE + "=" + Reservation.STATE_TYPE.PARKED + ")");
+                    Reservation.Columns.RESERVATION_STATE + "=" + Reservation.STATE_TYPE.RESERVED);
+
             String sql = "select * from " + Reservation.RESERVATION_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
+
             pstmt = mDBConn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                do {
-                    reservation = new ReservationData();
-                    reservation.setId(rs.getInt(Reservation.Columns.ID));
-                    reservation.setUserEmail(rs.getString(Reservation.Columns.USER_EMAIL));
-                    try {
-                        reservation.setReservedTime(
-                                mDateFormat.parse(rs.getString(Reservation.Columns.RESERVED_TIME)));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    reservation.setParkinglotId(rs.getInt(Reservation.Columns.LOT_ID));
-                    reservation.setPaymentInfo(rs.getString(Reservation.Columns.PAYMENT));
-                    reservation.setConfirmationCode(rs.getString(Reservation.Columns.CONFIRM_CODE));
-                    reservation.setState(rs.getInt(Reservation.Columns.STATE));
-                    reservation.setFee(rs.getString(Reservation.Columns.FEE));
-                    reservation.setGracePeriod(rs.getString(Reservation.Columns.GRACE_PERIOD));
-                    reservationList.add(reservation);
-                } while (rs.next());
+                reservation = new ReservationData();
+                reservation.setId(rs.getInt(Reservation.Columns.ID));
+                reservation.setUserEmail(rs.getString(Reservation.Columns.USER_EMAIL));
+                try {
+                    reservation.setReservationTime(
+                            mDateFormat.parse(rs.getString(Reservation.Columns.RESERVATION_TIME)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                reservation.setParkinglotId(rs.getInt(Reservation.Columns.LOT_ID));
+                reservation.setCreditInfo(rs.getString(Reservation.Columns.CREDIT_INFO));
+                reservation.setConfirmInfo(rs.getString(Reservation.Columns.CONFIRM_INFO));
+                reservation.setParkingFee(rs.getString(Reservation.Columns.PARKING_FEE));
+                reservation.setGracePeriod(rs.getString(Reservation.Columns.GRACE_PERIOD));
+                reservation.setReservationState(rs.getInt(Reservation.Columns.RESERVATION_STATE));
+                reservation.setPayment(rs.getFloat(Reservation.Columns.PAYMENT));
+                if (rs.next()) {
+                    LogHelper.log(TAG, "Warning :: there are many reservation.");
+                }
                 LogHelper.log(TAG, "reservation = " + reservation.toString());
             } else {
                 LogHelper.log(TAG, "matched reservation is not exist.");
@@ -519,40 +500,35 @@ public class DatabaseProvider {
                 e.printStackTrace();
             }
         }
-        LogHelper.log(TAG, "size of reservation list  = " + reservationList.size());
-        return reservationList;
+        LogHelper.log(TAG, "size of reservation  = " + reservation);
+        return reservation;
     }
 
     public int updateReservationState(int id, int state) {
-        PreparedStatement pstmt = null;
         int count = 0;
-        try {
-            StringBuilder set = new StringBuilder(" set ");
-            set.append(Reservation.Columns.STATE + "=" + state);
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(Reservation.Columns.RESERVATION_STATE + "=" + state);
 
-            StringBuilder where = new StringBuilder(" where ");
-            where.append(Reservation.Columns.ID + "=" + id);
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(Reservation.Columns.ID + "=" + id);
 
-            String sql = "update " + Reservation.RESERVATION_TABLE + set.toString()
-                    + where.toString();
-            LogHelper.log(TAG, "sql = " + sql);
+        count = doExecUpdateSQL(Reservation.RESERVATION_TABLE, set.toString(), where.toString());
 
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                count = pstmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null)
-                    pstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        LogHelper.log(TAG, "updated count = " + count);
+        return count;
+    }
+
+    public int updateReservationPayment(int id, int state, float payment) {
+        int count = 0;
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(Reservation.Columns.RESERVATION_STATE + "=" + state);
+        set.append(", " + Reservation.Columns.PAYMENT + "=" + payment);
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(Reservation.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(Reservation.RESERVATION_TABLE, set.toString(), where.toString());
+
         LogHelper.log(TAG, "updated count = " + count);
         return count;
     }
@@ -560,7 +536,7 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Parking Lot
     /*************************************************************************************/
-    boolean isValidParkingLot(String loginId, String password) {
+    boolean verifyParkingLot(String loginId, String password) {
         int count = 0;
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -603,58 +579,43 @@ public class DatabaseProvider {
     }
 
     boolean createParkingLot(ParkingLotData newlot) {
-        if (isValidParkingLot(newlot.getLoginId(), newlot.getLoginPw())) {
+        if (verifyParkingLot(newlot.getLoginId(), newlot.getLoginPw())) {
             LogHelper.log(TAG, "Error : Alreay is exist.");
             return false;
         }
         int count = 0;
         boolean result = false;
-        PreparedStatement pstmt = null;
-        try {
 
-            StringBuilder columns = new StringBuilder();
-            columns.append(ParkingLot.Columns.LOGINID);
-            columns.append(", " + ParkingLot.Columns.LOGINPW);
-            columns.append(", " + ParkingLot.Columns.NAME);
-            columns.append(", " + ParkingLot.Columns.FEE);
-            columns.append(", " + ParkingLot.Columns.GRACEPERIOD);
-            columns.append(", " + ParkingLot.Columns.USEREMAIL);
+        StringBuilder columns = new StringBuilder();
+        columns.append(ParkingLot.Columns.LOGINID);
+        columns.append(", " + ParkingLot.Columns.LOGINPW);
+        columns.append(", " + ParkingLot.Columns.ADDRESS);
+        columns.append(", " + ParkingLot.Columns.FEE);
+        columns.append(", " + ParkingLot.Columns.GRACE_PERIOD);
+        columns.append(", " + ParkingLot.Columns.USEREMAIL);
 
-            StringBuilder values = new StringBuilder();
-            values.append("'" + newlot.getLoginId() + "'");
-            values.append(", " + getSqlStringForEncryption(newlot.getLoginPw()));
-            values.append(", '" + newlot.getLotName() + "'");
-            values.append(", '" + newlot.getFee() + "'");
-            values.append(", '" + newlot.getGracePeriod() + "'");
-            values.append(", '" + newlot.getUserEmail() + "'");
+        StringBuilder values = new StringBuilder();
+        values.append("'" + newlot.getLoginId() + "'");
+        values.append(", " + getSqlStringForEncryption(newlot.getLoginPw()));
+        values.append(", '" + newlot.getLotAddress() + "'");
+        values.append(", '" + newlot.getFee() + "'");
+        values.append(", '" + newlot.getGracePeriod() + "'");
+        values.append(", '" + newlot.getUserEmail() + "'");
 
-            String sql = "insert into " + Reservation.RESERVATION_TABLE + " (" + columns.toString()
-                    + ")" + " values(" + values.toString() + ")";
-            LogHelper.log(TAG, "sql = " + sql);
-
-            synchronized (mDataLock) {
-                pstmt = mDBConn.prepareStatement(sql);
-                result = pstmt.execute();
-                if (result == false) {
-                    count = pstmt.getUpdateCount();
-                    LogHelper.log(TAG, "count = " + count);
-                }
-            }
-        } catch (SQLException e) {
-            count = 0;
-            e.printStackTrace();
-        } catch (NullPointerException ex) {
-            count = 0;
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        count = doExecInsertSQL(ParkingLot.PARKINGLOT_TABLE, columns.toString(),
+                values.toString());
+        if (count > 0) {
+            Calendar cal = Calendar.getInstance();
+            createChangingHistoryData(
+                    new ChangingHistoryData(newlot.getId(), cal.getTime(),
+                            ChangingHistory.CHANGED_TYPE.FEE,
+                            newlot.getFee()));
+            createChangingHistoryData(
+                    new ChangingHistoryData(newlot.getId(), cal.getTime(),
+                            ChangingHistory.CHANGED_TYPE.GRACE_PERIOD,
+                            newlot.getGracePeriod()));
         }
+
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
@@ -677,9 +638,9 @@ public class DatabaseProvider {
                     parkinglot.setId(rs.getInt(ParkingLot.Columns.ID));
                     parkinglot.setLoginId(rs.getString(ParkingLot.Columns.LOGINID));
                     //                    parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));  //Do not expose
-                    parkinglot.setLotName(rs.getString(ParkingLot.Columns.NAME));
+                    parkinglot.setLotAddress(rs.getString(ParkingLot.Columns.ADDRESS));
                     parkinglot.setFee(rs.getString(ParkingLot.Columns.FEE));
-                    parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACEPERIOD));
+                    parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACE_PERIOD));
                     parkinglot.setUserEmail(rs.getString(ParkingLot.Columns.USEREMAIL));
 
                     parkingLotDataList.add(parkinglot);
@@ -727,9 +688,9 @@ public class DatabaseProvider {
                 parkinglot.setId(rs.getInt(ParkingLot.Columns.ID));
                 parkinglot.setLoginId(rs.getString(ParkingLot.Columns.LOGINID));
                 //                parkinglot.setLoginPw(rs.getString(ParkingLot.Columns.LOGINPW));      //Do not expose
-                parkinglot.setLotName(rs.getString(ParkingLot.Columns.NAME));
+                parkinglot.setLotAddress(rs.getString(ParkingLot.Columns.ADDRESS));
                 parkinglot.setFee(rs.getString(ParkingLot.Columns.FEE));
-                parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACEPERIOD));
+                parkinglot.setGracePeriod(rs.getString(ParkingLot.Columns.GRACE_PERIOD));
                 parkinglot.setUserEmail(rs.getString(ParkingLot.Columns.USEREMAIL));
 
                 if (rs.next()) {
@@ -802,6 +763,11 @@ public class DatabaseProvider {
         where.append(ParkingLot.Columns.ID + "=" + id);
 
         count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+        if (count > 0) {
+            Calendar cal = Calendar.getInstance();
+            createChangingHistoryData(new ChangingHistoryData(id, cal.getTime(),
+                    ChangingHistory.CHANGED_TYPE.FEE, fee));
+        }
 
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
@@ -813,12 +779,18 @@ public class DatabaseProvider {
         int count = 0;
 
         StringBuilder set = new StringBuilder(" set ");
-        set.append(ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+        set.append(ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
         StringBuilder where = new StringBuilder(" where ");
         where.append(ParkingLot.Columns.ID + "=" + id);
 
         count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+        if (count > 0) {
+            Calendar cal = Calendar.getInstance();
+            createChangingHistoryData(
+                    new ChangingHistoryData(id, cal.getTime(),
+                            ChangingHistory.CHANGED_TYPE.GRACE_PERIOD, gracePeriod));
+        }
 
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
@@ -848,12 +820,20 @@ public class DatabaseProvider {
 
         StringBuilder set = new StringBuilder(" set ");
         set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
-        set.append(", " + ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+        set.append(", " + ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
         StringBuilder where = new StringBuilder(" where ");
         where.append(ParkingLot.Columns.ID + "=" + id);
 
         count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+        if (count > 0) {
+            Calendar cal = Calendar.getInstance();
+            createChangingHistoryData(new ChangingHistoryData(id, cal.getTime(),
+                    ChangingHistory.CHANGED_TYPE.FEE, fee));
+            createChangingHistoryData(
+                    new ChangingHistoryData(id, cal.getTime(),
+                            ChangingHistory.CHANGED_TYPE.GRACE_PERIOD, gracePeriod));
+        }
 
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
@@ -866,13 +846,21 @@ public class DatabaseProvider {
 
         StringBuilder set = new StringBuilder(" set ");
         set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
-        set.append(", " + ParkingLot.Columns.GRACEPERIOD + "='" + gracePeriod + "'");
+        set.append(", " + ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
         set.append(", " + ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
         StringBuilder where = new StringBuilder(" where ");
         where.append(ParkingLot.Columns.ID + "=" + id);
 
         count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+        if (count > 0) {
+            Calendar cal = Calendar.getInstance();
+            createChangingHistoryData(new ChangingHistoryData(id, cal.getTime(),
+                    ChangingHistory.CHANGED_TYPE.FEE, fee));
+            createChangingHistoryData(
+                    new ChangingHistoryData(id, cal.getTime(),
+                            ChangingHistory.CHANGED_TYPE.GRACE_PERIOD, gracePeriod));
+        }
 
         result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
@@ -1044,4 +1032,31 @@ public class DatabaseProvider {
         LogHelper.log(TAG, "result = " + result);
         return result;
     }
+
+    /*************************************************************************************/
+    // For history about changing fee or grace period
+    /*************************************************************************************/
+    public boolean createChangingHistoryData(ChangingHistoryData historyData) {
+        boolean result = false;
+        int count = 0;
+        StringBuilder columns = new StringBuilder();
+        columns.append(ChangingHistory.Columns.PARKINGLOT_ID);
+        columns.append(", " + ChangingHistory.Columns.CHANGED_TIME);
+        columns.append(", " + ChangingHistory.Columns.CHANGED_TYPE);
+        columns.append(", " + ChangingHistory.Columns.CHANGED_VALUE);
+
+        StringBuilder values = new StringBuilder();
+        values.append(historyData.getParkinglotId());
+        values.append(", '" + mDateFormat.format(historyData.getChangedTime()) + "'");
+        values.append(", " + historyData.getChangedType());
+        values.append(", '" + historyData.getChangedValue() + "'");
+
+        count = doExecInsertSQL(ChangingHistory.HISTORY_TABLE, columns.toString(),
+                values.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
 }

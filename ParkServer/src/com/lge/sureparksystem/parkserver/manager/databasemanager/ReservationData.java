@@ -2,33 +2,52 @@ package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
 import java.util.Date;
 
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Reservation;
+
 public class ReservationData {
     private int id;
     private String userEmail;
-    private Date reservedTime;
+    private Date reservationTime;
     private int parkinglotId;
-    private String paymentInfo;
-    private String confirmationCode;
-    private int state;
-    private String fee;
+    private String creditInfo;
+    private String confirmInfo;
+    private String parkingFee;
     private String gracePeriod;
+    private int reservationState;
+    private float payment;
 
     public ReservationData() {
     }
 
-    public ReservationData(int id, String userEmail, Date reservedTime, int parkinglotId,
-            String paymentInfo, String confirmationCode, int state, String fee,
-            String gracePeriod) {
+    public ReservationData(int id, String userEmail, Date reservationTime, int parkinglotId,
+            String ceaditInfo, String confirmInfo, String parkingFee, String gracePeriod) {
         super();
         this.id = id;
         this.userEmail = userEmail;
-        this.reservedTime = reservedTime;
+        this.reservationTime = reservationTime;
         this.parkinglotId = parkinglotId;
-        this.paymentInfo = paymentInfo;
-        this.confirmationCode = confirmationCode;
-        this.state = state;
-        this.fee = fee;
+        this.creditInfo = ceaditInfo;
+        this.confirmInfo = confirmInfo;
+        this.parkingFee = parkingFee;
         this.gracePeriod = gracePeriod;
+        this.reservationState = Reservation.STATE_TYPE.RESERVED;
+        this.payment = 0.0f;
+    }
+
+    public ReservationData(int id, String userEmail, Date reservationTime, int parkinglotId,
+            String ceaditInfo, String confirmInfo, String parkingFee, String gracePeriod,
+            int reservationState, float payment) {
+        super();
+        this.id = id;
+        this.userEmail = userEmail;
+        this.reservationTime = reservationTime;
+        this.parkinglotId = parkinglotId;
+        this.creditInfo = ceaditInfo;
+        this.confirmInfo = confirmInfo;
+        this.parkingFee = parkingFee;
+        this.gracePeriod = gracePeriod;
+        this.reservationState = reservationState;
+        this.payment = payment;
     }
 
     public int getId() {
@@ -47,12 +66,12 @@ public class ReservationData {
         this.userEmail = userEmail;
     }
 
-    public Date getReservedTime() {
-        return reservedTime;
+    public Date getReservationTime() {
+        return reservationTime;
     }
 
-    public void setReservedTime(Date reservedTime) {
-        this.reservedTime = reservedTime;
+    public void setReservationTime(Date reservationTime) {
+        this.reservationTime = reservationTime;
     }
 
     public int getParkinglotId() {
@@ -63,36 +82,28 @@ public class ReservationData {
         this.parkinglotId = parkinglotId;
     }
 
-    public String getPaymentInfo() {
-        return paymentInfo;
+    public String getCreditInfo() {
+        return creditInfo;
     }
 
-    public void setPaymentInfo(String paymentInfo) {
-        this.paymentInfo = paymentInfo;
+    public void setCreditInfo(String ceaditInfo) {
+        this.creditInfo = ceaditInfo;
     }
 
-    public String getConfirmationCode() {
-        return confirmationCode;
+    public String getConfirmInfo() {
+        return confirmInfo;
     }
 
-    public void setConfirmationCode(String confirmationCode) {
-        this.confirmationCode = confirmationCode;
+    public void setConfirmInfo(String confirmInfo) {
+        this.confirmInfo = confirmInfo;
     }
 
-    public int getState() {
-        return state;
+    public String getParkingFee() {
+        return parkingFee;
     }
 
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public String getFee() {
-        return fee;
-    }
-
-    public void setFee(String fee) {
-        this.fee = fee;
+    public void setParkingFee(String parkingFee) {
+        this.parkingFee = parkingFee;
     }
 
     public String getGracePeriod() {
@@ -103,12 +114,29 @@ public class ReservationData {
         this.gracePeriod = gracePeriod;
     }
 
+    public int getReservationState() {
+        return reservationState;
+    }
+
+    public void setReservationState(int reservationState) {
+        this.reservationState = reservationState;
+    }
+
+    public float getPayment() {
+        return payment;
+    }
+
+    public void setPayment(float payment) {
+        this.payment = payment;
+    }
+
     @Override
     public String toString() {
-        return "ReservationData [id=" + id + ", userEmail=" + userEmail + ", reservedTime="
-                + reservedTime + ", parkinglotId=" + parkinglotId + ", paymentInfo=" + paymentInfo
-                + ", confirmationCode=" + confirmationCode + ", state=" + state + ", fee=" + fee
-                + ", gracePeriod=" + gracePeriod + "]";
+        return "ReservationData [id=" + id + ", userEmail=" + userEmail + ", reservationTime="
+                + reservationTime + ", parkinglotId=" + parkinglotId + ", creditInfo=" + creditInfo
+                + ", confirmInfo=" + confirmInfo + ", parkingFee=" + parkingFee + ", gracePeriod="
+                + gracePeriod + ", reservationState=" + reservationState + ", payment=" + payment
+                + "]";
     }
 
 }

@@ -4,7 +4,7 @@ public class ParkingLotData {
     private int id;
     private String loginId;
     private String loginPw;
-    private String lotName;
+    private String lotAddress;
     private String fee;
     private String gracePeriod;
     private String userEmail;
@@ -12,13 +12,13 @@ public class ParkingLotData {
     public ParkingLotData() {
     }
 
-    public ParkingLotData(int id, String loginId, String loginPw, String lotName, String fee,
+    public ParkingLotData(int id, String loginId, String loginPw, String lotAddress, String fee,
             String gracePeriod, String userEmail) {
         super();
         this.id = id;
         this.loginId = loginId;
         this.loginPw = loginPw;
-        this.lotName = lotName;
+        this.lotAddress = lotAddress;
         this.fee = fee;
         this.gracePeriod = gracePeriod;
         this.userEmail = userEmail;
@@ -48,12 +48,12 @@ public class ParkingLotData {
         this.loginPw = loginPw;
     }
 
-    public String getLotName() {
-        return lotName;
+    public String getLotAddress() {
+        return lotAddress;
     }
 
-    public void setLotName(String lotName) {
-        this.lotName = lotName;
+    public void setLotAddress(String lotAddress) {
+        this.lotAddress = lotAddress;
     }
 
     public String getFee() {
@@ -83,7 +83,7 @@ public class ParkingLotData {
     @Override
     public String toString() {
         return "ParkingLotData [id=" + id + ", loginId=" + loginId + ", loginPw=" + loginPw
-                + ", lotName=" + lotName + ", fee=" + fee + ", gracePeriod=" + gracePeriod
+                + ", lotAddress=" + lotAddress + ", fee=" + fee + ", gracePeriod=" + gracePeriod
                 + ", userEmail=" + userEmail + "]";
     }
 
