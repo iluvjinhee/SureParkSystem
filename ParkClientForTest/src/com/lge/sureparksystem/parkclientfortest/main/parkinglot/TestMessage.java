@@ -12,7 +12,7 @@ public class TestMessage {
 		rand = new Random();
 		
 		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
-		strArray.add(
+		/*strArray.add(
 				"{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 4, \"slot_status\" : [\"1\", \"1\", \"0\", \"1\"], \"led_status\" : [\"0\", \"0\", \"0\", \"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
 		strArray.add(
 				"{\"messagetype\" : \"Parkingslot_Sensor\", \"slot_number\" : 2, \"status\" : \"empty\", \"timestamp\" : 10}");
@@ -26,7 +26,7 @@ public class TestMessage {
 		strArray.add("{\"messagetype\" : \"EntryGate_PassBy\", \"timestamp\" : 110}");
 		strArray.add("{\"messagetype\" : \"ExitGate_Arrive\", \"timestamp\" : 200}");
 		strArray.add("{\"messagetype\" : \"ExitGate_PassBy\", \"timestamp\" : 210}");
-		strArray.add("{\"messagetype\" : \"HeartBeat\", \"timestamp\" : 300}");
+		strArray.add("{\"messagetype\" : \"HeartBeat\", \"timestamp\" : 300}");*/
 	}
 	
 	static public String getTestMessage() {

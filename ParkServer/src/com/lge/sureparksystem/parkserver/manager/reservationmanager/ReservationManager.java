@@ -94,7 +94,7 @@ public class ReservationManager extends ManagerTask {
 		String reservationCode = MessageParser.getString(jsonObject, "ReservationCode");
 		
 		if(isValid(reservationCode)) {
-			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
 			dataMessage.setAssignedSlot(String.valueOf(getAvailableSlot()));
 			
 			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));

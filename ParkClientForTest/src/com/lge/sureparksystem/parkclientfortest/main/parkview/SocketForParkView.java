@@ -26,7 +26,7 @@ public class SocketForParkView extends SocketForClient {
 			message = new DataMessage(MessageType.RESERVATION_CODE);
 			((DataMessage) message).setReservationCode("{\"Name\":\"Daniel\",\"ReservationCode\":\"1234567890\"}");
 			break;
-		case ASSIGNED_SLOT:
+		case ASSIGN_SLOT:
 			System.out.println(
 					messageType.getText() + " " + ((DataMessage) MessageParser.makeMessage(jsonMessage)).getAssignedSlot());
 			break;

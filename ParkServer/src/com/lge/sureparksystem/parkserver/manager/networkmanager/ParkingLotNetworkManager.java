@@ -34,22 +34,26 @@ public class ParkingLotNetworkManager extends NetworkManager {
 	}
 	
 	protected void process(JSONObject jsonObject) {
+		super.process(jsonObject);
+		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		DataMessage dataMessage = null;
 		
 		switch(messageType) {
 		case PARKINGLOT_INFORMATION:
 			dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
+			break;
+		case AUTHENTICATION_RESPONSE:
+		case ENTRY_GATE_CONTROL:
+		case EXIT_GATE_CONTROL:
+		case ENTRY_GATE_LED_CONTROL:
+		case EXIT_GATE_LED_CONTROL:
+		case SLOT_LED_CONTROL:
+			send(jsonObject);
 		default:
 			break;
 		}
 		
 		return;
-	}
-	
-	protected void process(ParkingLotNetworkManagerTopic topic) {
-		super.process(topic);
-		
-		process(topic.getJsonObject());		
 	}
 }

@@ -134,6 +134,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 		
 		switch(messageType) {
+		case AUTHENTICATION_REQUEST:
+			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			break;
 		default:
 			break;
 		}
