@@ -3,6 +3,9 @@ package com.lge.sureparksystem.parkserver.manager.keyinmanager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import org.json.simple.JSONObject;
 
@@ -26,56 +29,102 @@ public class KeyboardInManager extends ManagerTask {
 	@Override
 	public void run() {
     	while(true) {
-			String keyMsg = null;
+			String typedMessage = null;
 			try {
-				keyMsg = keyIn.readLine();
+				typedMessage = keyIn.readLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			if(keyMsg != null) {
-				switch(KeyboardInType.fromValue(Integer.parseInt(keyMsg))) {
-				case KEYBOARD_1:
-					getEventBus().post(
-							new ParkViewNetworkManagerTopic(new Message(MessageType.WELCOME_SUREPARK)));
-					break;
-				case KEYBOARD_2:
-					getEventBus().post(
-							new ParkViewNetworkManagerTopic(new Message(MessageType.SCAN_CONFIRM)));
-					break;
-				case KEYBOARD_3:
-					DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
-					dataMessage.setAssignedSlot("3");
-					getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
-					break;
-				default:
-					break;
-				}
-			}
+			process(typedMessage);
 		}
 	}
 	
-	public JSONObject mapMessage(int messageIndex, String data) {
+	public JSONObject process(String typedMessage) {
 		JSONObject jsonObject = null;
 
-		switch (messageIndex) {
-		case 1:
-			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
-			break;
-		case 2:
-			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.SCAN_CONFIRM));
-			break;
-		case 3:
-			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
-			dataMessage.setAssignedSlot(data);
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
-			break;
-		default:
-			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
-			break;
-		}
+		jsonObject = processTypedParkViewMessage(typedMessage);
+		if(jsonObject == null)
+			jsonObject = processTypedParkingLotMessage(typedMessage);
+		
+		return jsonObject;
+	}
 
+	private JSONObject processTypedParkingLotMessage(String typedMessage) {
+		JSONObject jsonObject = null;
+		
+		if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
+			dataMessage.setCommand("1");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseEntryGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
+			dataMessage.setCommand("0");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenExitGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+			dataMessage.setCommand("up");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseExitGate)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+			dataMessage.setCommand("down");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnEntryGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+			dataMessage.setCommand("up");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffEntryGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+			dataMessage.setCommand("down");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedExitGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+			dataMessage.setCommand("red");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnGreenExitGateLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+			dataMessage.setCommand("green");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnSlotLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
+			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			dataMessage.setCommand("on");			
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffSlotLED)) {
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
+			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			dataMessage.setCommand("off");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthetication)) {
+			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("ok");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.FailAuthetication)) {
+			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("nok");
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		}
+		
+		return jsonObject;
+	}
+
+	private JSONObject processTypedParkViewMessage(String typedMessage) {
+		JSONObject jsonObject = null;
+		
+		if(containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
+			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.SCAN_CONFIRM));
+		}
+		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
+			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
+		}
+		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.AssignedSlot)) {
+			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+			dataMessage.setAssignedSlot(getAvailableSlot());
+			jsonObject = MessageParser.makeJSONObject(dataMessage);
+		}
+		
+		getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
+		
 		return jsonObject;
 	}
 
@@ -83,5 +132,25 @@ public class KeyboardInManager extends ManagerTask {
 	protected void process(ManagerTopic topic) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String getAvailableSlot() {
+		Random r = new Random();
+
+		return String.valueOf(r.nextInt(getSlotSize()) + 1);
+	}
+	
+	private int getSlotSize() {
+		return 4;
+	}
+	
+	public boolean containsCaseInsensitive(String s, String[] l) {
+		for (String string : l) {
+			if (string.equalsIgnoreCase(s)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

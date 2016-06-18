@@ -35,13 +35,16 @@ public class ParkingLotNetworkManager extends NetworkManager {
 	
 	protected void process(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
+		DataMessage dataMessage = null;
 		
 		switch(messageType) {
 		case PARKINGLOT_INFORMATION:
-			DataMessage dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
+			dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
 		default:
 			break;
 		}
+		
+		return;
 	}
 	
 	protected void process(ParkingLotNetworkManagerTopic topic) {

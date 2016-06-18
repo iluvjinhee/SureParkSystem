@@ -11,28 +11,22 @@ public class TestMessage {
 	static {
 		rand = new Random();
 		
-		strArray.add("{\"MessageType\":\"HeartBeat\",\"TimeStamp\":0}");
-		strArray.add("{\"MessageType\":\"Authentication_Request\",\"id\":\"team5-1\",\"pwd\":\"abcd1234\",\"TimeStamp\":1}");
-		strArray.add("{\"MessageType\":\"EntryGate_Arrive\",\"TimeStamp\":2}");
-		strArray.add("{\"MessageType\":\"EntryGate_PassBy\",\"TimeStamp\":3}");
-		strArray.add("{\"MessageType\":\"ExitGate_Arrive\",\"TimeStamp\":4}");
-		strArray.add("{\"MessageType\":\"ExitGate_PassBy\",\"TimeStamp\":5}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":0,\"status\":\"1\",\"TimeStamp\":7}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":0,\"status\":\"0\",\"TimeStamp\":8}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":1,\"status\":\"1\",\"TimeStamp\":9}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":1,\"status\":\"0\",\"TimeStamp\":10}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":2,\"status\":\"1\",\"TimeStamp\":11}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":2,\"status\":\"0\",\"TimeStamp\":13}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":3,\"status\":\"1\",\"TimeStamp\":14}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":3,\"status\":\"0\",\"TimeStamp\":15}");
-		strArray.add("{\"MessageType\":\"Parkinglot_Information\",\"slot_number\":4,\"slot_status\":[\"0\",\"0\",\"0\",\"0\"],\"led_status\":[\"0\",\"0\",\"0\",\"0\"],\"entrygate\":\"0\",\"exitgate\":\"0\",\"entrygateled\":\"1\",\"exitgateled\":\"1\",\"TimeStamp\":19}");
-		strArray.add("{\"MessageType\":\"HeartBeat\",\"TimeStamp\":11}");
-		strArray.add("{\"MessageType\":\"EntryGate_Arrive\",\"TimeStamp\":19}");
-		strArray.add("{\"MessageType\":\"EntryGate_PassBy\",\"TimeStamp\":20}");
-		strArray.add("{\"MessageType\":\"ExitGate_Arrive\",\"TimeStamp\":22}");
-		strArray.add("{\"MessageType\":\"ExitGate_PassBy\",\"TimeStamp\":23}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":0,\"status\":\"empty\",\"TimeStamp\":15}");
-		strArray.add("{\"MessageType\":\"Parkingslot_Sensor\",\"sensor_number\":0,\"status\":\"occupied\",\"TimeStamp\":14}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+		strArray.add(
+				"{\"messagetype\" : \"Parkinglot_Information\", \"slot_number\" : 4, \"slot_status\" : [\"1\", \"1\", \"0\", \"1\"], \"led_status\" : [\"0\", \"0\", \"0\", \"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
+		strArray.add(
+				"{\"messagetype\" : \"Parkingslot_Sensor\", \"sendor_number\" : 2, \"status\" : \"empty\", \"timestamp\" : 10}");
+		strArray.add(
+				"{\"messagetype\" : \"Parkingslot_LED\", \"sendor_number\" : 2, \"status\" : \"off\", \"timestamp\" : 15}");
+		strArray.add("{\"messagetype\" : \"EntryGate_Servo\", \"status\" : \"down\", \"timestamp\" : 30}");
+		strArray.add("{\"messagetype\" : \"ExitGate_Servo\", \"status\" : \"down\", \"timestamp\" : 40}");
+		strArray.add("{\"messagetype\" : \"EntryGate_LED\", \"status\" : \"red\", \"timestamp\" : 50}");
+		strArray.add("{\"messagetype\" : \"ExitGate_LED\", \"status\" : \"red\", \"timestamp\" : 60}");
+		strArray.add("{\"messagetype\" : \"EntryGate_Arrive\", \"timestamp\" : 100}");
+		strArray.add("{\"messagetype\" : \"EntryGate_PassBy\", \"timestamp\" : 110}");
+		strArray.add("{\"messagetype\" : \"ExitGate_Arrive\", \"timestamp\" : 200}");
+		strArray.add("{\"messagetype\" : \"ExitGate_PassBy\", \"timestamp\" : 210}");
+		strArray.add("{\"messagetype\" : \"HeartBeat\", \"timestamp\" : 300}");
 	}
 	
 	static public String getTestMessage() {
