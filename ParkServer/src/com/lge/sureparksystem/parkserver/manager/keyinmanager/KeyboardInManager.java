@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.json.simple.JSONObject;
@@ -52,13 +53,21 @@ public class KeyboardInManager extends ManagerTask {
 	private JSONObject processTypedParkingLotMessage(String typedMessage) {
 		JSONObject jsonObject = null;
 		
-		if(Arrays.asList(KeyInCorpus.OpenEntryGate).contains(typedMessage)) {
-		}
-		else if(Arrays.asList(KeyInCorpus.CloseEntryGate).contains(typedMessage)) {
-		}
-		else if(Arrays.asList(KeyInCorpus.OpenExitGate).contains(typedMessage)) {
-		}
-		else if(Arrays.asList(KeyInCorpus.CloseExitGate).contains(typedMessage)) {
+		if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseEntryGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenExitGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseExitGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnEntryGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffEntryGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnExitGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffExitGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnSlotLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffSlotLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.RequestParkingLotInfo)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.ResponseAuthetication)) {
 		}
 		
 		return jsonObject;
@@ -67,13 +76,13 @@ public class KeyboardInManager extends ManagerTask {
 	private JSONObject processTypedParkViewMessage(String typedMessage) {
 		JSONObject jsonObject = null;
 		
-		if(Arrays.asList(KeyInCorpus.ScanReservationCode).contains(typedMessage)) {
+		if(containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
 			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.SCAN_CONFIRM));
 		}
-		else if(Arrays.asList(KeyInCorpus.WelcomeSurePark).contains(typedMessage)) {
+		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
 			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
 		}
-		else if(Arrays.asList(KeyInCorpus.AssignedSlot).contains(typedMessage)) {
+		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.AssignedSlot)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
 			dataMessage.setAssignedSlot(getAvailableSlot());
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
@@ -98,5 +107,15 @@ public class KeyboardInManager extends ManagerTask {
 	
 	private int getSlotSize() {
 		return 4;
+	}
+	
+	public boolean containsCaseInsensitive(String s, String[] l) {
+		for (String string : l) {
+			if (string.equalsIgnoreCase(s)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
