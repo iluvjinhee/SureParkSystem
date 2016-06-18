@@ -6,21 +6,24 @@ public class DataMessage extends Message {
 	public static String ASSIGNED_SLOT = "ASSIGNED_SLOT";
 	public static String RESERVATION_CODE = "RESERVATION_CODE";
 	
-	public static String LED_STATUS = "LED_STATUS";
-	public static String SLOT_STATUS = "SLOT_STATUS";
-	public static String ENTRYGATE_ARRIVE = "ENTRYGATE_ARRIVE";
-	public static String ENTRYGATE_STATUS = "ENTRYGATE_STATUS";
-	public static String ENTRYGATELED_STATUS = "ENTRYGATELED_STATUS";
-	public static String EXITGATE_ARRIVE = "EXITGATE_ARRIVE";
-	public static String EXITGATE_STATUS = "EXITGATE_STATUS";
-	public static String EXITGATELED_STATUS = "EXITGATELED_STATUS";
-	public static String ID = "ID";
-	public static String PWD = "PWD";
-	public static String STATUS = "STATUS";
-	public static String LED_NUMBER = "LED_NUMBER";
-	public static String SENSOR_NUMBER = "SENSOR_NUMBER";
-	public static String SLOT_NUMBER = "SLOT_NUMBER";
-	public static String TIMESTAMP = "TIMESTAMP";
+	public static String ENTRYGATELED_STATUS = "entrygateled";
+	public static String ENTRYGATE_ARRIVE = "entrygate_arrive";
+	public static String ENTRYGATE_STATUS = "entrygate";
+	public static String EXITGATELED_STATUS = "exitgateled";
+	public static String EXITGATE_ARRIVE = "exitgate_arrive";
+	public static String EXITGATE_STATUS = "exitgate";
+	public static String ID = "id";
+	public static String LED_NUMBER = "led_number";
+	public static String LED_STATUS = "led_status";
+	public static String PASSWORD = "pwd";
+	public static String SENSOR_NUMBER = "sensor_number";
+	public static String SLOT_NUMBER = "slot_number";
+	public static String SLOT_STATUS = "slot_status";
+	public static String STATUS = "status";
+	public static String TIMESTAMP = "timestamp";
+	
+	public static String COMMAND = "command";
+	public static String RESULT = "result";
 	
 	// ParkView
 	String assignedSlot;
@@ -29,15 +32,18 @@ public class DataMessage extends Message {
 	// Parking Lot
 	ArrayList<String> led_status;
 	ArrayList<String> slot_status;
-	String entrygate_arrive;
-	String entrygate_status;
-	String entrygateled_status;
-	String exitgate_arrive;
-	String exitgate_status;
-	String exitgateled_status;
+	String entry_gate_arrive;
+	String entry_gate_status;
+	String entry_gate_led_status;
+	String exit_gate_arrive;
+	String exit_gate_status;
+	String exit_gate_led_status;
 	String id;
 	String pwd;
-	String status;;
+	String status;
+	String result;
+	String command;
+	
 	int led_number;
 	int sensor_number;;
 	int slot_number;
@@ -99,51 +105,51 @@ public class DataMessage extends Message {
 	}
 
 	public String getEntrygateArrive() {
-		return entrygate_arrive;
+		return entry_gate_arrive;
 	}
 
 	public void setEntrygateArrive(String entrygate_arrive) {
-		this.entrygate_arrive = entrygate_arrive;
+		this.entry_gate_arrive = entrygate_arrive;
 	}
 
 	public String getEntrygateStatus() {
-		return entrygate_status;
+		return entry_gate_status;
 	}
 
-	public void setEntrygateStatus(String entrygate_status) {
-		this.entrygate_status = entrygate_status;
+	public void setEntryGateStatus(String entrygate_status) {
+		this.entry_gate_status = entrygate_status;
 	}
 
 	public String getEntrygateledStatus() {
-		return entrygateled_status;
+		return entry_gate_led_status;
 	}
 
-	public void setEntrygateledStatus(String entrygateled_status) {
-		this.entrygateled_status = entrygateled_status;
+	public void setEntryGateLEDStatus(String entrygateled_status) {
+		this.entry_gate_led_status = entrygateled_status;
 	}
 
 	public String getExitgateArrive() {
-		return exitgate_arrive;
+		return exit_gate_arrive;
 	}
 
 	public void setExitgateArrive(String exitgate_arrive) {
-		this.exitgate_arrive = exitgate_arrive;
+		this.exit_gate_arrive = exitgate_arrive;
 	}
 
 	public String getExitgateStatus() {
-		return exitgate_status;
+		return exit_gate_status;
 	}
 
-	public void setExitgateStatus(String exitgate_status) {
-		this.exitgate_status = exitgate_status;
+	public void setExitGateStatus(String exitgate_status) {
+		this.exit_gate_status = exitgate_status;
 	}
 
 	public String getExitgateledStatus() {
-		return exitgateled_status;
+		return exit_gate_led_status;
 	}
 
-	public void setExitgateledStatus(String exitgateled_status) {
-		this.exitgateled_status = exitgateled_status;
+	public void setExitGateLEDStatus(String exitgateled_status) {
+		this.exit_gate_led_status = exitgateled_status;
 	}
 
 	public String getId() {
@@ -178,14 +184,31 @@ public class DataMessage extends Message {
 		this.slot_number = slot_number;
 	}
 
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+	
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
 	@Override
 	public String toString() {
 		return "DataMessage [assignedSlot=" + assignedSlot + ", reservationCode=" + reservationCode + ", led_status="
-				+ led_status + ", slot_status=" + slot_status + ", entrygate_arrive=" + entrygate_arrive
-				+ ", entrygate_status=" + entrygate_status + ", entrygateled_status=" + entrygateled_status
-				+ ", exitgate_arrive=" + exitgate_arrive + ", exitgate_status=" + exitgate_status
-				+ ", exitgateled_status=" + exitgateled_status + ", id=" + id + ", pwd=" + pwd + ", status=" + status
-				+ ", led_number=" + led_number + ", sensor_number=" + sensor_number + ", slot_number=" + slot_number
-				+ ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+				+ led_status + ", slot_status=" + slot_status + ", entry_gate_arrive=" + entry_gate_arrive
+				+ ", entry_gate_status=" + entry_gate_status + ", entry_gate_led_status=" + entry_gate_led_status
+				+ ", exit_gate_arrive=" + exit_gate_arrive + ", exit_gate_status=" + exit_gate_status
+				+ ", exit_gate_led_status=" + exit_gate_led_status + ", id=" + id + ", pwd=" + pwd + ", status="
+				+ status + ", result=" + result + ", command=" + command + ", led_number=" + led_number
+				+ ", sensor_number=" + sensor_number + ", slot_number=" + slot_number + ", messageType=" + messageType
+				+ ", timestamp=" + timestamp + "]";
 	}
 }

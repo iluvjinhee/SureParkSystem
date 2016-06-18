@@ -57,18 +57,26 @@ public class KeyInCorpus {
 		"Turn Off the EntryGate LED",
 	};
 
-	public static final String[] TurnOnExitGateLED = {
-		"Turn On Exit Gate LED",
-		"Turn On ExitGate LED",
-		"Turn On the Exit Gate LED",
-		"Turn On the ExitGate LED",
-	};
-
-	public static final String[] TurnOffExitGateLED = {
+	public static final String[] TurnRedExitGateLED = {
+		"Turn red Exit Gate LED",
+		"Turn red ExitGate LED",
+		"Turn red the Exit Gate LED",
+		"Turn red the ExitGate LED",
 		"Turn Off Exit Gate LED",
 		"Turn Off ExitGate LED",
 		"Turn Off the Exit Gate LED",
 		"Turn Off the ExitGate LED",
+	};
+
+	public static final String[] TurnGreenExitGateLED = {
+		"Turn green Exit Gate LED",
+		"Turn green ExitGate LED",
+		"Turn green the Exit Gate LED",
+		"Turn green the ExitGate LED",
+		"Turn on Exit Gate LED",
+		"Turn on ExitGate LED",
+		"Turn on the Exit Gate LED",
+		"Turn on the ExitGate LED",
 	};
 
 	public static final String[] TurnOnSlotLED = {
@@ -87,14 +95,13 @@ public class KeyInCorpus {
 		"Turn Off Slot 5 LED",
 	};
 
-	public static final String[] RequestParkingLotInfo = {
-		"Request Parking Info",
-		"Request Parking Lot Info",
-		"Request ParkingLot Info",
+	public static final String[] SuccessAuthetication = {
+		"Success Authentication",
+		"Success Login"
 	};
-
-	public static final String[] ResponseAuthetication = {
-		"Response Authentication",
-		"Response Login"
+	
+	public static final String[] FailAuthetication = {
+		"Fail Authentication",
+		"Fail Login"
 	};
 }
