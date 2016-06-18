@@ -10,14 +10,15 @@ public class ReservationData {
     private String paymentInfo;
     private String confirmationCode;
     private int state;
-    private float fee;
-    private int gracePeriod;
-    
+    private String fee;
+    private String gracePeriod;
+
     public ReservationData() {
     }
 
     public ReservationData(int id, String userEmail, Date reservedTime, int parkinglotId,
-            String paymentInfo, String confirmationCode, int state, float fee, int gracePeriod) {
+            String paymentInfo, String confirmationCode, int state, String fee,
+            String gracePeriod) {
         super();
         this.id = id;
         this.userEmail = userEmail;
@@ -86,19 +87,19 @@ public class ReservationData {
         this.state = state;
     }
 
-    public float getFee() {
+    public String getFee() {
         return fee;
     }
 
-    public void setFee(float fee) {
+    public void setFee(String fee) {
         this.fee = fee;
     }
 
-    public int getGracePeriod() {
+    public String getGracePeriod() {
         return gracePeriod;
     }
 
-    public void setGracePeriod(int gracePeriod) {
+    public void setGracePeriod(String gracePeriod) {
         this.gracePeriod = gracePeriod;
     }
 
@@ -109,7 +110,5 @@ public class ReservationData {
                 + ", confirmationCode=" + confirmationCode + ", state=" + state + ", fee=" + fee
                 + ", gracePeriod=" + gracePeriod + "]";
     }
-
-
 
 }

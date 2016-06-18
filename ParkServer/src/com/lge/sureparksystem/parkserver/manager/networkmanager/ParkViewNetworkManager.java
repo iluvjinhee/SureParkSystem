@@ -14,8 +14,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 	public class ParkViewNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkViewNetworkManagerTopic topic) {
-			System.out.println("ParkViewNetworkManagerListener");
-			System.out.println(topic);
+			System.out.println("ParkViewNetworkManagerListener: " + topic);
 			
 			send(MessageParser.makeJSONObject(topic.getMessage()));
 		}

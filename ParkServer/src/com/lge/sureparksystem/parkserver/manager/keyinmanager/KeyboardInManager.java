@@ -11,6 +11,7 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 
 public class KeyboardInManager extends ManagerTask {
@@ -76,5 +77,11 @@ public class KeyboardInManager extends ManagerTask {
 		}
 
 		return jsonObject;
+	}
+
+	@Override
+	protected void process(ManagerTopic topic) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -36,4 +36,10 @@ public class SocketForParkView extends SocketForClient {
 
 		return message;
 	}
+
+	@Override
+	public void testSend() {
+		// TODO Auto-generated method stub
+		
+	}
 }

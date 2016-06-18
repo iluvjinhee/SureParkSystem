@@ -17,7 +17,7 @@ public abstract class SocketForClient {
 
 	private Socket socket = null;
 	private BufferedReader in = null;
-	private PrintWriter out = null;
+	protected PrintWriter out = null;
 
 	private Thread socketThread = null;
 
@@ -27,6 +27,7 @@ public abstract class SocketForClient {
 	}
 	
 	public abstract Message process(String jsonMessage);
+	public abstract void testSend();
 
 	public void connect() {
 		if (socketThread == null) {
@@ -40,6 +41,8 @@ public abstract class SocketForClient {
 							if (socket.isConnected()) {
 								out = new PrintWriter(socket.getOutputStream(), true);
 								in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+								
+								testSend();
 
 								String inJSONMessage = "";
 								while (true) {
@@ -51,7 +54,7 @@ public abstract class SocketForClient {
 									Message outJSONMessage = process(inJSONMessage);
 									if(outJSONMessage != null) {
 										JSONObject jsonObject = MessageParser.makeJSONObject(outJSONMessage);
-										out.println(jsonObject.toJSONString());
+										send(jsonObject.toJSONString());
 									}
 								}
 							}
@@ -60,8 +63,6 @@ public abstract class SocketForClient {
 						}
 					}
 				}
-
-				
 			});
 
 			socketThread.start();
@@ -88,30 +89,7 @@ public abstract class SocketForClient {
 		out.println(jsonObject.toJSONString());
 	}
 	
-	/*
-	private Message process(String jsonMessage) {
-		Message result = null;
-		
-		MessageType messageType = MessageParser.parseJSONMessage(jsonMessage).getMessageType();
-		switch(messageType) {
-		case WELCOME_SUREPARK:
-		case NOT_RESERVED:
-			System.out.println(messageType.getText());
-			break;
-		case SCAN_CONFIRM:
-			result = new Message(
-					MessageType.RESERVATION_NUMBER,
-					"{\"Name\":\"Daniel\",\"ReservationNumber\":\"1234567890\"}");
-			break;
-		case ASSIGN_SLOT:
-			System.out.println(messageType.getText() +
-					" " +
-					MessageParser.parseJSONMessage(jsonMessage).getGlobalValue());
-			break;
-		default:
-			break;						
-		}
-		
-		return result;
-	}*/
+	public void send(String jsonMessage) {
+		out.println(jsonMessage);
+	}
 }
