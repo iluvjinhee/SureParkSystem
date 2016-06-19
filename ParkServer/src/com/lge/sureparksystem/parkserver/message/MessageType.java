@@ -37,11 +37,12 @@ public enum MessageType {
     //AUTHENTICATION_REQUEST("Authentication_Request"),
     //AUTHENTICATION_RESPONSE("Authentication_Response"),
     //PARKINGLOT_INFORMATION("Parkinglot_Information"),
-    RESERVATION_INFORMATON("Reservation_Information"),
+    CANCEL_REQUEST("Cancel_Request"),
     CANCEL_RESPONSE("Cancel_Response"),
-    
-    
-    
+    PARKINGLOTINFO_REQUEST("ParkinglotInfo_Request"),
+    RESERVATIONINFO_REQUEST("ReservationInfo_Request"),
+    RESERVATION_INFORMATION("Reservation_Information"),
+    RESERVATION_REQUEST("Reservation_Request"),   
     
     NONE("NONE");
 	

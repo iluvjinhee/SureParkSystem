@@ -23,6 +23,24 @@ public class DataMessage extends Message {
 	public static String STATUS = "status";
 	public static String TIMESTAMP = "timestamp";
 	
+	// Parking Here
+	public static String confirmationinfo;
+	public static String Stringdriver_id;
+	public static String[] driver_often;
+	public static String[] graceperiod;
+	public static String messagetype;
+	public static String[] parkingfee;
+	public static int parkinglot_count;
+	public static String[] parkinglot_id;
+	public static String[] parkinglot_location;
+	public static String paymentinfo;
+	public static String reservation_id;
+	public static String reservation_time;
+	public static int slot_count;
+	public static String[] slot_driverid;
+	public static String[] slot_time;
+	public static String type;
+	
 	public static String COMMAND = "command";
 	public static String RESULT = "result";
 	
