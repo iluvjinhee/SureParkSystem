@@ -2,6 +2,8 @@ package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
 	ACKNOWLEDGE("ACK"),
+	AUTHENTICATION_OK("AUTHENTICATION OK"),
+	AUTHENTICATION_FAIL("AUTHENTICATION FAIL"),
 	
 	// Park View
     WELCOME_SUREPARK("WELCOME SUREPARK"),
@@ -19,8 +21,8 @@ public enum MessageType {
     ENTRY_GATE_LED_CONTROL("EntryGate_LED"),
     ENTRY_GATE_LED_STATUS("EntryGate_LED"),
     ENTRY_GATE_STATUS("EntryGate_Servo"),
-    EXITGATE_ARRIVE("ExitGate_Arrive"),
-    EXITGATE_PASSBY("ExitGate_PassBy"),
+    EXIT_GATE_ARRIVE("ExitGate_Arrive"),
+    EXIT_GATE_PASSBY("ExitGate_PassBy"),
     EXIT_GATE_CONTROL("ExitGate_Control"),
     EXIT_GATE_LED_CONTROL("ExitGate_LED"),
     EXIT_GATE_LED_STATUS("ExitGate_LED"),
@@ -30,6 +32,16 @@ public enum MessageType {
     SLOT_LED_CONTROL("Parkingslot_LED"),
     SLOT_LED_STATUS("Parkingslot_LED"),
     SLOT_SENSOR_STATUS("Parkingslot_Sensor"),
+    
+    // ParkHere
+    //AUTHENTICATION_REQUEST("Authentication_Request"),
+    //AUTHENTICATION_RESPONSE("Authentication_Response"),
+    //PARKINGLOT_INFORMATION("Parkinglot_Information"),
+    RESERVATION_INFORMATON("Reservation_Information"),
+    CANCEL_RESPONSE("Cancel_Response"),
+    
+    
+    
     
     NONE("NONE");
 	

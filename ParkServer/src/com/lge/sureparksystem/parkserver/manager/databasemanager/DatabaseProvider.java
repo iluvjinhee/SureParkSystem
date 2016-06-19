@@ -560,7 +560,7 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Parking Lot
     /*************************************************************************************/
-    boolean isValidParkingLot(String loginId, String password) {
+    public boolean isValidParkingLot(String loginId, String password) {
         int count = 0;
         boolean result = false;
         PreparedStatement pstmt = null;
