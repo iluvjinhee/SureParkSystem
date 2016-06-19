@@ -43,11 +43,11 @@ public class AuthenticationManager extends ManagerTask {
 
 	@Override
 	protected void process(ManagerTopic topic) {
-		DataMessage recvMessage = (DataMessage) MessageParser.makeMessage(topic.getJsonObject());
+		DataMessage recvMessage = (DataMessage) MessageParser.convertToMessage(topic.getJsonObject());
 		
 		switch(recvMessage.getMessageType()) {
 		case AUTHENTICATION_REQUEST:
-			boolean isValidUser = dbProvider.isValidParkingLot(recvMessage.getId(), recvMessage.getPwd());
+			boolean isValidUser = dbProvider.verifyParkingLot(recvMessage.getId(), recvMessage.getPwd());
 			if(isValidUser) {
 				DataMessage sendMessage = new DataMessage(MessageType.AUTHENTICATION_OK);
 				sendMessage.setId(recvMessage.getId());

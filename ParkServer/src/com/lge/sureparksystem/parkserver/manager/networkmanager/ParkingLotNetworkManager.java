@@ -41,8 +41,8 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		DataMessage dataMessage = null;
 		
 		switch(messageType) {
-		case PARKINGLOT_INFORMATION:
-			dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
+		case PARKING_LOT_INFORMATION:
+			dataMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			break;
 		case AUTHENTICATION_RESPONSE:
 		case ENTRY_GATE_CONTROL:

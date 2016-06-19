@@ -28,7 +28,7 @@ public enum MessageType {
     EXIT_GATE_LED_STATUS("ExitGate_LED"),
     EXIT_GATE_STATUS("ExitGate_Servo"),
     HEARTBEAT("HeartBeat"),
-    PARKINGLOT_INFORMATION("Parkinglot_Information"),
+    PARKING_LOT_INFORMATION("Parkinglot_Information"),
     SLOT_LED_CONTROL("Parkingslot_LED"),
     SLOT_LED_STATUS("Parkingslot_LED"),
     SLOT_SENSOR_STATUS("Parkingslot_Sensor"),
@@ -36,13 +36,16 @@ public enum MessageType {
     // ParkHere
     //AUTHENTICATION_REQUEST("Authentication_Request"),
     //AUTHENTICATION_RESPONSE("Authentication_Response"),
-    //PARKINGLOT_INFORMATION("Parkinglot_Information"),
+    PARKING_LOT_INFORMATION2("Parkinglot_Information2"),
     CANCEL_REQUEST("Cancel_Request"),
     CANCEL_RESPONSE("Cancel_Response"),
     PARKINGLOTINFO_REQUEST("ParkinglotInfo_Request"),
-    RESERVATIONINFO_REQUEST("ReservationInfo_Request"),
+    RESERVATION_INFO_REQUEST("ReservationInfo_Request"),
     RESERVATION_INFORMATION("Reservation_Information"),
-    RESERVATION_REQUEST("Reservation_Request"),   
+    RESERVATION_REQUEST("Reservation_Request"),
+    PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
+    PARKING_LOT_STATUS("ParkinglotStatus"),
+    NOTIFICATION("Notification"),
     
     NONE("NONE");
 	

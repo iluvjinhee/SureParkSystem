@@ -59,53 +59,53 @@ public class KeyboardInManager extends ManagerTask {
 		if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
 			dataMessage.setCommand("up");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseEntryGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
 			dataMessage.setCommand("down");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenExitGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 			dataMessage.setCommand("up");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseExitGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 			dataMessage.setCommand("down");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnGreenEntryGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
 			dataMessage.setCommand("green");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedEntryGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
 			dataMessage.setCommand("red");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedExitGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
 			dataMessage.setCommand("red");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnGreenExitGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
 			dataMessage.setCommand("green");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnSlotLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
 			dataMessage.setSlotNumber(Integer.valueOf(typedMessage.replaceAll("[^0-9]", "")));
 			dataMessage.setCommand("on");			
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffSlotLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
 			dataMessage.setSlotNumber(Integer.valueOf(typedMessage.replaceAll("[^0-9]", "")));
 			dataMessage.setCommand("off");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthetication)) {
 			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("ok");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.FailAuthetication)) {
 			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("nok");
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		}
 		
 		if(jsonObject != null)
@@ -118,15 +118,15 @@ public class KeyboardInManager extends ManagerTask {
 		JSONObject jsonObject = null;
 		
 		if(containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
-			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.SCAN_CONFIRM));
+			jsonObject = MessageParser.convertToJSONObject(new Message(MessageType.SCAN_CONFIRM));
 		}
 		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
-			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
+			jsonObject = MessageParser.convertToJSONObject(new Message(MessageType.WELCOME_SUREPARK));
 		}
 		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.AssignedSlot)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
 			dataMessage.setAssignedSlot(getAvailableSlot());
-			jsonObject = MessageParser.makeJSONObject(dataMessage);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		}
 		
 		if(jsonObject != null)

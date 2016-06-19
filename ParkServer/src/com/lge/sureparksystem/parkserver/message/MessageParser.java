@@ -9,7 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class MessageParser {
-	public static Message makeMessage(String jsonMessage) {
+	public static Message convertToMessage(String jsonMessage) {
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
 		try {
@@ -18,38 +18,60 @@ public class MessageParser {
 			e.printStackTrace();
 		}
 
-		return makeMessage(jsonObject);
+		return convertToMessage(jsonObject);
 	}
 
-	public static Message makeMessage(JSONObject jsonObject) {
+	public static Message convertToMessage(JSONObject jsonObject) {
 		Message message = new DataMessage();
 		
 		message.setMessageType(MessageType.fromText(MessageParser.getString(jsonObject, Message.MESSAGE_TYPE)));
 		message.setTimestamp(MessageParser.getInt(jsonObject, Message.TIMESTAMP));
-		((DataMessage) message).setReservationCode(MessageParser.getString(jsonObject, DataMessage.RESERVATION_CODE));
-		((DataMessage) message).setAssignedSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGNED_SLOT));
-		((DataMessage) message).setEntrygateArrive(MessageParser.getString(jsonObject, DataMessage.ENTRYGATE_ARRIVE));
-		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATE_STATUS));
-		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRYGATELED_STATUS));
-		((DataMessage) message).setExitgateArrive(MessageParser.getString(jsonObject, DataMessage.EXITGATE_ARRIVE));
-		((DataMessage) message).setExitGateStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATE_STATUS));
-		((DataMessage) message).setExitGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.EXITGATELED_STATUS));
-		((DataMessage) message).setId(MessageParser.getString(jsonObject, DataMessage.ID));
-		((DataMessage) message).setPwd(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
-		((DataMessage) message).setStatus(MessageParser.getString(jsonObject, DataMessage.STATUS));
 		
+		// Parking Lot
+		((DataMessage) message).setAssignedSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGNED_SLOT));
+		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_LED_STATUS));
+		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_STATUS));
+		((DataMessage) message).setEntrygateArrive(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_ARRIVE));
+		((DataMessage) message).setExitGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_LED_STATUS));
+		((DataMessage) message).setExitGateStatus(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_STATUS));
+		((DataMessage) message).setExitgateArrive(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_ARRIVE));
+		((DataMessage) message).setId(MessageParser.getString(jsonObject, DataMessage.ID));
 		((DataMessage) message).setLedNumber(MessageParser.getInt(jsonObject, DataMessage.LED_NUMBER));
+		((DataMessage) message).setLedStatus(MessageParser.getStringList(jsonObject, DataMessage.LED_STATUS));
+		((DataMessage) message).setPwd(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
+		((DataMessage) message).setReservationCode(MessageParser.getString(jsonObject, DataMessage.RESERVATION_CODE));
 		((DataMessage) message).setSensorNumber(MessageParser.getInt(jsonObject, DataMessage.SENSOR_NUMBER));
 		((DataMessage) message).setSlotNumber(MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER));
-		
-		((DataMessage) message).setLedStatus(MessageParser.getStringList(jsonObject, DataMessage.LED_STATUS));
 		((DataMessage) message).setSlotStatus(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
+		((DataMessage) message).setStatus(MessageParser.getString(jsonObject, DataMessage.STATUS));
+		
+		// ParkHere
+		ArrayList<String> driver_often;
+		ArrayList<String> grace_period;
+		ArrayList<String> parking_fee;
+		ArrayList<String> parking_lot_id;
+		ArrayList<String> parking_lot_location;
+		ArrayList<String> slot_driver_id;
+		ArrayList<String> slot_time;
+		String confirmation_info;
+		String driver_id;
+		String payment_info;
+		String reservation_id;
+		String reservation_time;
+		String type;
+		int parking_lot_count;
+		int slot_count;
 
+		((DataMessage) message).setLedStatus(MessageParser.getStringList(jsonObject, DataMessage.LED_STATUS));
+		((DataMessage) message).setPwd(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
+		((DataMessage) message).setReservationCode(MessageParser.getString(jsonObject, DataMessage.RESERVATION_CODE));
+		((DataMessage) message).setSensorNumber(MessageParser.getInt(jsonObject, DataMessage.SENSOR_NUMBER));
+		
 		return message;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static JSONObject makeJSONObject(Message message) {
+	public static JSONObject convertToJSONObject(Message message) {
 		JSONObject jsonObject = new JSONObject();
 		
 		jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
@@ -86,8 +108,8 @@ public class MessageParser {
 			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
 			jsonObject.put(DataMessage.COMMAND, ((DataMessage) message).getCommand());
 			break;
-		case PARKINGLOT_INFORMATION:
-			jsonObject.put(DataMessage.SLOT_COUNT, ((DataMessage) message).getSlotNumber());
+		case PARKING_LOT_INFORMATION:
+			jsonObject.put(DataMessage.SLOT_COUNT, ((DataMessage) message).getSlotCount());
 			
 			JSONArray array = new JSONArray();
 			array.addAll(((DataMessage) message).getSlotStatus());
@@ -97,18 +119,78 @@ public class MessageParser {
 			array.addAll(((DataMessage) message).getLedStatus());
 			jsonObject.put(DataMessage.LED_STATUS, array);
 			
-			jsonObject.put(DataMessage.ENTRYGATE_STATUS, ((DataMessage) message).getEntrygateStatus());
-			jsonObject.put(DataMessage.EXITGATE_STATUS, ((DataMessage) message).getExitgateStatus());
-			jsonObject.put(DataMessage.ENTRYGATELED_STATUS, ((DataMessage) message).getEntrygateledStatus());
-			jsonObject.put(DataMessage.EXITGATELED_STATUS, ((DataMessage) message).getExitgateledStatus());
-			jsonObject.put(DataMessage.ENTRYGATE_ARRIVE, ((DataMessage) message).getEntrygateArrive());
-			jsonObject.put(DataMessage.EXITGATE_ARRIVE, ((DataMessage) message).getExitgateArrive());
+			jsonObject.put(DataMessage.ENTRY_GATE_STATUS, ((DataMessage) message).getEntrygateStatus());
+			jsonObject.put(DataMessage.EXIT_GATE_STATUS, ((DataMessage) message).getExitgateStatus());
+			jsonObject.put(DataMessage.ENTRY_GATE_LED_STATUS, ((DataMessage) message).getEntrygateledStatus());
+			jsonObject.put(DataMessage.EXIT_GATE_LED_STATUS, ((DataMessage) message).getExitgateledStatus());
+			jsonObject.put(DataMessage.ENTRY_GATE_ARRIVE, ((DataMessage) message).getEntrygateArrive());
+			jsonObject.put(DataMessage.EXIT_GATE_ARRIVE, ((DataMessage) message).getExitgateArrive());
 			break;
+		case PARKING_LOT_STATUS:
+			jsonObject.put(DataMessage.SLOT_COUNT, ((DataMessage) message).getSlotCount());
+			
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getSlotStatus());
+			jsonObject.put(DataMessage.SLOT_STATUS, array);
+			
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getSlotDriverId());
+			jsonObject.put(DataMessage.SLOT_DRIVER_ID, array);
+			
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getDriverOften());
+			jsonObject.put(DataMessage.DRIVER_OFTEN, array);
+			
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getSlotTime());
+			jsonObject.put(DataMessage.SLOT_TIME, array);
+		case NOTIFICATION:
+			jsonObject.put(DataMessage.TYPE, ((DataMessage) message).getType());
 		case SLOT_LED_STATUS:
 		case SLOT_SENSOR_STATUS:
 			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
 			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
 			break;
+			
+		// Park Here
+		case RESERVATION_REQUEST:
+			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotId());
+			jsonObject.put(DataMessage.RESERVATION_TIME, ((DataMessage) message).getReservationTime());
+			jsonObject.put(DataMessage.PAYMENT_INFO, ((DataMessage) message).getPaymentInfo());
+		case RESERVATION_INFO_REQUEST:
+			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
+		case CANCEL_REQUEST:
+			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
+			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
+		case PARKING_LOT_INFORMATION2:
+			jsonObject.put(DataMessage.PARKING_LOT_COUNT, ((DataMessage) message).getDriverID());
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getParkingLotId());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, array);
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getParkingLotLocation());
+			jsonObject.put(DataMessage.PARKING_LOT_LOCATION, array);
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getParkingFee());
+			jsonObject.put(DataMessage.PARKING_FEE, array);
+			array = new JSONArray();
+			array.addAll(((DataMessage) message).getGracePeriod());
+			jsonObject.put(DataMessage.GRACE_PERIOD, array);
+		case RESERVATION_INFORMATION:
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
+			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
+			jsonObject.put(DataMessage.RESERVATION_TIME, ((DataMessage) message).getReservationTime());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotId());
+			jsonObject.put(DataMessage.PARKING_LOT_LOCATION, ((DataMessage) message).getParkingLotLocation());
+			jsonObject.put(DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFee());
+			jsonObject.put(DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriod());
+			jsonObject.put(DataMessage.PAYMENT_INFO, ((DataMessage) message).getPaymentInfo());
+			jsonObject.put(DataMessage.CONFIRMATION_INFO, ((DataMessage) message).getConfirmationInfo());
+		case CANCEL_RESPONSE:
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
+			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
 		default:
 			break;
 		}
@@ -128,7 +210,7 @@ public class MessageParser {
 	}
 
 	public static MessageType getMessageType(String jsonString) {
-		Message message = makeMessage(jsonString);
+		Message message = convertToMessage(jsonString);
 
 		return message.getMessageType();
 	}
@@ -144,7 +226,7 @@ public class MessageParser {
 	}
 
 	public static int getTimestamp(String jsonString) {
-		Message message = makeMessage(jsonString);
+		Message message = convertToMessage(jsonString);
 
 		return message.getTimestamp();
 	}
