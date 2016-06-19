@@ -153,4 +153,45 @@ public final class DatabaseInfo {
             public static final String CHANGED_VALUE = "changed_value";
         }
     }
+
+    /**
+     * Container for Occupancy rate per hour.
+     */
+    public static final class OccupancyRatePerHour {
+        public static final String OCCUPANCYRATE_TABLE = "occupancy_rate";
+
+        /**
+         * Columns for OccupancyRate.
+         */
+        public interface Columns {
+            public static final String ID = "id";
+            public static final String YEAR = "year";
+            public static final String MONTH = "month";
+            public static final String DAY = "day";
+            public static final String HOUR = "hour";
+            public static final String PARKINGLOT_ID = "parkinglot_id";
+            public static final String OCCUPANCY_RATE = "occupancy_rate";
+        }
+    }
+    
+    /**
+     * Container for Statistics information.
+     */
+    public static final class StatisticsInfo {
+        public static final String STATISTICSINFO_TABLE = "statistics_info";
+
+        /**
+         * Columns for OccupancyRate.
+         */
+        public interface Columns {
+            public static final String ID = "id";
+            public static final String YEAR = "year";
+            public static final String MONTH = "month";
+            public static final String DAY = "day";
+            public static final String PARKINGLOT_ID = "parkinglot_id";
+            public static final String REVENUE = "revenue";
+            public static final String OCCUPANCY_RATE = "occupancy_rate";
+            public static final String CANCEL_RATE = "cancel_rate";
+        }
+    }
 }
