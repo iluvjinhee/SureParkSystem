@@ -3,8 +3,6 @@ package com.lge.sureparksystem.parkserver.manager.keyinmanager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import org.json.simple.JSONObject;
@@ -16,6 +14,7 @@ import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 
 public class KeyboardInManager extends ManagerTask {
 	private BufferedReader keyIn = null;
@@ -47,6 +46,10 @@ public class KeyboardInManager extends ManagerTask {
 		if(jsonObject == null)
 			jsonObject = processTypedParkingLotMessage(typedMessage);
 		
+		if(jsonObject == null) {
+			System.out.println("CAN'T UNDERSTAND YOUR COMMAND !!!!");
+		}
+		
 		return jsonObject;
 	}
 
@@ -55,11 +58,11 @@ public class KeyboardInManager extends ManagerTask {
 		
 		if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenEntryGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
-			dataMessage.setCommand("1");
+			dataMessage.setCommand("up");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.CloseEntryGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
-			dataMessage.setCommand("0");
+			dataMessage.setCommand("down");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.OpenExitGate)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
@@ -69,13 +72,13 @@ public class KeyboardInManager extends ManagerTask {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 			dataMessage.setCommand("down");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnEntryGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnGreenEntryGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
-			dataMessage.setCommand("up");
+			dataMessage.setCommand("green");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffEntryGateLED)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedEntryGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
-			dataMessage.setCommand("down");
+			dataMessage.setCommand("red");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnRedExitGateLED)) {
 			DataMessage dataMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
@@ -86,13 +89,13 @@ public class KeyboardInManager extends ManagerTask {
 			dataMessage.setCommand("green");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOnSlotLED)) {
-			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
-			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
+			dataMessage.setSlotNumber(Integer.valueOf(typedMessage.replaceAll("[^0-9]", "")));
 			dataMessage.setCommand("on");			
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.TurnOffSlotLED)) {
-			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_STATUS);
-			dataMessage.setSensorNumber(Integer.parseInt(typedMessage));
+			DataMessage dataMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
+			dataMessage.setSlotNumber(Integer.valueOf(typedMessage.replaceAll("[^0-9]", "")));
 			dataMessage.setCommand("off");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthetication)) {
@@ -104,6 +107,9 @@ public class KeyboardInManager extends ManagerTask {
 			dataMessage.setResult("nok");
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		}
+		
+		if(jsonObject != null)
+			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
 		
 		return jsonObject;
 	}
@@ -118,12 +124,13 @@ public class KeyboardInManager extends ManagerTask {
 			jsonObject = MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK));
 		}
 		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.AssignedSlot)) {
-			DataMessage dataMessage = new DataMessage(MessageType.ASSIGNED_SLOT);
+			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
 			dataMessage.setAssignedSlot(getAvailableSlot());
 			jsonObject = MessageParser.makeJSONObject(dataMessage);
 		}
 		
-		getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
+		if(jsonObject != null)
+			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
 		
 		return jsonObject;
 	}

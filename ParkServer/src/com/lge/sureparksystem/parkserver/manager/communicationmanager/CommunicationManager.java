@@ -45,15 +45,6 @@ public class CommunicationManager extends ManagerTask {
 		JSONObject jsonObject = topic.getJsonObject();		
 		
 		switch (MessageParser.getMessageType(topic.getJsonObject())) {
-		case RESERVATION_CODE:
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
-			break;
-		case ASSIGNED_SLOT:
-			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
-			break;
-		case NOT_RESERVED:
-			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
-			break;
 		case AUTHENTICATION_REQUEST:
 			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;

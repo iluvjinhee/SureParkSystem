@@ -38,11 +38,13 @@ public class SocketForServer implements Runnable {
 	public void send(JSONObject jsonObject) {
 		out.println(jsonObject.toJSONString());
 		
-		System.out.printf("%-20s %40s\n", "[SEND]", jsonObject.toJSONString());
+		if(!jsonObject.toJSONString().contains("ACK"))
+			System.out.printf("%-20s %40s\n", "[SEND]", jsonObject.toJSONString());
 	}
 
 	private void receive(String jsonMessage) {
-		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
+		if(!jsonMessage.contains("HEARTBEAT"))
+			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
 		Message message = MessageParser.makeMessage(jsonMessage);
 		
@@ -77,7 +79,7 @@ public class SocketForServer implements Runnable {
 			
 			while (true) {
 				String input = in.readLine();
-				System.out.println(input);
+				//System.out.println(input);
 				
 				input = input.toUpperCase();
 				

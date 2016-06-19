@@ -51,54 +51,43 @@ public class MessageParser {
 	@SuppressWarnings("unchecked")
 	public static JSONObject makeJSONObject(Message message) {
 		JSONObject jsonObject = new JSONObject();
+		
+		jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
+		if (message.getTimestamp() != -1)
+			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 
 		switch (message.getMessageType()) {
-		case WELCOME_SUREPARK:
-		case SCAN_CONFIRM:
-		case NOT_RESERVED:
-		case ACKNOWLEDGE:
-		case ENTRYGATE_ARRIVE:
-		case ENTRYGATE_PASSBY:
-		case EXITGATE_ARRIVE:
-		case EXITGATE_PASSBY:
-		case HEARTBEAT:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
-			break;
 		case RESERVATION_CODE:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
 			break;
-		case ASSIGNED_SLOT:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+		case ASSIGN_SLOT:
 			jsonObject.put(DataMessage.ASSIGNED_SLOT, ((DataMessage) message).getAssignedSlot());
 			break;
 		case AUTHENTICATION_REQUEST:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getId());
 			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPwd());
+			break;
+		case AUTHENTICATION_RESPONSE:
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			break;
 		case ENTRY_GATE_LED_STATUS:
 		case ENTRY_GATE_STATUS:
 		case EXIT_GATE_LED_STATUS:
 		case EXIT_GATE_STATUS:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
 			break;
-		case PARKINGLOT_INFORMATION:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+		case ENTRY_GATE_LED_CONTROL:
+		case ENTRY_GATE_CONTROL:
+		case EXIT_GATE_CONTROL:
+		case EXIT_GATE_LED_CONTROL:
+			jsonObject.put(DataMessage.COMMAND, ((DataMessage) message).getCommand());
+			break;
+		case SLOT_LED_CONTROL:
 			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
+			jsonObject.put(DataMessage.COMMAND, ((DataMessage) message).getCommand());
+			break;
+		case PARKINGLOT_INFORMATION:
+			jsonObject.put(DataMessage.SLOT_COUNT, ((DataMessage) message).getSlotNumber());
 			
 			JSONArray array = new JSONArray();
 			array.addAll(((DataMessage) message).getSlotStatus());
@@ -117,10 +106,7 @@ public class MessageParser {
 			break;
 		case SLOT_LED_STATUS:
 		case SLOT_SENSOR_STATUS:
-			jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
-			if (message.getTimestamp() != -1)
-				jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
-			jsonObject.put(DataMessage.SENSOR_NUMBER, ((DataMessage) message).getSensorNumber());
+			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
 			jsonObject.put(DataMessage.STATUS, ((DataMessage) message).getStatus());
 			break;
 		default:
@@ -133,8 +119,8 @@ public class MessageParser {
 	public static MessageType getMessageType(JSONObject jsonObject) {
 		MessageType messageType = MessageType.NONE;
 
-		if (jsonObject.get(Message.MESSAGE_TYPE.toUpperCase()) != null) {
-			String str = (String) jsonObject.get(Message.MESSAGE_TYPE.toUpperCase());
+		if (jsonObject.get(Message.MESSAGE_TYPE) != null) {
+			String str = (String) jsonObject.get(Message.MESSAGE_TYPE);
 			messageType = MessageType.fromText(str);
 		}
 

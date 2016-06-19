@@ -40,12 +40,12 @@ public class Main {
             e.printStackTrace();
         }
 
-        		startKeyboardInManager();
-        		startCommunicationManager();
-        		startNetworkManager();
-        		startReservationManager();
-        		startAuthenticationManager();
-        		startSecurityManager();
+		startKeyboardInManager();
+		startCommunicationManager();
+		startNetworkManager();
+		startReservationManager();
+		startAuthenticationManager();
+		startSecurityManager();
 
 //        DatabaseTest mDBtest = new DatabaseTest();
 //        mDBtest.testRun(mDBtest);
