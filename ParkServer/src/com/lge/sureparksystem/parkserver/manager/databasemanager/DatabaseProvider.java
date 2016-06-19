@@ -13,9 +13,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.ChangingHistory;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.OccupancyRatePerHour;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Parking;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.ParkingLot;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Reservation;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.StatisticsInfo;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.User;
 import com.sun.istack.internal.Nullable;
 
@@ -536,7 +538,7 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Parking Lot
     /*************************************************************************************/
-    boolean verifyParkingLot(String loginId, String password) {
+    public boolean verifyParkingLot(String loginId, String password) {
         int count = 0;
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -814,6 +816,23 @@ public class DatabaseProvider {
         return result;
     }
 
+    public boolean updateParkingLotAddress(int id, String address) {
+        boolean result = false;
+        int count = 0;
+
+        StringBuilder set = new StringBuilder(" set ");
+        set.append(ParkingLot.Columns.ADDRESS + "='" + address + "'");
+
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(ParkingLot.Columns.ID + "=" + id);
+
+        count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
     public boolean updateParkingLotInfo(int id, String fee, String gracePeriod) {
         boolean result = false;
         int count = 0;
@@ -1059,4 +1078,72 @@ public class DatabaseProvider {
         return result;
     }
 
+    /*************************************************************************************/
+    // For Occupancy rate
+    /*************************************************************************************/
+    public boolean createOccupancyRatePerHour(Date date, int parkinglotId, float rate) {
+        boolean result = false;
+        int count = 0;
+        StringBuilder columns = new StringBuilder();
+        columns.append(OccupancyRatePerHour.Columns.YEAR);
+        columns.append(", " + OccupancyRatePerHour.Columns.MONTH);
+        columns.append(", " + OccupancyRatePerHour.Columns.DAY);
+        columns.append(", " + OccupancyRatePerHour.Columns.HOUR);
+        columns.append(", " + OccupancyRatePerHour.Columns.PARKINGLOT_ID);
+        columns.append(", " + OccupancyRatePerHour.Columns.OCCUPANCY_RATE);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        StringBuilder values = new StringBuilder();
+        values.append(cal.get(Calendar.YEAR));
+        values.append(", " + (cal.get(Calendar.MONTH) + 1));
+        values.append(", " + cal.get(Calendar.DAY_OF_MONTH));
+        values.append(", " + cal.get(Calendar.HOUR_OF_DAY));
+        values.append(", " + parkinglotId);
+        values.append(", " + rate);
+
+        count = doExecInsertSQL(OccupancyRatePerHour.OCCUPANCYRATE_TABLE, columns.toString(),
+                values.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
+
+    /*************************************************************************************/
+    // For Statistics information
+    /*************************************************************************************/
+    public boolean createStatisticsInfo(Date date, int parkinglotId, float revenue,
+            float occupancyRate, float cancelRate) {
+        boolean result = false;
+        int count = 0;
+        StringBuilder columns = new StringBuilder();
+        columns.append(StatisticsInfo.Columns.YEAR);
+        columns.append(", " + StatisticsInfo.Columns.MONTH);
+        columns.append(", " + StatisticsInfo.Columns.DAY);
+        columns.append(", " + StatisticsInfo.Columns.PARKINGLOT_ID);
+        columns.append(", " + StatisticsInfo.Columns.REVENUE);
+        columns.append(", " + StatisticsInfo.Columns.OCCUPANCY_RATE);
+        columns.append(", " + StatisticsInfo.Columns.CANCEL_RATE);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        StringBuilder values = new StringBuilder();
+        values.append(cal.get(Calendar.YEAR));
+        values.append(", " + (cal.get(Calendar.MONTH) + 1));
+        values.append(", " + cal.get(Calendar.DAY_OF_MONTH));
+        values.append(", " + parkinglotId);
+        values.append(", " + revenue);
+        values.append(", " + occupancyRate);
+        values.append(", " + cancelRate);
+
+        count = doExecInsertSQL(StatisticsInfo.STATISTICSINFO_TABLE, columns.toString(),
+                values.toString());
+
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
+    }
 }
