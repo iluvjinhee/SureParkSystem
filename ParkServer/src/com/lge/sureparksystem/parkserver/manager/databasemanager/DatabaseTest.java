@@ -31,7 +31,11 @@ public class DatabaseTest {
 //        getParkingInfo_Test();
 //        updateParkingInfo_Test();
 //        updateParkingParkedSlot_Test();
-        updateParkingUnparkedTime_Test();
+//        updateParkingUnparkedTime_Test();
+        
+//        ucreateOccupancyRatePerHour_Test();
+        
+//        createStatisticsInfo_Test();
     }
 
     /*************************************************************************************/
@@ -147,5 +151,23 @@ public class DatabaseTest {
     public void updateParkingUnparkedTime_Test() {
         Calendar cal = Calendar.getInstance();
         mDatabaseProvider.updateParkingUnparkedTime(26, cal.getTime());
+    }
+    
+    /*************************************************************************************/
+    //  For Occupancy rate
+    /*************************************************************************************/
+    public void ucreateOccupancyRatePerHour_Test() {
+        Calendar cal = Calendar.getInstance();
+        LogHelper.log("Time is " + cal.getTime());
+        mDatabaseProvider.createOccupancyRatePerHour(cal.getTime(), 13, 50);
+    }
+    
+    /*************************************************************************************/
+    //  For Occupancy rate
+    /*************************************************************************************/
+    public void createStatisticsInfo_Test() {
+        Calendar cal = Calendar.getInstance();
+        LogHelper.log("Time is " + cal.getTime());
+        mDatabaseProvider.createStatisticsInfo(cal.getTime(), 13, 1000, 50, 1.1f);
     }
 }
