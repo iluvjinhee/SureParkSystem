@@ -38,7 +38,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 	public void onSocketAccepted(Socket socket) {
 		super.onSocketAccepted(socket);
 		
-		send(MessageParser.makeJSONObject(new Message(MessageType.WELCOME_SUREPARK)));
+		send(MessageParser.convertToJSONObject(new Message(MessageType.WELCOME_SUREPARK)));
 	}
 	
 	protected void process(JSONObject jsonObject) {

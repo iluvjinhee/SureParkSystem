@@ -46,7 +46,7 @@ public class SocketForServer implements Runnable {
 		if(!jsonMessage.contains("HEARTBEAT"))
 			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
-		Message message = MessageParser.makeMessage(jsonMessage);
+		Message message = MessageParser.convertToMessage(jsonMessage);
 		
 		if(message != null &&
 		   message.getMessageType() != null &&
@@ -65,7 +65,7 @@ public class SocketForServer implements Runnable {
 	private void sendAck(Message message) {
 		int timestamp = message.getTimestamp();
 		if (timestamp != -1) {
-			JSONObject ackJSONObject = MessageParser.makeJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
+			JSONObject ackJSONObject = MessageParser.convertToJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
 
 			send(ackJSONObject);
 		}

@@ -7,6 +7,7 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class ParkingLotNetworkManager extends NetworkManager {
 	public class ParkingLotNetworkManagerListener {
@@ -40,8 +41,8 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		DataMessage dataMessage = null;
 		
 		switch(messageType) {
-		case PARKINGLOT_INFORMATION:
-			dataMessage = (DataMessage) MessageParser.makeMessage(jsonObject);
+		case PARKING_LOT_INFORMATION:
+			dataMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			break;
 		case AUTHENTICATION_RESPONSE:
 		case ENTRY_GATE_CONTROL:
@@ -50,10 +51,17 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
 			send(jsonObject);
+		case AUTHENTICATION_OK:
+			break;
+		case AUTHENTICATION_FAIL:
+			Logger.log("Unauthorized Parking Lot!!! Connection close.");
+			//socket.close();
+			break;
+			
 		default:
 			break;
 		}
-		
+
 		return;
 	}
 }
