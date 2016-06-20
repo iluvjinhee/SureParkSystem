@@ -82,8 +82,8 @@ void ClrTimeStamp(void);
 #define __STR_EMPTY				"empty"
 
 
-#define __STR_STR_ON			"on"
-#define __STR_STR_OFF			"off"
+#define __STR_ON			"on"
+#define __STR_OFF			"off"
 
 
 
@@ -253,7 +253,7 @@ JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx)
 			
 		case CS_Parkingslot_LED :
 			root[__STR_SLOT_NUMBER] = GetParkingStallLED(GetRequestedLed())+1;
-			root[__STR_STATUS] = GetParkingStallLED(GetRequestedLed()) == ON ? __STR_STR_ON : __STR_STR_OFF;	// status : "on" or "off"
+			root[__STR_STATUS] = GetParkingStallLED(GetRequestedLed()) == ON ? __STR_ON : __STR_OFF;	// status : "on" or "off"
 			ClrRequestedLed();
 			break;
 			
@@ -354,11 +354,13 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				EntryGateOpen();
 			}
-			else
+			else if( str.equalsIgnoreCase(__STR_DOWN) )
 			{
 				EntryGateClose();
 			}
-			//SetSendToServer(false);
+			// reply directly
+			SetMsgNumber(CS_EntryGate_Servo);
+			SetSendToServer(true);
 			break;
 
 		case SC_ExitGate_Control :
@@ -368,11 +370,13 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				ExitGateOpen();
 			}
-			else
+			else if( str.equalsIgnoreCase(__STR_DOWN) )
 			{
 				ExitGateClose();
 			}
-			//SetSendToServer(false);			
+			// reply directly
+			SetMsgNumber(CS_ExitGate_Servo);
+			SetSendToServer(true);
 			break;
 
 		case SC_EntryGate_LED :
@@ -382,11 +386,13 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				SetEntryGateLED_Green();
 			}
-			else
+			else if( str.equalsIgnoreCase(__STR_RED) )
 			{
 				SetEntryGateLED_Red();
 			}
-			//SetSendToServer(false);
+			// reply directly
+			SetMsgNumber(CS_EntryGate_LED);
+			SetSendToServer(true);
 			break;
 
 		case SC_ExitGate_LED :
@@ -396,18 +402,33 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				SetExitGateLED_Green();
 			}
-			else
+			else if( str.equalsIgnoreCase(__STR_RED) )
 			{
 				SetExitGateLED_Red();
 			}
-			//SetSendToServer(false);
+			// reply directly
+			SetMsgNumber(CS_ExitGate_LED);
+			SetSendToServer(true);
 			break;
 
 		case SC_Parkingslot_LED :
 			iSlotNumber = (int)(root[__STR_SLOT_NUMBER])-1;
 			str = (const char*)root[__STR_COMMAND];
-			if( iSlotNumber < PARKSLOT_MAX && iSlotNumber > 0 ) SetParkingStallLED(iSlotNumber, str.equalsIgnoreCase(__STR_STR_ON)?true:false);
-			//SetSendToServer(false);
+			if( iSlotNumber < PARKSLOT_MAX && iSlotNumber > 0 )
+			{
+				if( str.equalsIgnoreCase(__STR_ON) )
+				{
+					SetParkingStallLED(iSlotNumber, true);
+				}
+				else if( str.equalsIgnoreCase(__STR_OFF) )
+				{
+					SetParkingStallLED(iSlotNumber, false);
+				}
+				// reply directly
+				SetRequestedLed(iSlotNumber);
+				SetMsgNumber(CS_Parkingslot_LED);
+				SetSendToServer(true);
+			}
 			break;
 
 		case SC_Ack :
