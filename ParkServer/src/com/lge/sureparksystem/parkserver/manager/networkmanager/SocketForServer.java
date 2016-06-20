@@ -88,7 +88,7 @@ public class SocketForServer implements Runnable {
 				}
 			}
 		} catch (IOException e) {
-//			Log.log("Error handling client: " + e);
+			Logger.log("Error handling client: " + e);
 		} finally {
 			try {
 				socket.close();

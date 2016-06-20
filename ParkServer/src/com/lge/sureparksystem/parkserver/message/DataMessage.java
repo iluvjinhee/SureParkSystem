@@ -3,7 +3,7 @@ package com.lge.sureparksystem.parkserver.message;
 import java.util.ArrayList;
 
 public class DataMessage extends Message {
-	public static String ASSIGNED_SLOT = "ASSIGNED_SLOT";
+	public static String ASSIGN_SLOT = "ASSIGNED_SLOT";
 	public static String RESERVATION_CODE = "RESERVATION_CODE";
 	
 	public static String ENTRY_GATE_LED_STATUS = "entrygateled";
@@ -53,7 +53,7 @@ public class DataMessage extends Message {
 	public static String RESULT = "result";
 	
 	// ParkView
-	String assignedSlot;
+	String assignSlot;
 	String reservationCode;
 	
 	// Parking Lot
@@ -106,12 +106,12 @@ public class DataMessage extends Message {
 		super(messageType);
 	}
 
-	public String getAssignedSlot() {
-		return assignedSlot;
+	public String getAssignSlot() {
+		return assignSlot;
 	}
 
-	public void setAssignedSlot(String assignedSlot) {
-		this.assignedSlot = assignedSlot;
+	public void setAssignSlot(String assignSlot) {
+		this.assignSlot = assignSlot;
 	}
 
 	public String getReservationCode() {
@@ -428,7 +428,7 @@ public class DataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "DataMessage [assignedSlot=" + assignedSlot + ", reservationCode=" + reservationCode + ", ledStatusList="
+		return "DataMessage [assignedSlot=" + assignSlot + ", reservationCode=" + reservationCode + ", ledStatusList="
 				+ ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive="
 				+ entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus="
 				+ entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus

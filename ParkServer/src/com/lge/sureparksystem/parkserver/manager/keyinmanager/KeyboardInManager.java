@@ -117,15 +117,18 @@ public class KeyboardInManager extends ManagerTask {
 	private JSONObject processTypedParkViewMessage(String typedMessage) {
 		JSONObject jsonObject = null;
 		
-		if(containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
-			jsonObject = MessageParser.convertToJSONObject(new Message(MessageType.SCAN_CONFIRM));
-		}
-		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
-			jsonObject = MessageParser.convertToJSONObject(new Message(MessageType.WELCOME_SUREPARK));
-		}
-		else if(containsCaseInsensitive(typedMessage, KeyInCorpus.AssignedSlot)) {
+		if (containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
+			DataMessage dataMessage = new DataMessage(MessageType.WELCOME_SUREPARK);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
+			DataMessage dataMessage = new DataMessage(MessageType.SCAN_CONFIRM);
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.AssignSlot)) {
 			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
-			dataMessage.setAssignedSlot(getAvailableSlot());
+			dataMessage.setAssignSlot("4");
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.NotReserved)) {
+			DataMessage dataMessage = new DataMessage(MessageType.NOT_RESERVED);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		}
 		

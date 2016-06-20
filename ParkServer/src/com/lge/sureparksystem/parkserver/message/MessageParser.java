@@ -28,7 +28,7 @@ public class MessageParser {
 		message.setTimestamp(MessageParser.getInt(jsonObject, Message.TIMESTAMP));
 		
 		// Parking Lot
-		((DataMessage) message).setAssignedSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGNED_SLOT));
+		((DataMessage) message).setAssignSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGN_SLOT));
 		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_LED_STATUS));
 		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_STATUS));
 		((DataMessage) message).setEntrygateArrive(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_ARRIVE));
@@ -85,7 +85,7 @@ public class MessageParser {
 			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
 			break;
 		case ASSIGN_SLOT:
-			jsonObject.put(DataMessage.ASSIGNED_SLOT, ((DataMessage) message).getAssignedSlot());
+			jsonObject.put(DataMessage.ASSIGN_SLOT, ((DataMessage) message).getAssignSlot());
 			break;
 		case AUTHENTICATION_REQUEST:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
