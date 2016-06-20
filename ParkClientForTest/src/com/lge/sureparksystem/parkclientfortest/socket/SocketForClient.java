@@ -42,18 +42,23 @@ public abstract class SocketForClient {
 								out = new PrintWriter(socket.getOutputStream(), true);
 								in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 								
-								testSend();
+								System.out.println("Connected to Server");
+								//testSend();
 
 								String inJSONMessage = "";
 								while (true) {
 									inJSONMessage = in.readLine();
-									if (inJSONMessage != null && !inJSONMessage.equals("")) {
-//										System.out.println(inJSONMessage);
+									
+									if(inJSONMessage == null)
+										continue;
+									
+									if (!inJSONMessage.equals("")) {
+										System.out.println(inJSONMessage);
 									}
 									
 									Message outJSONMessage = process(inJSONMessage);
 									if(outJSONMessage != null) {
-										JSONObject jsonObject = MessageParser.makeJSONObject(outJSONMessage);
+										JSONObject jsonObject = MessageParser.convertToJSONObject(outJSONMessage);
 										send(jsonObject.toJSONString());
 									}
 								}

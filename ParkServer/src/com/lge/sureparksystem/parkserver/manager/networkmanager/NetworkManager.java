@@ -55,32 +55,34 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		Socket socket = null;
 		ServerSocket serverSocket = null;
 		
-		try {
-			serverSocket = new ServerSocket(serverPort);
-			
-			while (loop) {
-				socket = serverSocket.accept();
+		while(true) {
+			try {
+				serverSocket = new ServerSocket(serverPort);
 				
-				showConnectionInfo(socket.getLocalPort());
-				
-				onSocketAccepted(socket);
-			}
-		} catch (IOException e) {
-			if(e.toString().contains("Address already in use")) {
-				System.out.println("Server already running !!!");
-			}				
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					e.printStackTrace();
+				while (loop) {
+					socket = serverSocket.accept();
+					
+					showConnectionInfo(socket.getLocalPort());
+					
+					onSocketAccepted(socket);
 				}
+			} catch (IOException e) {
+				if(e.toString().contains("Address already in use")) {
+					System.out.println("Server already running !!!");
+				}				
+			} finally {
+				if (socket != null) {
+					try {
+						socket.close();
+					} catch (IOException e) {
+						System.out.println(e.toString());
+						e.printStackTrace();
+					}
+				}
+				
+				System.out.println("serverSocket Close.");
+	//			System.exit(0);
 			}
-			
-			System.out.println("serverSocket Close.");
-			System.exit(0);
 		}
 	}
 	

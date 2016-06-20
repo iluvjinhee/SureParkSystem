@@ -1,5 +1,8 @@
 package com.lge.sureparksystem.parkserver.manager.networkmanager;
 
+import java.net.Socket;
+import java.nio.channels.SocketChannel;
+
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
@@ -14,33 +17,30 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		@Subscribe
 		public void onSubscribe(ParkingLotNetworkManagerTopic topic) {
 			System.out.println("ParkingLotNetworkManagerListener: " + topic);
-			
+
 			process(topic);
 		}
-	}
-	
-	@Override
-	public void init() {
-		getEventBus().register(new ParkingLotNetworkManagerListener());
 	}
 	
 	public ParkingLotNetworkManager(int serverPort) {
 		super(serverPort);
 	}
+
+	@Override
+	public void init() {
+		getEventBus().register(new ParkingLotNetworkManagerListener());
+	}
 	
-	public void send(JSONObject jsonObject) {
-		for(SocketForServer socketForServer : socketList) {
-			socketForServer.send(jsonObject);
-		}
+	@Override
+	public void run() {
+		super.run();
 	}
 	
 	protected void process(JSONObject jsonObject) {
-		super.process(jsonObject);
-		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		DataMessage dataMessage = null;
-		
-		switch(messageType) {
+
+		switch (messageType) {
 		case PARKING_LOT_INFORMATION:
 			dataMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			break;
@@ -55,13 +55,19 @@ public class ParkingLotNetworkManager extends NetworkManager {
 			break;
 		case AUTHENTICATION_FAIL:
 			Logger.log("Unauthorized Parking Lot!!! Connection close.");
-			//socket.close();
+			// socket.close();
 			break;
-			
+
 		default:
 			break;
 		}
 
 		return;
+	}
+	
+	@Override
+	public void receive(JSONObject jsonObject) {
+		// TODO Auto-generated method stub
+		
 	}
 }

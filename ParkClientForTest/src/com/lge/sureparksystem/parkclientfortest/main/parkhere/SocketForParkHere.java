@@ -26,7 +26,20 @@ public class SocketForParkHere extends SocketForClient {
 
 	@Override
 	public void testSend() {
-		// TODO Auto-generated method stub
-		
+		Thread t = new Thread() {
+		    public void run() {
+		    	while(true) {
+		    		out.println(TestMessage.getTestMessage());
+		    		
+		    		try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
+		    }
+		};
+		t.start();
 	}
 }

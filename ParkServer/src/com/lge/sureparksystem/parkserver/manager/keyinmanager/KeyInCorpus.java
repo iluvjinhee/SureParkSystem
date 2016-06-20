@@ -2,19 +2,26 @@ package com.lge.sureparksystem.parkserver.manager.keyinmanager;
 
 public class KeyInCorpus {
 	public static final String[] ScanReservationCode = {
+		"Scan",
 		"Scan Reservation Code",
 		"Scan your reservation code"
 	};
 	
 	public static final String[] WelcomeSurePark = {
+		"welcome",
 		"welcome surepark",
 		"welcome sure park",
 		"welcome sure park system"
 	};
 	
-	public static final String[] AssignedSlot = {
+	public static final String[] AssignSlot = {
+		"Assign",
 		"Assigned Slot",
 		"assign slot"
+	};
+	
+	public static final String[] NotReserved = {
+		"Not Reserved",
 	};
 
 	public static final String[] OpenEntryGate = {

@@ -81,14 +81,12 @@ public class SocketForServer implements Runnable {
 				String input = in.readLine();
 				//System.out.println(input);
 				
-				input = input.toUpperCase();
-				
 				if(input != null && !input.equals("")) {
 					receive(input);
 				}
 			}
 		} catch (IOException e) {
-//			Log.log("Error handling client: " + e);
+			Logger.log("Error handling client: " + e);
 		} finally {
 			try {
 				socket.close();

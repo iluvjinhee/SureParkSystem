@@ -1,7 +1,6 @@
 package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
 public class ParkingLotData {
-    private int id;
     private String loginId;
     private String loginPw;
     private String lotAddress;
@@ -15,7 +14,6 @@ public class ParkingLotData {
     public ParkingLotData(int id, String loginId, String loginPw, String lotAddress, String fee,
             String gracePeriod, String userEmail) {
         super();
-        this.id = id;
         this.loginId = loginId;
         this.loginPw = loginPw;
         this.lotAddress = lotAddress;
@@ -24,13 +22,6 @@ public class ParkingLotData {
         this.userEmail = userEmail;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getLoginId() {
         return loginId;
@@ -82,7 +73,7 @@ public class ParkingLotData {
 
     @Override
     public String toString() {
-        return "ParkingLotData [id=" + id + ", loginId=" + loginId + ", loginPw=" + loginPw
+        return "ParkingLotData [loginId=" + loginId + ", loginPw=" + loginPw
                 + ", lotAddress=" + lotAddress + ", fee=" + fee + ", gracePeriod=" + gracePeriod
                 + ", userEmail=" + userEmail + "]";
     }

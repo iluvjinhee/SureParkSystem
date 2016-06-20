@@ -33,9 +33,9 @@ public class FullscreenActivity extends Activity {
 	private static final boolean TOGGLE_ON_CLICK = true;
 	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 	private SystemUiHider mSystemUiHider;
-	
+
 	private Controller controller = null;
-	
+
 	private TextView fullScreenUI = null;
 
 	@Override
@@ -70,12 +70,12 @@ public class FullscreenActivity extends Activity {
 					if (mShortAnimTime == 0) {
 						mShortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 					}
-					
+
 					controlsView.animate().translationY(visible ? 0 : mControlsHeight).setDuration(mShortAnimTime);
 				} else {
 					// If the ViewPropertyAnimator APIs aren't
 					// available, simply show or hide the in-layout UI
-					// controls.					
+					// controls.
 					controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
 				}
 
@@ -105,10 +105,10 @@ public class FullscreenActivity extends Activity {
 	@Override
 	public void finish() {
 		controller.destroy();
-		
+
 		super.finish();
 	}
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -140,14 +140,14 @@ public class FullscreenActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		controller.parseActivityResult(requestCode, resultCode, intent);
 	}
-	
+
 	public void setDisplay(String msg, int size) {
 		fullScreenUI = (TextView) findViewById(R.id.fullscreen_content);
-		
+
 		fullScreenUI.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
 		fullScreenUI.setText(msg);
 	}
-	
+
 	public TextView getFullScreenUI() {
 		return fullScreenUI;
 	}

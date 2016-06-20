@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.mysql.jdbc.CommunicationsException;
+
 public class DatabaseConnector {
     public static final String TAG = DatabaseConnector.class.getSimpleName();
     private static DatabaseConnector mDBConnector = null;
@@ -40,7 +42,10 @@ public class DatabaseConnector {
 //            conn = DriverManager.getConnection("jdbc:mysql://128.237.202.85/sureparkdb?" +
 //                    "user=ohteam&password=ohteamchoigo");
             LogHelper.log(TAG, "conn = " + conn.toString());
-        } catch (ClassNotFoundException e) {
+        } catch (CommunicationsException ex) {
+            ex.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
