@@ -8,6 +8,7 @@ import com.lge.sureparksystem.parkserver.manager.authenticationmanager.Authentic
 import com.lge.sureparksystem.parkserver.manager.communicationmanager.CommunicationManager;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseTest;
 import com.lge.sureparksystem.parkserver.manager.securitymanager.SecurityManager;
+import com.lge.sureparksystem.parkserver.manager.statisticsmanager.StatisticsManager;
 import com.lge.sureparksystem.parkserver.manager.keyinmanager.KeyboardInManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.NetworkManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkHereNetworkManager;
@@ -28,6 +29,7 @@ public class Main {
 	static ManagerService ReservationManagerService = null;
 	static ManagerService AuthenticationManagerService = null;
 	static ManagerService SecurityManagerService = null;
+	static ManagerService StatisticsManagerService = null;
 
 	public static void main(String[] args) throws Exception {
         try {
@@ -40,12 +42,13 @@ public class Main {
             e.printStackTrace();
         }
 
-        		startKeyboardInManager();
-        		startCommunicationManager();
-        		startNetworkManager();
-        		startReservationManager();
-        		startAuthenticationManager();
-        		startSecurityManager();
+		startKeyboardInManager();
+		startCommunicationManager();
+		startNetworkManager();
+		startReservationManager();
+		startAuthenticationManager();
+		startSecurityManager();
+        startStatisticsManager();
 
 //        DatabaseTest mDBtest = new DatabaseTest();
 //        mDBtest.testRun(mDBtest);
@@ -108,4 +111,13 @@ public class Main {
 		
 		communicationManagerService.doWork();
 	}
+	
+        private static void startStatisticsManager() {
+            StatisticsManager statisticsManager = new StatisticsManager();
+            statisticsManager.init();
+            StatisticsManagerService = new ManagerService(statisticsManager,
+                    "StatisticsManager");
+    
+            StatisticsManagerService.doWork();
+        }
 }

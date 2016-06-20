@@ -38,13 +38,15 @@ public class SocketForServer implements Runnable {
 	public void send(JSONObject jsonObject) {
 		out.println(jsonObject.toJSONString());
 		
-		System.out.printf("%-20s %40s\n", "[SEND]", jsonObject.toJSONString());
+		if(!jsonObject.toJSONString().contains("ACK"))
+			System.out.printf("%-20s %40s\n", "[SEND]", jsonObject.toJSONString());
 	}
 
 	private void receive(String jsonMessage) {
-		System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
+		if(!jsonMessage.contains("HEARTBEAT"))
+			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
-		Message message = MessageParser.makeMessage(jsonMessage);
+		Message message = MessageParser.convertToMessage(jsonMessage);
 		
 		if(message != null &&
 		   message.getMessageType() != null &&
@@ -63,7 +65,7 @@ public class SocketForServer implements Runnable {
 	private void sendAck(Message message) {
 		int timestamp = message.getTimestamp();
 		if (timestamp != -1) {
-			JSONObject ackJSONObject = MessageParser.makeJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
+			JSONObject ackJSONObject = MessageParser.convertToJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
 
 			send(ackJSONObject);
 		}
@@ -77,7 +79,7 @@ public class SocketForServer implements Runnable {
 			
 			while (true) {
 				String input = in.readLine();
-				System.out.println(input);
+				//System.out.println(input);
 				
 				input = input.toUpperCase();
 				

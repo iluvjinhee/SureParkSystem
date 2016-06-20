@@ -109,7 +109,7 @@ public class Controller {
 		case SCAN_CONFIRM:
 			scanConfirmation();
 			break;
-		case ASSIGNED_SLOT:
+		case ASSIGN_SLOT:
 			assignSlot(Integer.parseInt(((DataMessage) message).getAssignedSlot()));
 			break;
 		case NOT_RESERVED:
