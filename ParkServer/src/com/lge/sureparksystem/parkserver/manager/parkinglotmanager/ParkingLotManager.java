@@ -1,8 +1,9 @@
 package com.lge.sureparksystem.parkserver.manager.parkinglotmanager;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotManagerTopic;
 
 public class ParkingLotManager extends ManagerTask {
@@ -11,7 +12,7 @@ public class ParkingLotManager extends ManagerTask {
 		public void onSubscribe(ParkingLotManagerTopic topic) {
 			System.out.println("ParkingLotManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -33,7 +34,7 @@ public class ParkingLotManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(ManagerTopic topic) {
+	protected void process(JSONObject jsonObject) {
 		// TODO Auto-generated method stub
 		
 	}	

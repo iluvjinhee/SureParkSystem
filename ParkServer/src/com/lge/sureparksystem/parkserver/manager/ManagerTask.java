@@ -1,13 +1,14 @@
 package com.lge.sureparksystem.parkserver.manager;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.EventBus;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 
 public abstract class ManagerTask implements Runnable {
 	private static EventBus eventBus = null;
 	protected boolean loop = true;
 	
-	protected abstract void process(ManagerTopic topic);
+	protected abstract void process(JSONObject topic);
 	
 	public ManagerTask() {
 		if(eventBus == null)

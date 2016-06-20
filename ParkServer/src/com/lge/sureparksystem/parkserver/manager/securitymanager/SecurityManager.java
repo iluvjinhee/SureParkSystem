@@ -1,8 +1,9 @@
 package com.lge.sureparksystem.parkserver.manager.securitymanager;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.SecurityManagerTopic;
 
 public class SecurityManager extends ManagerTask {
@@ -11,7 +12,7 @@ public class SecurityManager extends ManagerTask {
 		public void onSubscribe(SecurityManagerTopic topic) {
 			System.out.println("SecurityManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -33,7 +34,7 @@ public class SecurityManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(ManagerTopic topic) {
+	protected void process(JSONObject jsonObject) {
 		// TODO Auto-generated method stub
 		
 	}	

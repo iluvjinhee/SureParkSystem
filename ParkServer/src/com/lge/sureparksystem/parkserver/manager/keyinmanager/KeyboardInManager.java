@@ -138,12 +138,6 @@ public class KeyboardInManager extends ManagerTask {
 		return jsonObject;
 	}
 
-	@Override
-	protected void process(ManagerTopic topic) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public String getAvailableSlot() {
 		Random r = new Random();
 
@@ -162,5 +156,11 @@ public class KeyboardInManager extends ManagerTask {
 		}
 		
 		return false;
+	}
+
+	@Override
+	protected void process(JSONObject topic) {
+		// TODO Auto-generated method stub
+		
 	}
 }
