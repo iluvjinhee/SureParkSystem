@@ -22,7 +22,7 @@ public class ReservationManager extends ManagerTask {
 		public void onSubscribe(ReservationManagerTopic topic) {
 			System.out.println("ReservationManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -78,9 +78,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(ManagerTopic topic) {
-		JSONObject jsonObject = topic.getJsonObject();
-		
+	protected void process(JSONObject jsonObject) {
 		switch(MessageParser.getMessageType(jsonObject)) {
 		case RESERVATION_CODE:
 			processVerification(jsonObject);

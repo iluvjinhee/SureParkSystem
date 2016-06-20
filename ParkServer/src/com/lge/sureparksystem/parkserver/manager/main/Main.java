@@ -46,7 +46,7 @@ public class Main {
 		startCommunicationManager();
 		startNetworkManager();
 		startReservationManager();
-//		startAuthenticationManager();
+		startAuthenticationManager();
 		startSecurityManager();
         startStatisticsManager();
 

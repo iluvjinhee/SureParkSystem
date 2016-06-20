@@ -5,9 +5,10 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.StatisticsManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -17,7 +18,7 @@ public class StatisticsManager extends ManagerTask {
         public void onSubscribe(StatisticsManagerTopic topic) {
             System.out.println("StatisticsManagerListener: " + topic);
 
-            process(topic);
+            process(topic.getJsonObject());
         }
     }
 
@@ -43,7 +44,7 @@ public class StatisticsManager extends ManagerTask {
     }
 
     @Override
-    protected void process(ManagerTopic topic) {
+    protected void process(JSONObject jsonObject) {
 
     }
 

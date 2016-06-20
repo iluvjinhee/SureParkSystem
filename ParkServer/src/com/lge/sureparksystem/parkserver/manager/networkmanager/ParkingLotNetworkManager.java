@@ -1,8 +1,5 @@
 package com.lge.sureparksystem.parkserver.manager.networkmanager;
 
-import java.net.Socket;
-import java.nio.channels.SocketChannel;
-
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
@@ -18,7 +15,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		public void onSubscribe(ParkingLotNetworkManagerTopic topic) {
 			System.out.println("ParkingLotNetworkManagerListener: " + topic);
 
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -36,7 +33,14 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		super.run();
 	}
 	
+	@Override
+	public void receive(JSONObject jsonObject) {
+		process(jsonObject);
+	}
+	
 	protected void process(JSONObject jsonObject) {
+		super.process(jsonObject);
+		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		DataMessage dataMessage = null;
 
@@ -65,9 +69,5 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		return;
 	}
 	
-	@Override
-	public void receive(JSONObject jsonObject) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

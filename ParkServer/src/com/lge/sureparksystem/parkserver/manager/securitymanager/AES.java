@@ -7,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class AES {
 	static String IV = "AAAAAAAAAAAAAAAA";
 	static String plaintext = "test text 123\0\0\0"; /* Note null padding */
-	static String encryptionKey = "0123456789abcdef";
+	static String encryptionKey = "SP1234567890";
 
 	public static byte[] encrypt(String plainText, String encryptionKey) throws Exception {
 		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");

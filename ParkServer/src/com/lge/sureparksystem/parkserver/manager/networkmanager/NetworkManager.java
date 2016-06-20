@@ -12,8 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -26,7 +25,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		public void onSubscribe(NetworkManagerTopic topic) {
 			System.out.println("NetworkManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -118,11 +117,6 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		process(jsonObject);
 	}
 	
-	@Override
-	protected void process(ManagerTopic topic) {
-		process(topic.getJsonObject());
-	}
-
 	protected void process(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
@@ -137,7 +131,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		
 		switch(messageType) {
 		case AUTHENTICATION_REQUEST:
-			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;
 		default:
 			break;

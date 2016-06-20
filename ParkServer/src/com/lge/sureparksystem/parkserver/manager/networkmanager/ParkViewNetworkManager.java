@@ -16,7 +16,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 		public void onSubscribe(ParkViewNetworkManagerTopic topic) {
 			System.out.println("ParkViewNetworkManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -31,6 +31,11 @@ public class ParkViewNetworkManager extends NetworkManager {
 	
 	public void run() {
 		super.run();
+	}
+	
+	@Override
+	public void receive(JSONObject jsonObject) {
+		process(jsonObject);
 	}
 	
 	@Override
