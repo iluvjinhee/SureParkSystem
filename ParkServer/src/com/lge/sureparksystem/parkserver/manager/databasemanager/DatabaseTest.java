@@ -1,6 +1,11 @@
 package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
+
+import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class DatabaseTest {
 
@@ -11,30 +16,34 @@ public class DatabaseTest {
     }
 
     public void testRun(DatabaseTest test) {
-//        isExistigUser_Test();
-//        createUserAccount_Test();
-//        getUserInfoUser_Test();
-//        verifyUser_Test();
-//        getRemoveUserAccount_Test();
-//        getUserAuthority_Test();
+        //        isExistigUser_Test();
+        //        createUserAccount_Test();
+        //        getUserInfoUser_Test();
+        //        verifyUser_Test();
+        //        getRemoveUserAccount_Test();
+        //        getUserAuthority_Test();
 
-//        createReservation_Test();
-//        getReservationInfo_Test();
-//        updateReservationState_Test();
-//
-//        updateParkingLot_Test();
-//        updateParkingLotFee_Test();
-//        updateParkingLotGracePeriod_Test();
-//        updateParkingLotUserMail_Test();
-//
-//        createParkingData_Test();
-//        getParkingInfo_Test();
-//        updateParkingInfo_Test();
-//        updateParkingParkedSlot_Test();
-//        updateParkingUnparkedTime_Test();
+        //        createReservation_Test();
+        //        getReservationInfo_Test();
+        //        updateReservationState_Test();
+        //
+        //        updateParkingLot_Test();
+        //        updateParkingLotFee_Test();
+        //        updateParkingLotGracePeriod_Test();
+        //        updateParkingLotUserMail_Test();
+        //
+        //        createParkingData_Test();
+        //        getParkingInfo_Test();
+        //        updateParkingInfo_Test();
+        //        updateParkingParkedSlot_Test();
+        //        updateParkingUnparkedTime_Test();
         
-//        ucreateOccupancyRatePerHour_Test();
-        
+//        getChangingHistory_Test();
+
+        //        ucreateOccupancyRatePerHour_Test();
+
+        //        createStatisticsInfo_Test();
+
 //        createStatisticsInfo_Test();
     }
 
@@ -84,7 +93,7 @@ public class DatabaseTest {
         ReservationData reservation = new ReservationData();
         reservation.setUserEmail("tester2@lge.com");
         reservation.setReservationTime(cal.getTime());
-        reservation.setParkinglotId(13);
+        reservation.setParkinglotId("13");
         reservation.setCreditInfo("credit info");
         reservation.setConfirmInfo("QR code");
         reservation.setParkingFee("5");
@@ -108,22 +117,22 @@ public class DatabaseTest {
     // For Parking lot
     /*************************************************************************************/
     public void updateParkingLot_Test() {
-        mDatabaseProvider.updateParkingLotInfo(13, "1", "10", "tester2@lge.com");
+        mDatabaseProvider.updateParkingLotInfo("13", "1", "10", "tester2@lge.com");
     }
 
     public void updateParkingLotFee_Test() {
-        mDatabaseProvider.updateParkingLotFee(14, "10");
+        mDatabaseProvider.updateParkingLotFee("14", "10");
     }
 
     public void updateParkingLotGracePeriod_Test() {
-        mDatabaseProvider.updateParkingLotGracePeriod(15, "15");
+        mDatabaseProvider.updateParkingLotGracePeriod("15", "15");
     }
 
     public void updateParkingLotUserMail_Test() {
-//        Calendar cal = Calendar.getInstance();
-//        UserAccountData newuser = new UserAccountData("tester", "tester2@lge.com", "1234567890",
-//                cal.getTime(), DatabaseInfo.Authority.DRIVER_ID);
-//        mDatabaseProvider.createUserAccount(newuser);
+        //        Calendar cal = Calendar.getInstance();
+        //        UserAccountData newuser = new UserAccountData("tester", "tester2@lge.com", "1234567890",
+        //                cal.getTime(), DatabaseInfo.Authority.DRIVER_ID);
+        //        mDatabaseProvider.createUserAccount(newuser);
         mDatabaseProvider.updateParkingLotUserEmail(15, "tester2@lge.com");
     }
 
@@ -152,22 +161,170 @@ public class DatabaseTest {
         Calendar cal = Calendar.getInstance();
         mDatabaseProvider.updateParkingUnparkedTime(26, cal.getTime());
     }
-    
+
+    /*************************************************************************************/
+    //  For Changing History
+    /*************************************************************************************/
+    public void getChangingHistory_Test() {
+        Calendar cal = Calendar.getInstance();
+        Date endTime = cal.getTime();
+        LogHelper.log("endTime is " + endTime);
+        
+       long startTime = cal.getTimeInMillis() - javax.management.timer.Timer.ONE_WEEK;
+        cal.setTimeInMillis(startTime);
+        LogHelper.log("startTime is " + cal.getTime());
+        
+        mDatabaseProvider.getChangingHistory(cal.getTime(), endTime, 1);
+        mDatabaseProvider.getChangingHistory(cal.getTime(), endTime, 2);
+    }
     /*************************************************************************************/
     //  For Occupancy rate
     /*************************************************************************************/
     public void ucreateOccupancyRatePerHour_Test() {
         Calendar cal = Calendar.getInstance();
         LogHelper.log("Time is " + cal.getTime());
-        mDatabaseProvider.createOccupancyRatePerHour(cal.getTime(), 13, 50);
+        mDatabaseProvider.createOccupancyRatePerHour(cal.getTime(), "13", 50);
     }
-    
+
     /*************************************************************************************/
-    //  For Occupancy rate
+    //  For Statistics rate
     /*************************************************************************************/
+    ArrayList<String> mDriverList = new ArrayList<String>();
+    ArrayList<String> mParkingLotId = new ArrayList<String>();
+    ArrayList<Integer> mParkingState = new ArrayList<Integer>();
+
     public void createStatisticsInfo_Test() {
+        generateInitDataSet();
+        //        generateUserData();
+        //        generateReservationData();
+        //        generateOccupancyRatePerHourData();
+        generateChangingHitoryData();
+    }
+
+    private void generateChangingHitoryData() {
         Calendar cal = Calendar.getInstance();
-        LogHelper.log("Time is " + cal.getTime());
-        mDatabaseProvider.createStatisticsInfo(cal.getTime(), 13, 1000, 50, 1.1f);
+        Random random = new Random();
+
+        ChangingHistoryData historyData = new ChangingHistoryData();
+        for (String parkinglot : mParkingLotId) {
+            for (int type = 1; type < 3; type++) {
+                for (int year = 2016; year > 2014; year--) {
+                    for (int month = 0; month < 12; month++) {
+                        for (int time = 0; time < 5; time += 3) {
+                            int date = random.nextInt(31);
+                            cal.set(year, month, date, 0, 0, 0);
+                            int value = 0;
+                            if (type == 1) { //fee
+                                value = random.nextInt(100);
+                            } else { //grace period
+                                value = random.nextInt(6) * 15;
+                            }
+                            historyData.setParkinglotId(parkinglot);
+                            historyData.setChangedTime(cal.getTime());
+                            historyData.setChangedType(type);
+                            historyData.setChangedValue(String.valueOf(value));
+
+                            mDatabaseProvider.createChangingHistoryData(historyData);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void generateOccupancyRatePerHourData() {
+        Calendar cal = Calendar.getInstance();
+        Random random = new Random();
+
+        for (String parkinglot : mParkingLotId) {
+            for (int year = 2014; year < 2015; year++) {
+                for (int month = 0; month < 12; month++) {
+                    for (int date = 0; date < 29; date += 3) {
+                        for (int hourOfDay = 0; hourOfDay < 24; hourOfDay++) {
+                            cal.set(year, month, date, hourOfDay, 0, 0);
+                            int rate = random.nextInt(100);
+                            mDatabaseProvider.createOccupancyRatePerHour(cal.getTime(), parkinglot,
+                                    (float)rate);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void generateReservationData() {
+        Calendar cal = Calendar.getInstance();
+        Random random = new Random();
+
+        ReservationData reservation = new ReservationData();
+        for (String driver : mDriverList) {
+            for (String parkinglot : mParkingLotId) {
+                for (int state = 1; state < 5; state++) {
+                    for (int year = 2014; year < 2017; year++) {
+                        for (int month = 0; month < 12; month++) {
+                            for (int time = 0; time < 10; time++) {
+                                reservation.setUserEmail(driver);
+                                int date = random.nextInt(29);
+                                int hourOfDay = random.nextInt(24);
+                                int minute = random.nextInt(60);
+                                int second = random.nextInt(60);
+                                cal.set(year, month, date, hourOfDay, minute, second);
+                                reservation.setReservationTime(cal.getTime());
+                                reservation.setParkinglotId(parkinglot);
+                                reservation.setCreditInfo("credit info");
+                                reservation.setConfirmInfo("QR code");
+                                int fee = random.nextInt(100);
+                                reservation.setParkingFee(String.valueOf(fee));
+                                int period = state * 15;
+                                reservation.setGracePeriod(String.valueOf(period));
+                                reservation.setReservationState(state);
+                                float payment = random.nextInt(1000);
+                                reservation.setPayment(payment);
+                                mDatabaseProvider.createReservation(reservation);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void generateUserData() {
+        Calendar cal = Calendar.getInstance();
+
+        UserAccountData newuser = new UserAccountData("Tony", "antony@cmu.edu", "1234567890",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.OWNER);
+        mDatabaseProvider.createUserAccount(newuser);
+        newuser = new UserAccountData("daedon", "daedon.jeon@lge.com", "1234567891",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.ATTENDANT);
+        mDatabaseProvider.createUserAccount(newuser);
+        newuser = new UserAccountData("sanghee", mDriverList.get(0), "1234567892",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.DRIVER);
+        mDatabaseProvider.createUserAccount(newuser);
+        newuser = new UserAccountData("yongchul", mDriverList.get(1), "1234567893",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.DRIVER);
+        mDatabaseProvider.createUserAccount(newuser);
+        newuser = new UserAccountData("kimoon", mDriverList.get(2), "1234567894",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.DRIVER);
+        mDatabaseProvider.createUserAccount(newuser);
+        newuser = new UserAccountData("jin", mDriverList.get(3), "1234567895",
+                cal.getTime(), DatabaseInfo.Authority.ID_TYPE.DRIVER);
+        mDatabaseProvider.createUserAccount(newuser);
+    }
+
+    private void generateInitDataSet() {
+        mParkingLotId.add("SP001");
+        mParkingLotId.add("SP002");
+        mParkingLotId.add("SP003");
+
+        mDriverList.add("sanghee3.lee@lge.com");
+        mDriverList.add("yongchul.park@lge.com");
+        mDriverList.add("kimoon.lee@lge.com");
+        mDriverList.add("jaedo.jin@lge.com");
+
+        mParkingState.add(1);
+
     }
 }

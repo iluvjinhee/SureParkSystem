@@ -84,12 +84,12 @@ CREATE TABLE IF NOT EXISTS `parkinglot` (
   CONSTRAINT `FK_parkinglot_user` FOREIGN KEY (`user_email`) REFERENCES `user` (`email`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
-INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `login_pw`, `name`) 
-VALUES ('SP001', AES_ENCRYPT('ohteamchoigo', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 5000 Forbes Avenue,Pittsburgh, PA 15213 USA');
-INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `login_pw`, `name`) 
-VALUES ('SP002', AES_ENCRYPT('ohteamchoigo', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 2000 Fifth Avenue,Pittsburgh, PA 15213 USA');
-INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `login_pw`, `name`) 
-VALUES ('SP003', AES_ENCRYPT('ohteamchoigo', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 1000 Centre Avenue,Pittsburgh, PA 15213 USA');
+INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `password`, `address`) 
+VALUES ('SP001', AES_ENCRYPT('SP001', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 5000 Forbes Avenue,Pittsburgh, PA 15213 USA');
+INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `password`, `address`) 
+VALUES ('SP002', AES_ENCRYPT('SP002', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 2000 Fifth Avenue,Pittsburgh, PA 15213 USA');
+INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `password`, `address`) 
+VALUES ('SP003', AES_ENCRYPT('SP003', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 1000 Centre Avenue,Pittsburgh, PA 15213 USA');
 
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.

@@ -8,7 +8,7 @@ public class ReservationData {
     private int id;
     private String userEmail;
     private Date reservationTime;
-    private int parkinglotId;
+    private String parkinglotId;
     private String creditInfo;
     private String confirmInfo;
     private String parkingFee;
@@ -19,30 +19,15 @@ public class ReservationData {
     public ReservationData() {
     }
 
-    public ReservationData(int id, String userEmail, Date reservationTime, int parkinglotId,
-            String ceaditInfo, String confirmInfo, String parkingFee, String gracePeriod) {
-        super();
-        this.id = id;
-        this.userEmail = userEmail;
-        this.reservationTime = reservationTime;
-        this.parkinglotId = parkinglotId;
-        this.creditInfo = ceaditInfo;
-        this.confirmInfo = confirmInfo;
-        this.parkingFee = parkingFee;
-        this.gracePeriod = gracePeriod;
-        this.reservationState = Reservation.STATE_TYPE.RESERVED;
-        this.payment = 0.0f;
-    }
-
-    public ReservationData(int id, String userEmail, Date reservationTime, int parkinglotId,
-            String ceaditInfo, String confirmInfo, String parkingFee, String gracePeriod,
+    public ReservationData(int id, String userEmail, Date reservationTime, String parkinglotId,
+            String creditInfo, String confirmInfo, String parkingFee, String gracePeriod,
             int reservationState, float payment) {
         super();
         this.id = id;
         this.userEmail = userEmail;
         this.reservationTime = reservationTime;
         this.parkinglotId = parkinglotId;
-        this.creditInfo = ceaditInfo;
+        this.creditInfo = creditInfo;
         this.confirmInfo = confirmInfo;
         this.parkingFee = parkingFee;
         this.gracePeriod = gracePeriod;
@@ -74,11 +59,11 @@ public class ReservationData {
         this.reservationTime = reservationTime;
     }
 
-    public int getParkinglotId() {
+    public String getParkinglotId() {
         return parkinglotId;
     }
 
-    public void setParkinglotId(int parkinglotId) {
+    public void setParkinglotId(String parkinglotId) {
         this.parkinglotId = parkinglotId;
     }
 
@@ -86,8 +71,8 @@ public class ReservationData {
         return creditInfo;
     }
 
-    public void setCreditInfo(String ceaditInfo) {
-        this.creditInfo = ceaditInfo;
+    public void setCreditInfo(String creditInfo) {
+        this.creditInfo = creditInfo;
     }
 
     public String getConfirmInfo() {
@@ -138,5 +123,7 @@ public class ReservationData {
                 + gracePeriod + ", reservationState=" + reservationState + ", payment=" + payment
                 + "]";
     }
+
+    
 
 }

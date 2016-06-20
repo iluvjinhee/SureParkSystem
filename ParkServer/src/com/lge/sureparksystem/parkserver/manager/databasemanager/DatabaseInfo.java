@@ -67,10 +67,9 @@ public final class DatabaseInfo {
          * Columns for parking lot.
          */
         public interface Columns {
-            public static final String ID = "id";
+            public static final String LOGIN_ID = "login_id";
+            public static final String PASSWORD = "password";
             public static final String ADDRESS = "address";
-            public static final String LOGINID = "login_id";
-            public static final String LOGINPW = "login_pw";
             public static final String FEE = "fee";
             public static final String GRACE_PERIOD = "grace_period";
             public static final String USEREMAIL = "user_email";
