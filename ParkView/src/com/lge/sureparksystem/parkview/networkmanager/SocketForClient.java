@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class SocketForClient {
-	public static final String IP_ADDRESS = "192.168.1.183";
+	public static final String IP_ADDRESS = "192.168.1.184";
 	public static final int PORT = 9898;
 
 	String dstAddress;

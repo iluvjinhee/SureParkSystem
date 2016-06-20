@@ -12,8 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -26,7 +25,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		public void onSubscribe(NetworkManagerTopic topic) {
 			System.out.println("NetworkManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -55,32 +54,34 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		Socket socket = null;
 		ServerSocket serverSocket = null;
 		
-		try {
-			serverSocket = new ServerSocket(serverPort);
-			
-			while (loop) {
-				socket = serverSocket.accept();
+		while(true) {
+			try {
+				serverSocket = new ServerSocket(serverPort);
 				
-				showConnectionInfo(socket.getLocalPort());
-				
-				onSocketAccepted(socket);
-			}
-		} catch (IOException e) {
-			if(e.toString().contains("Address already in use")) {
-				System.out.println("Server already running !!!");
-			}				
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					System.out.println(e.toString());
-					e.printStackTrace();
+				while (loop) {
+					socket = serverSocket.accept();
+					
+					showConnectionInfo(socket.getLocalPort());
+					
+					onSocketAccepted(socket);
 				}
+			} catch (IOException e) {
+				if(e.toString().contains("Address already in use")) {
+					System.out.println("Server already running !!!");
+				}				
+			} finally {
+				if (socket != null) {
+					try {
+						socket.close();
+					} catch (IOException e) {
+						System.out.println(e.toString());
+						e.printStackTrace();
+					}
+				}
+				
+				System.out.println("serverSocket Close.");
+	//			System.exit(0);
 			}
-			
-			System.out.println("serverSocket Close.");
-			System.exit(0);
 		}
 	}
 	
@@ -116,11 +117,6 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		process(jsonObject);
 	}
 	
-	@Override
-	protected void process(ManagerTopic topic) {
-		process(topic.getJsonObject());
-	}
-
 	protected void process(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
@@ -135,7 +131,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		
 		switch(messageType) {
 		case AUTHENTICATION_REQUEST:
-			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;
 		default:
 			break;

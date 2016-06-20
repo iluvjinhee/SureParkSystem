@@ -46,7 +46,7 @@ public class Main {
 		startCommunicationManager();
 		startNetworkManager();
 		startReservationManager();
-//		startAuthenticationManager();
+		startAuthenticationManager();
 		startSecurityManager();
         startStatisticsManager();
 
@@ -59,7 +59,7 @@ public class Main {
 		securityManager.init();
 		SecurityManagerService = new ManagerService(securityManager, "SecurityManager");
 		
-		SecurityManagerService.doWork();
+		//SecurityManagerService.doWork();
 	}
 
 	private static void startAuthenticationManager() {
@@ -67,7 +67,7 @@ public class Main {
 		authenticationManager.init();
 		AuthenticationManagerService = new ManagerService(authenticationManager, "AuthenticationManager");
 		
-		AuthenticationManagerService.doWork();
+		//AuthenticationManagerService.doWork();
 	}
 
 	private static void startReservationManager() {
@@ -75,7 +75,7 @@ public class Main {
 		reservationManager.init();
 		ReservationManagerService = new ManagerService(reservationManager, "ReservationManager");
 		
-		ReservationManagerService.doWork();
+		//ReservationManagerService.doWork();
 	}
 
 	private static void startKeyboardInManager() {
@@ -109,15 +109,14 @@ public class Main {
 		communicationManager.init();
 		communicationManagerService = new ManagerService(communicationManager, "CommunicationManager");
 		
-		communicationManagerService.doWork();
+		//communicationManagerService.doWork();
 	}
 	
-        private static void startStatisticsManager() {
-            StatisticsManager statisticsManager = new StatisticsManager();
-            statisticsManager.init();
-            StatisticsManagerService = new ManagerService(statisticsManager,
-                    "StatisticsManager");
-    
-            StatisticsManagerService.doWork();
-        }
+	private static void startStatisticsManager() {
+		StatisticsManager statisticsManager = new StatisticsManager();
+		statisticsManager.init();
+		StatisticsManagerService = new ManagerService(statisticsManager, "StatisticsManager");
+
+		//StatisticsManagerService.doWork();
+	}
 }

@@ -1,5 +1,7 @@
 package com.lge.sureparksystem.parkserver.manager.authenticationmanager;
 
+import org.json.simple.JSONObject;
+
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
@@ -7,7 +9,6 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 
 public class AuthenticationManager extends ManagerTask {
@@ -18,7 +19,7 @@ public class AuthenticationManager extends ManagerTask {
 		public void onSubscribe(AuthenticationManagerTopic topic) {
 			System.out.println("AuthenticationManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -42,8 +43,8 @@ public class AuthenticationManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(ManagerTopic topic) {
-		DataMessage recvMessage = (DataMessage) MessageParser.convertToMessage(topic.getJsonObject());
+	protected void process(JSONObject jsonObject) {
+		DataMessage recvMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
 		
 		switch(recvMessage.getMessageType()) {
 		case AUTHENTICATION_REQUEST:

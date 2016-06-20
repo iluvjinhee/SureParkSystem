@@ -19,7 +19,7 @@ public class CommunicationManager extends ManagerTask {
 		public void onSubscribe(CommunicationManagerTopic topic) {
 			System.out.println("CommunicationManagerListener: " + topic);
 			
-			process(topic);
+			process(topic.getJsonObject());
 		}
 	}
 	
@@ -41,10 +41,8 @@ public class CommunicationManager extends ManagerTask {
 	}
 	
 	@Override
-	protected void process(ManagerTopic topic) {
-		JSONObject jsonObject = topic.getJsonObject();		
-		
-		switch (MessageParser.getMessageType(topic.getJsonObject())) {
+	protected void process(JSONObject jsonObject) {
+		switch (MessageParser.getMessageType(jsonObject)) {
 		case AUTHENTICATION_REQUEST:
 			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;

@@ -11,15 +11,15 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-CREATE USER 'ohteam'@'localhost' IDENTIFIED BY 'ohteamchoigo';
-CREATE USER 'ohteam'@'%' IDENTIFIED BY 'ohteamchoigo';
+-- CREATE USER 'ohteam'@'localhost' IDENTIFIED BY 'ohteamchoigo';
+-- CREATE USER 'ohteam'@'%' IDENTIFIED BY 'ohteamchoigo';
 
 -- sureparkdb 데이터베이스 구조 내보내기
 CREATE DATABASE IF NOT EXISTS `sureparkdb` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `sureparkdb`;
 
-GRANT ALL PRIVILEGES ON sureparkdb.* TO 'ohteam'@'localhost';
-GRANT ALL PRIVILEGES ON sureparkdb.* TO 'ohteam'@'%';
+-- GRANT ALL PRIVILEGES ON sureparkdb.* TO 'ohteam'@'localhost';
+-- GRANT ALL PRIVILEGES ON sureparkdb.* TO 'ohteam'@'%';
 
 -- 테이블 sureparkdb.authority 구조 내보내기
 CREATE TABLE IF NOT EXISTS `authority` (
@@ -34,7 +34,7 @@ INSERT INTO `sureparkdb`.`authority` VALUES (3, 'DRIVER');
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 sureparkdb.change_history 구조 내보내기
 CREATE TABLE IF NOT EXISTS `change_history` (
-  `parkinglot_id` int(11) NOT NULL,
+  `parkinglot_id` varchar(50) NOT NULL,
   `changed_time` datetime NOT NULL,
   `changed_type` int(11) NOT NULL,
   `changed_value` varchar(50) NOT NULL,
@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS `occupancy_rate` (
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
   `hour` smallint(6) NOT NULL,
-  `parkinglot_id` int(11) NOT NULL,
+  `parkinglot_id` varchar(50) NOT NULL,
   `occupancy_rate` float NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 sureparkdb.parking 구조 내보내기
@@ -66,23 +66,21 @@ CREATE TABLE IF NOT EXISTS `parking` (
   PRIMARY KEY (`id`),
   KEY `FK_parking_reservation` (`reservation_id`),
   CONSTRAINT `FK_parking_reservation` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 sureparkdb.parkinglot 구조 내보내기
 CREATE TABLE IF NOT EXISTS `parkinglot` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `login_id` varchar(255) NOT NULL,
-  `login_pw` varbinary(255) NOT NULL,
+  `login_id` varchar(50) NOT NULL,
+  `password` varbinary(255) NOT NULL,
   `address` varchar(255) DEFAULT NULL,
   `fee` varchar(50) NOT NULL DEFAULT '5',
   `grace_period` varchar(50) NOT NULL DEFAULT '30',
   `user_email` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `login_id` (`login_id`),
+  PRIMARY KEY (`login_id`),
   KEY `FK_parkinglot_user` (`user_email`),
   CONSTRAINT `FK_parkinglot_user` FOREIGN KEY (`user_email`) REFERENCES `user` (`email`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `sureparkdb`.`parkinglot`(`login_id`, `password`, `address`) 
 VALUES ('SP001', AES_ENCRYPT('SP001', UNHEX(SHA2('SureparksystemByOhteam',256))), 'SurePark Parkinglot, 5000 Forbes Avenue,Pittsburgh, PA 15213 USA');
@@ -98,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_email` varchar(255) NOT NULL,
   `reservation_time` datetime NOT NULL,
-  `parkinglot_id` int(11) NOT NULL,
+  `parkinglot_id` varchar(50) NOT NULL,
   `credit_info` varbinary(50) NOT NULL,
   `confirmation_info` varchar(255) DEFAULT NULL,
   `parking_fee` varchar(50) NOT NULL,
@@ -106,11 +104,11 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `reservation_state` int(11) NOT NULL,
   `payment` float DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `FK_reservation_parkinglot` (`parkinglot_id`),
   KEY `FK_reservation_user` (`user_email`),
-  CONSTRAINT `FK_reservation_parkinglot` FOREIGN KEY (`parkinglot_id`) REFERENCES `parkinglot` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  KEY `FK_reservation_parkinglot` (`parkinglot_id`),
+  CONSTRAINT `FK_reservation_parkinglot` FOREIGN KEY (`parkinglot_id`) REFERENCES `parkinglot` (`login_id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `FK_reservation_user` FOREIGN KEY (`user_email`) REFERENCES `user` (`email`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 sureparkdb.statistics_info 구조 내보내기
@@ -119,12 +117,12 @@ CREATE TABLE IF NOT EXISTS `statistics_info` (
   `year` int(11) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
-  `parkinglot_id` int(11) NOT NULL,
+  `parkinglot_id` varchar(50) NOT NULL,
   `revenue` float NOT NULL,
   `occupancy_rate` float NOT NULL,
   `cancel_rate` float NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 -- 테이블 sureparkdb.user 구조 내보내기
@@ -138,6 +136,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `FK_user_authority` (`authority_id`),
   CONSTRAINT `FK_user_authority` FOREIGN KEY (`authority_id`) REFERENCES `authority` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `sureparkdb`.`user`(`username`, `email`, `password`, `authority_id`) 
+VALUES ('Tony', 'antony@cmu.edu', AES_ENCRYPT('1234567890', UNHEX(SHA2('SureparksystemByOhteam',256))), 1);
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

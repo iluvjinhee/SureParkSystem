@@ -43,7 +43,7 @@ public abstract class SocketForClient {
 								in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 								
 								System.out.println("Connected to Server");
-								//testSend();
+								testSend();
 
 								String inJSONMessage = "";
 								while (true) {
