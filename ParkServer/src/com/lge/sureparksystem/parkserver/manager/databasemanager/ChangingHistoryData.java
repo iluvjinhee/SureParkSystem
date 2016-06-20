@@ -3,7 +3,7 @@ package com.lge.sureparksystem.parkserver.manager.databasemanager;
 import java.util.Date;
 
 public class ChangingHistoryData {
-    private int parkinglotId;
+    private String parkinglotId;
     private Date changedTime;
     private int changedType;
     private String changedValue;
@@ -11,7 +11,7 @@ public class ChangingHistoryData {
     public ChangingHistoryData() {
     }
 
-    public ChangingHistoryData(int parkinglotId, Date changedTime, int changedType,
+    public ChangingHistoryData(String parkinglotId, Date changedTime, int changedType,
             String changedValue) {
         super();
         this.parkinglotId = parkinglotId;
@@ -20,11 +20,11 @@ public class ChangingHistoryData {
         this.changedValue = changedValue;
     }
 
-    public int getParkinglotId() {
+    public String getParkinglotId() {
         return parkinglotId;
     }
 
-    public void setParkinglotId(int parkinglotId) {
+    public void setParkinglotId(String parkinglotId) {
         this.parkinglotId = parkinglotId;
     }
 
