@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Arduino/ServerJson/src"/>
+	<classpathentry kind="src" path="Arduino/ServerTest/src"/>
+	<classpathentry kind="src" path="Database"/>
+	<classpathentry kind="src" path="DemoFromTony/ArduinoClientJavaServer"/>
+	<classpathentry kind="src" path="DemoFromTony/JavaClientArduinoServer"/>
+	<classpathentry kind="src" path="ParkClient/src"/>
+	<classpathentry kind="src" path="ParkClientForTest/src"/>
+	<classpathentry kind="src" path="ParkServer/src"/>
+	<classpathentry kind="src" path="ParkServerTest/src"/>
+	<classpathentry kind="src" path="ParkView/src"/>
+	<classpathentry kind="lib" path="ParkClient/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="ParkClient/libs/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/android-core-3.2.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/android-integration-3.2.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/core-3.2.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/javase-3.2.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ParkClientForTest/libs/message.jar"/>
+	<classpathentry kind="lib" path="ParkServer/guava-19.0.jar"/>
+	<classpathentry kind="lib" path="ParkServer/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ParkServer/message.jar"/>
+	<classpathentry kind="lib" path="ParkServer/mysql-connector-java-5.0.8-bin.jar"/>
+	<classpathentry kind="lib" path="ParkView/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="ParkView/libs/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ParkView/libs/message.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="ParkServer/bin"/>
+</classpath>

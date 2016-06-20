@@ -47,15 +47,15 @@ public class AuthenticationManager extends ManagerTask {
 		
 		switch(recvMessage.getMessageType()) {
 		case AUTHENTICATION_REQUEST:
-			boolean isValidUser = dbProvider.verifyParkingLot(recvMessage.getId(), recvMessage.getPwd());
+			boolean isValidUser = dbProvider.verifyParkingLot(recvMessage.getID(), recvMessage.getPassword());
 			if(isValidUser) {
 				DataMessage sendMessage = new DataMessage(MessageType.AUTHENTICATION_OK);
-				sendMessage.setId(recvMessage.getId());
+				sendMessage.setId(recvMessage.getID());
 				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 			}
 			else {
 				DataMessage sendMessage = new DataMessage(MessageType.AUTHENTICATION_FAIL);
-				sendMessage.setId(recvMessage.getId());
+				sendMessage.setId(recvMessage.getID());
 				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 			}
 			break;

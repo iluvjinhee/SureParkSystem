@@ -40,6 +40,15 @@ public class DataMessage extends Message {
 	public static String SLOT_TIME = "slot_time";
 	public static String TYPE = "type";
 	
+	public static String ADDRESS = "address";
+	public static String CANCEL_RATE = "cancel_rate";
+	public static String NAME = "name";
+	public static String OCCUPANCY_RATE = "occupancy_rate";
+	public static String PARKINGLOT_COUNT = "parkinglot_count";
+	public static String PERIOD = "period";
+	public static String REVENUE = "revenue";
+	public static String VALUE = "value";
+	
 	public static String COMMAND = "command";
 	public static String RESULT = "result";
 	
@@ -48,39 +57,46 @@ public class DataMessage extends Message {
 	String reservationCode;
 	
 	// Parking Lot
-	ArrayList<String> led_status;
-	ArrayList<String> slot_status;
+	ArrayList<String> ledStatusList;
+	ArrayList<String> slotStatusList;
 	String command;
-	String entry_gate_arrive;
-	String entry_gate_led_status;
-	String entry_gate_status;
-	String exit_gate_arrive;
-	String exit_gate_led_status;
-	String exit_gate_status;
+	String entryGateArrive;
+	String entryGateLEDStatus;
+	String entryGateStatus;
+	String exitGateArrive;
+	String exitGateLEDStatus;
+	String exitGateStatus;
 	String id;
-	String pwd;
+	String password;
 	String result;
 	String status;
-	int led_number;
-	int sensor_number;;
-	int slot_number;
+	int ledNumber;
+	int sensorNumber;;
+	int slotNumber;
 	
 	// Park Here
-	ArrayList<String> driver_often;
-	ArrayList<String> grace_period;
-	ArrayList<String> parking_fee;
-	ArrayList<String> parking_lot_id;
-	ArrayList<String> parking_lot_location;
-	ArrayList<String> slot_driver_id;
-	ArrayList<String> slot_time;
-	String confirmation_info;
-	String driver_id;
-	String payment_info;
-	String reservation_id;
-	String reservation_time;
+	ArrayList<String> driverOftenList;
+	ArrayList<String> gracePeriodList;
+	ArrayList<String> parkingFeeList;
+	ArrayList<String> parkingLotIDList;
+	ArrayList<String> parkingLotLocationList;
+	ArrayList<String> slotDriverIDList;
+	ArrayList<String> slotTimeList;
+	String address;
+	String cancelRate;
+	String confirmationInfo;
+	String driverID;
+	String name;
+	String occupancyRate;
+	String paymentInfo;
+	String period;
+	String reservationID;
+	String reservationTime;
+	String revenue;
 	String type;
-	int parking_lot_count;
-	int slot_count;
+	String value;
+	int parkingLotCount;
+	int slotCount;
 	
 	public DataMessage() {
 		super();
@@ -107,11 +123,11 @@ public class DataMessage extends Message {
 	}
 
 	public int getSensorNumber() {
-		return sensor_number;
+		return sensorNumber;
 	}
 
 	public void setSensorNumber(int sensor_number) {
-		this.sensor_number = sensor_number;
+		this.sensorNumber = sensor_number;
 	}
 
 	public String getStatus() {
@@ -122,71 +138,71 @@ public class DataMessage extends Message {
 		this.status = status;
 	}
 
-	public ArrayList<String> getLedStatus() {
-		return led_status;
+	public ArrayList<String> getLEDStatusList() {
+		return ledStatusList;
 	}
 
-	public void setLedStatus(ArrayList<String> led_status) {
-		this.led_status = led_status;
+	public void setLedStatusList(ArrayList<String> ledStatusList) {
+		this.ledStatusList = ledStatusList;
 	}
 
-	public ArrayList<String> getSlotStatus() {
-		return slot_status;
+	public ArrayList<String> getSlotStatusList() {
+		return slotStatusList;
 	}
 
-	public void setSlotStatus(ArrayList<String> slot_status) {
-		this.slot_status = slot_status;
+	public void setSlotStatus(ArrayList<String> slotStatusList) {
+		this.slotStatusList = slotStatusList;
 	}
 
 	public String getEntrygateArrive() {
-		return entry_gate_arrive;
+		return entryGateArrive;
 	}
 
 	public void setEntrygateArrive(String entrygate_arrive) {
-		this.entry_gate_arrive = entrygate_arrive;
+		this.entryGateArrive = entrygate_arrive;
 	}
 
 	public String getEntrygateStatus() {
-		return entry_gate_status;
+		return entryGateStatus;
 	}
 
 	public void setEntryGateStatus(String entrygate_status) {
-		this.entry_gate_status = entrygate_status;
+		this.entryGateStatus = entrygate_status;
 	}
 
 	public String getEntrygateledStatus() {
-		return entry_gate_led_status;
+		return entryGateLEDStatus;
 	}
 
 	public void setEntryGateLEDStatus(String entrygateled_status) {
-		this.entry_gate_led_status = entrygateled_status;
+		this.entryGateLEDStatus = entrygateled_status;
 	}
 
 	public String getExitgateArrive() {
-		return exit_gate_arrive;
+		return exitGateArrive;
 	}
 
 	public void setExitgateArrive(String exitgate_arrive) {
-		this.exit_gate_arrive = exitgate_arrive;
+		this.exitGateArrive = exitgate_arrive;
 	}
 
 	public String getExitgateStatus() {
-		return exit_gate_status;
+		return exitGateStatus;
 	}
 
 	public void setExitGateStatus(String exitgate_status) {
-		this.exit_gate_status = exitgate_status;
+		this.exitGateStatus = exitgate_status;
 	}
 
 	public String getExitgateledStatus() {
-		return exit_gate_led_status;
+		return exitGateLEDStatus;
 	}
 
 	public void setExitGateLEDStatus(String exitgateled_status) {
-		this.exit_gate_led_status = exitgateled_status;
+		this.exitGateLEDStatus = exitgateled_status;
 	}
 
-	public String getId() {
+	public String getID() {
 		return id;
 	}
 
@@ -194,28 +210,28 @@ public class DataMessage extends Message {
 		this.id = id;
 	}
 
-	public String getPwd() {
-		return pwd;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPwd(String pwd) {
-		this.pwd = pwd;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public int getLedNumber() {
-		return led_number;
+		return ledNumber;
 	}
 
 	public void setLedNumber(int led_number) {
-		this.led_number = led_number;
+		this.ledNumber = led_number;
 	}
 
 	public int getSlotNumber() {
-		return slot_number;
+		return slotNumber;
 	}
 
 	public void setSlotNumber(int slot_number) {
-		this.slot_number = slot_number;
+		this.slotNumber = slot_number;
 	}
 
 	public String getResult() {
@@ -234,116 +250,116 @@ public class DataMessage extends Message {
 		this.command = command;
 	}
 	
-	public ArrayList<String> getDriverOften() {
-		return driver_often;
+	public ArrayList<String> getDriverOftenList() {
+		return driverOftenList;
 	}
 
-	public void setDriverOften(ArrayList<String> driver_often) {
-		this.driver_often = driver_often;
+	public void setDriverOften(ArrayList<String> driverOftenList) {
+		this.driverOftenList = driverOftenList;
 	}
 
-	public ArrayList<String> getGracePeriod() {
-		return grace_period;
+	public ArrayList<String> getGracePeriodList() {
+		return gracePeriodList;
 	}
 
-	public void setGracePeriod(ArrayList<String> graceperiod) {
-		this.grace_period = graceperiod;
+	public void setGracePeriod(ArrayList<String> gracePeriodList) {
+		this.gracePeriodList = gracePeriodList;
 	}
 
-	public ArrayList<String> getParkingFee() {
-		return parking_fee;
+	public ArrayList<String> getParkingFeeList() {
+		return parkingFeeList;
 	}
 
-	public void setParkingFee(ArrayList<String> parkingfee) {
-		this.parking_fee = parkingfee;
+	public void setParkingFee(ArrayList<String> parkingFeeList) {
+		this.parkingFeeList = parkingFeeList;
 	}
 
-	public ArrayList<String> getParkingLotId() {
-		return parking_lot_id;
+	public ArrayList<String> getParkingLotIDList() {
+		return parkingLotIDList;
 	}
 
-	public void setParkingLotId(ArrayList<String> parkinglot_id) {
-		this.parking_lot_id = parkinglot_id;
+	public void setParkingLotIDList(ArrayList<String> parkingLotIDList) {
+		this.parkingLotIDList = parkingLotIDList;
 	}
 
-	public ArrayList<String> getParkingLotLocation() {
-		return parking_lot_location;
+	public ArrayList<String> getParkingLotLocationList() {
+		return parkingLotLocationList;
 	}
 
-	public void setParkingLotLocation(ArrayList<String> parkinglot_location) {
-		this.parking_lot_location = parkinglot_location;
+	public void setParkingLotLocation(ArrayList<String> parkingLotLocationList) {
+		this.parkingLotLocationList = parkingLotLocationList;
 	}
 
-	public ArrayList<String> getSlotDriverId() {
-		return slot_driver_id;
+	public ArrayList<String> getSlotDriverIDList() {
+		return slotDriverIDList;
 	}
 
-	public void setSlotDriverId(ArrayList<String> slot_driverid) {
-		this.slot_driver_id = slot_driverid;
+	public void setSlotDriverID(ArrayList<String> slotDriverIDList) {
+		this.slotDriverIDList = slotDriverIDList;
 	}
 
-	public ArrayList<String> getSlotTime() {
-		return slot_time;
+	public ArrayList<String> getSlotTimeList() {
+		return slotTimeList;
 	}
 
-	public void setSlotTime(ArrayList<String> slot_time) {
-		this.slot_time = slot_time;
+	public void setSlotTime(ArrayList<String> slotTimeList) {
+		this.slotTimeList = slotTimeList;
 	}
 
 	public String getConfirmationInfo() {
-		return confirmation_info;
+		return confirmationInfo;
 	}
 
 	public void setConfirmationInfo(String confirmationinfo) {
-		this.confirmation_info = confirmationinfo;
+		this.confirmationInfo = confirmationinfo;
 	}
 
 	public String getDriverID() {
-		return driver_id;
+		return driverID;
 	}
 
-	public void setDriverId(String driver_id) {
-		this.driver_id = driver_id;
+	public void setDriverID(String driverID) {
+		this.driverID = driverID;
 	}
 
 	public String getPaymentInfo() {
-		return payment_info;
+		return paymentInfo;
 	}
 
-	public void setPaymentInfo(String paymentinfo) {
-		this.payment_info = paymentinfo;
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
 	}
 
 	public String getReservationID() {
-		return reservation_id;
+		return reservationID;
 	}
 
-	public void setReservationId(String reservation_id) {
-		this.reservation_id = reservation_id;
+	public void setReservationId(String reservationID) {
+		this.reservationID = reservationID;
 	}
 
 	public String getReservationTime() {
-		return reservation_time;
+		return reservationTime;
 	}
 
-	public void setReservationTime(String reservation_time) {
-		this.reservation_time = reservation_time;
+	public void setReservationTime(String reservationTime) {
+		this.reservationTime = reservationTime;
 	}
 
 	public int getParkingLotCount() {
-		return parking_lot_count;
+		return parkingLotCount;
 	}
 
-	public void setParkingLotCount(int parkinglot_count) {
-		this.parking_lot_count = parkinglot_count;
+	public void setParkingLotCount(int parkingLotCount) {
+		this.parkingLotCount = parkingLotCount;
 	}
 
 	public int getSlotCount() {
-		return slot_count;
+		return slotCount;
 	}
 
-	public void setSlotCount(int slot_count) {
-		this.slot_count = slot_count;
+	public void setSlotCount(int slotCount) {
+		this.slotCount = slotCount;
 	}
 	
 	public String getType() {
@@ -353,21 +369,79 @@ public class DataMessage extends Message {
 	public void setType(String type) {
 		this.type = type;
 	}
+	
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCancelRate() {
+		return cancelRate;
+	}
+
+	public void setCancelRate(String cancelRate) {
+		this.cancelRate = cancelRate;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getOccupancyRate() {
+		return occupancyRate;
+	}
+
+	public void setOccupancyRate(String occupancyRate) {
+		this.occupancyRate = occupancyRate;
+	}
+
+	public String getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(String period) {
+		this.period = period;
+	}
+
+	public String getRevenue() {
+		return revenue;
+	}
+
+	public void setRevenue(String revenue) {
+		this.revenue = revenue;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	@Override
 	public String toString() {
-		return "DataMessage [assignedSlot=" + assignedSlot + ", reservationCode=" + reservationCode + ", led_status="
-				+ led_status + ", slot_status=" + slot_status + ", command=" + command + ", entry_gate_arrive="
-				+ entry_gate_arrive + ", entry_gate_led_status=" + entry_gate_led_status + ", entry_gate_status="
-				+ entry_gate_status + ", exit_gate_arrive=" + exit_gate_arrive + ", exit_gate_led_status="
-				+ exit_gate_led_status + ", exit_gate_status=" + exit_gate_status + ", id=" + id + ", pwd=" + pwd
-				+ ", result=" + result + ", status=" + status + ", led_number=" + led_number + ", sensor_number="
-				+ sensor_number + ", slot_number=" + slot_number + ", driver_often=" + driver_often + ", grace_period="
-				+ grace_period + ", parking_fee=" + parking_fee + ", parking_lot_id=" + parking_lot_id
-				+ ", parking_lot_location=" + parking_lot_location + ", slot_driver_id=" + slot_driver_id
-				+ ", slot_time=" + slot_time + ", confirmation_info=" + confirmation_info + ", driver_id=" + driver_id
-				+ ", payment_info=" + payment_info + ", reservation_id=" + reservation_id + ", reservation_time="
-				+ reservation_time + ", type=" + type + ", parking_lot_count=" + parking_lot_count + ", slot_count="
-				+ slot_count + ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+		return "DataMessage [assignedSlot=" + assignedSlot + ", reservationCode=" + reservationCode + ", ledStatusList="
+				+ ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive="
+				+ entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus="
+				+ entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
+				+ ", exitGateStatus=" + exitGateStatus + ", id=" + id + ", password=" + password + ", result=" + result
+				+ ", status=" + status + ", ledNumber=" + ledNumber + ", sensorNumber=" + sensorNumber + ", slotNumber="
+				+ slotNumber + ", driverOftenList=" + driverOftenList + ", gracePeriodList=" + gracePeriodList
+				+ ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList=" + parkingLotIDList
+				+ ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList=" + slotDriverIDList
+				+ ", slotTimeList=" + slotTimeList + ", address=" + address + ", cancelRate=" + cancelRate
+				+ ", confirmationInfo=" + confirmationInfo + ", driverID=" + driverID + ", name=" + name
+				+ ", occupancyRate=" + occupancyRate + ", paymentInfo=" + paymentInfo + ", period=" + period
+				+ ", reservationID=" + reservationID + ", reservationTime=" + reservationTime + ", revenue=" + revenue
+				+ ", type=" + type + ", value=" + value + ", parkingLotCount=" + parkingLotCount + ", slotCount="
+				+ slotCount + ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
 	}
 }

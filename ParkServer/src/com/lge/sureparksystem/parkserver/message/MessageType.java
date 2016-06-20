@@ -6,11 +6,11 @@ public enum MessageType {
 	AUTHENTICATION_FAIL("AUTHENTICATION FAIL"),
 	
 	// Park View
-    WELCOME_SUREPARK("WELCOME SUREPARK"),
-    SCAN_CONFIRM("SCAN CONFIRM"),
-    RESERVATION_CODE("RESERVATION CODE"),
-    ASSIGN_SLOT("ASSIGN SLOT"),
-    NOT_RESERVED("NOT RESERVED"),
+	ASSIGN_SLOT("ASSIGN SLOT"),
+	NOT_RESERVED("NOT RESERVED"),
+	RESERVATION_CODE("RESERVATION CODE"),
+	SCAN_CONFIRM("SCAN CONFIRM"),
+	WELCOME_SUREPARK("WELCOME SUREPARK"),
     
     // Parking Lot
     AUTHENTICATION_REQUEST("Authentication_Request"),
@@ -34,18 +34,25 @@ public enum MessageType {
     SLOT_SENSOR_STATUS("Parkingslot_Sensor"),
     
     // ParkHere
-    //AUTHENTICATION_REQUEST("Authentication_Request"),
-    //AUTHENTICATION_RESPONSE("Authentication_Response"),
-    PARKING_LOT_INFORMATION2("Parkinglot_Information2"),
-    CANCEL_REQUEST("Cancel_Request"),
-    CANCEL_RESPONSE("Cancel_Response"),
-    PARKINGLOTINFO_REQUEST("ParkinglotInfo_Request"),
-    RESERVATION_INFO_REQUEST("ReservationInfo_Request"),
-    RESERVATION_INFORMATION("Reservation_Information"),
-    RESERVATION_REQUEST("Reservation_Request"),
-    PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
-    PARKING_LOT_STATUS("ParkinglotStatus"),
-    NOTIFICATION("Notification"),
+	ADD_PARKINGLOT("Add_Parkinglot"),
+	CANCEL_REQUEST("Cancel_Request"),
+	CANCEL_RESPONSE("Cancel_Response"),
+	CHANGE_GRACEPERIOD("Change_graceperiod"),
+	CHANGE_PARKINGFEE("Change_parkingfee"),
+	CHANGE_RESPONSE("Change_Response"),
+	CREATE_ATTENDANT("Create_Attendant"),
+	NOTIFICATION("Notification"),
+	PARKING_LOT_STATISTICS("Parkinglot_Statistics"),
+	PARKING_LOT_STATS_REQUEST("Parkinglot_stats_Request"),
+	PARKING_LOT_INFO_REQUEST("ParkinglotInfo_Request"),
+	PARKING_LOT_LIST("Parkinglot_List"),
+	PARKING_LOT_STATUS("ParkinglotStatus"),
+	PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
+	REMOVE_ATTENDANT("Remove_Attendant"),
+	REMOVE_PARKINGLOT("Remove_Parkinglot"),
+	RESERVATION_INFORMATION("Reservation_Information"),
+	RESERVATION_INFO_REQUEST("ReservationInfo_Request"),
+	RESERVATION_REQUEST("Reservation_Request"),
     
     NONE("NONE");
 	
