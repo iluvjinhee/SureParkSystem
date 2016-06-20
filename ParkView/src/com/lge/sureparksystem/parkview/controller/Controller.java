@@ -64,7 +64,7 @@ public class Controller {
 			if(qrcode != null) {
 				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_CODE);
 				dataMessage.setReservationCode(qrcode);
-				JSONObject jsonObject = MessageParser.makeJSONObject(dataMessage);				
+				JSONObject jsonObject = MessageParser.convertToJSONObject(dataMessage);				
 				
 				clientSocket.send(jsonObject);			
 			}
@@ -100,7 +100,7 @@ public class Controller {
 	}
 
 	public void parseJSONMessage(String jsonMessage) {
-		Message message = MessageParser.makeMessage(jsonMessage);
+		Message message = MessageParser.convertToMessage(jsonMessage);
 		
 		switch(message.getMessageType()) {
 		case WELCOME_SUREPARK:
@@ -110,7 +110,7 @@ public class Controller {
 			scanConfirmation();
 			break;
 		case ASSIGN_SLOT:
-			assignSlot(Integer.parseInt(((DataMessage) message).getAssignedSlot()));
+			assignSlot(Integer.parseInt(((DataMessage) message).getAssignSlot()));
 			break;
 		case NOT_RESERVED:
 			notReserved();
