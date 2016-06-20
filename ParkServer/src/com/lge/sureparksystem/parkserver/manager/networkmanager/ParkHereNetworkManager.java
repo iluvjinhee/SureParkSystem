@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 
 public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {

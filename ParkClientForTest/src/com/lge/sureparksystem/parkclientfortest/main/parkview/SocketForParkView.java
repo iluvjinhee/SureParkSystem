@@ -17,7 +17,11 @@ public class SocketForParkView extends SocketForClient {
 		Message message = null;
 
 		MessageType messageType = MessageParser.getMessageType(jsonMessage);
-		switch (MessageParser.getMessageType(jsonMessage)) {
+		
+		if(messageType == null)
+			return message;
+		
+		switch (messageType) {
 		case WELCOME_SUREPARK:
 		case NOT_RESERVED:
 			System.out.println(messageType.getText());
@@ -28,7 +32,7 @@ public class SocketForParkView extends SocketForClient {
 			break;
 		case ASSIGN_SLOT:
 			System.out.println(
-					messageType.getText() + " " + ((DataMessage) MessageParser.makeMessage(jsonMessage)).getAssignedSlot());
+					messageType.getText() + " " + ((DataMessage) MessageParser.convertToMessage(jsonMessage)).getAssignSlot());
 			break;
 		default:
 			break;
@@ -39,7 +43,20 @@ public class SocketForParkView extends SocketForClient {
 
 	@Override
 	public void testSend() {
-		// TODO Auto-generated method stub
-		
+		Thread t = new Thread() {
+		    public void run() {
+		    	while(true) {
+		    		out.println(TestMessage.getTestMessage());
+		    		
+		    		try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
+		    }
+		};
+		t.start();
 	}
 }
