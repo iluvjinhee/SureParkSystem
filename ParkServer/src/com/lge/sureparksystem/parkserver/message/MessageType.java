@@ -1,6 +1,7 @@
 package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
+	// Inner Message
 	AUTHENTICATION_OK("AUTHENTICATION OK"),
 	AUTHENTICATION_FAIL("AUTHENTICATION FAIL"),
 	

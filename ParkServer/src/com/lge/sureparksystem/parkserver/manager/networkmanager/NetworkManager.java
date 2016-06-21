@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
@@ -80,7 +81,6 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 				}
 				
 				System.out.println("serverSocket Close.");
-	//			System.exit(0);
 			}
 		}
 	}
@@ -98,6 +98,19 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		else {
 			Logger.log("Connected...");
 		}		
+	}
+	
+	public void disconnectServer() {
+		for(SocketForServer socketForServer : socketList) {
+			if(socketForServer.getSocket().isConnected()) {
+				try {
+					socketForServer.getSocket().close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void removeSocket(SocketForServer socketForServer) {
@@ -119,6 +132,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	
 	protected void process(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
+		DataMessage dataMessage = null;
 		
 		if(messageType == null) {
 			System.out.println("");
@@ -131,7 +145,24 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		
 		switch(messageType) {
 		case AUTHENTICATION_REQUEST:
+			jsonObject.put(DataMessage.PORT, serverPort);
 			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
+			break;
+		case AUTHENTICATION_OK:
+			Logger.log("Authentication OK");
+			dataMessage = new DataMessage();
+			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("ok");
+			send(MessageParser.convertToJSONObject(dataMessage));
+			break;
+		case AUTHENTICATION_FAIL:
+			Logger.log("Unauthorized!!! Connection close.");
+			dataMessage = new DataMessage();
+			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("nok");
+			send(MessageParser.convertToJSONObject(dataMessage));
+			
+			disconnectServer();
 			break;
 		default:
 			break;

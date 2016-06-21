@@ -43,7 +43,6 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		super.process(jsonObject);
 		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
-		DataMessage dataMessage = null;
 
 		switch (messageType) {
 		case PARKING_LOT_INFORMATION:
@@ -56,22 +55,6 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
 			send(jsonObject);
-		case AUTHENTICATION_OK:
-			Logger.log("Authentication OK");
-			dataMessage = new DataMessage();
-			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
-			dataMessage.setResult("ok");
-			send(MessageParser.convertToJSONObject(dataMessage));
-			break;
-		case AUTHENTICATION_FAIL:
-			Logger.log("Unauthorized Parking Lot!!! Connection close.");
-			dataMessage = new DataMessage();
-			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
-			dataMessage.setResult("nok");
-			send(MessageParser.convertToJSONObject(dataMessage));
-			//socket.close();
-			break;
-
 		default:
 			break;
 		}

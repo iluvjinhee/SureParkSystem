@@ -43,9 +43,6 @@ public class CommunicationManager extends ManagerTask {
 	@Override
 	protected void process(JSONObject jsonObject) {
 		switch (MessageParser.getMessageType(jsonObject)) {
-		case AUTHENTICATION_REQUEST:
-			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
-			break;
 		default:
 			break;
 		}
