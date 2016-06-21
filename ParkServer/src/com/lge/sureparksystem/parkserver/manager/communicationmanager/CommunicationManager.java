@@ -12,6 +12,10 @@ import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class CommunicationManager extends ManagerTask {
+	private class ParkingLotInformation {
+		
+	}
+	
 	public class CommunicationManagerListener {
 		@Subscribe
 		public void onSubscribe(CommunicationManagerTopic topic) {
@@ -56,51 +60,55 @@ public class CommunicationManager extends ManagerTask {
 		case ENTRY_GATE_PASSBY:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			
-			message = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
-			message.setCommand("red");
-			getEventBus().post(new ParkingLotNetworkManagerTopic(message));
+			controlEntryGate("down");
 			
-			message = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
-			message.setCommand("down");
-			getEventBus().post(new ParkingLotNetworkManagerTopic(message));
 			break;	
 		case EXIT_GATE_ARRIVE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			
-			message = new DataMessage(MessageType.EXIT_GATE_CONTROL);
-			message.setCommand("up");
-			getEventBus().post(new ParkingLotNetworkManagerTopic(message));
+			controlExitGate("up");
 			break;		
 		case EXIT_GATE_PASSBY:
-			message = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
-			message.setCommand("red");
-			getEventBus().post(new ParkingLotNetworkManagerTopic(message));
-			
-			message = new DataMessage(MessageType.EXIT_GATE_CONTROL);
-			message.setCommand("down");
-			jsonObject = MessageParser.convertToJSONObject(message);			
-			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
+			controlExitGate("down");
 			break;
 		case CONFIRMATION_RESPONSE:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			if(message.getResult().equalsIgnoreCase("OK")) {
-				DataMessage sendMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
-				sendMessage.setCommand("up");
-				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
-				
-				sendMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
-				sendMessage.setSlotNumber(message.getSlotNumber());
-				sendMessage.setCommand("on");
-				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+				controlEntryGate("up");
+				turnSlotLED(message.getSlotNumber(), "on");
 			}
 			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
 			break;
 		case CONFIRMATION_SEND:
 		case SLOT_SENSOR_STATUS:
+			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
+			if(message.getStatus().equalsIgnoreCase("occupied")) {
+				turnSlotLED(0, "off");
+			}
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void controlEntryGate(String command) {
+		DataMessage sendMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
+		sendMessage.setCommand(command);
+		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+	}
+	
+	private void controlExitGate(String command) {
+		DataMessage sendMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+		sendMessage.setCommand(command);
+		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+	}
+
+	private void turnSlotLED(int slotNumber, String command) {
+		DataMessage sendMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
+		sendMessage.setSlotNumber(slotNumber);
+		sendMessage.setCommand(command);
+		
+		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 	}	
 }

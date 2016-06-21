@@ -54,6 +54,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
 			break;
 		case PARKING_LOT_INFORMATION:
+			getEventBus().post(new CommunicationManagerTopic(jsonObject));
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
 		case ENTRY_GATE_CONTROL:
@@ -70,6 +71,13 @@ public class ParkingLotNetworkManager extends NetworkManager {
 				outMessage.setCommand("green");
 				
 				sendMessage(MessageParser.convertToJSONObject(outMessage));				
+			} else {
+				if(message.getStatus().equalsIgnoreCase("DOWN")) {
+					DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+					outMessage.setCommand("red");
+					
+					sendMessage(MessageParser.convertToJSONObject(outMessage));				
+				}
 			}
 			break;
 		case EXIT_GATE_STATUS:
@@ -77,6 +85,11 @@ public class ParkingLotNetworkManager extends NetworkManager {
 			if(message.getStatus().equalsIgnoreCase("UP")) {
 				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
 				outMessage.setCommand("green");
+				
+				sendMessage(MessageParser.convertToJSONObject(outMessage));	
+			} else if(message.getStatus().equalsIgnoreCase("DOWN")) {
+				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+				outMessage.setCommand("red");
 				
 				sendMessage(MessageParser.convertToJSONObject(outMessage));	
 			}
