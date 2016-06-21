@@ -184,10 +184,11 @@ public final class DatabaseInfo {
          */
         public interface Columns {
             public static final String ID = "id";
+            public static final String PARKINGLOT_ID = "parkinglot_id";
+            public static final String DATE_TIME = "date_time";
             public static final String YEAR = "year";
             public static final String MONTH = "month";
             public static final String DAY = "day";
-            public static final String PARKINGLOT_ID = "parkinglot_id";
             public static final String REVENUE = "revenue";
             public static final String OCCUPANCY_RATE = "occupancy_rate";
             public static final String CANCEL_RATE = "cancel_rate";

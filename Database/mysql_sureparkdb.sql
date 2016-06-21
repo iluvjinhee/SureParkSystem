@@ -114,10 +114,11 @@ CREATE TABLE IF NOT EXISTS `reservation` (
 -- 테이블 sureparkdb.statistics_info 구조 내보내기
 CREATE TABLE IF NOT EXISTS `statistics_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `parkinglot_id` varchar(50) NOT NULL,
+  `date_time` datetime NOT NULL,
   `year` int(11) NOT NULL,
   `month` smallint(6) NOT NULL,
   `day` smallint(6) NOT NULL,
-  `parkinglot_id` varchar(50) NOT NULL,
   `revenue` float NOT NULL,
   `occupancy_rate` float NOT NULL,
   `cancel_rate` float NOT NULL,
@@ -139,6 +140,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 INSERT INTO `sureparkdb`.`user`(`username`, `email`, `password`, `authority_id`) 
 VALUES ('Tony', 'antony@cmu.edu', AES_ENCRYPT('1234567890', UNHEX(SHA2('SureparksystemByOhteam',256))), 1);
+-- INSERT INTO `sureparkdb`.`user`(`username`, `email`, `password`, `authority_id`) 
+-- VALUES ('daedon', 'daedon.jeon@lge.com', AES_ENCRYPT('1234567891', UNHEX(SHA2('SureparksystemByOhteam',256))), 2);
+-- INSERT INTO `sureparkdb`.`user`(`username`, `email`, `password`, `authority_id`) 
+-- VALUES ('sanghee', 'sanghee3.lee@lge.com', AES_ENCRYPT('1234567892', UNHEX(SHA2('SureparksystemByOhteam',256))), 3);
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

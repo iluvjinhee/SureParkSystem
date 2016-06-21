@@ -3,9 +3,6 @@ package com.lge.sureparksystem.parkserver.message;
 import java.util.ArrayList;
 
 public class DataMessage extends Message {
-	public static String ASSIGN_SLOT = "ASSIGNED_SLOT";
-	public static String RESERVATION_CODE = "RESERVATION_CODE";
-	
 	public static String ENTRY_GATE_LED_STATUS = "entrygateled";
 	public static String ENTRY_GATE_ARRIVE = "entrygate_arrive";
 	public static String ENTRY_GATE_STATUS = "entrygate";
@@ -53,8 +50,7 @@ public class DataMessage extends Message {
 	public static String RESULT = "result";
 	
 	// ParkView
-	String assignSlot;
-	String reservationCode;
+	String confirmationInfo;
 	
 	// Parking Lot
 	ArrayList<String> ledStatusList;
@@ -84,7 +80,6 @@ public class DataMessage extends Message {
 	ArrayList<String> slotTimeList;
 	String address;
 	String cancelRate;
-	String confirmationInfo;
 	String driverID;
 	String name;
 	String occupancyRate;
@@ -104,22 +99,6 @@ public class DataMessage extends Message {
 
 	public DataMessage(MessageType messageType) {
 		super(messageType);
-	}
-
-	public String getAssignSlot() {
-		return assignSlot;
-	}
-
-	public void setAssignSlot(String assignSlot) {
-		this.assignSlot = assignSlot;
-	}
-
-	public String getReservationCode() {
-		return reservationCode;
-	}
-
-	public void setReservationCode(String reservationCode) {
-		this.reservationCode = reservationCode;
 	}
 
 	public int getSensorNumber() {
@@ -206,7 +185,7 @@ public class DataMessage extends Message {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setID(String id) {
 		this.id = id;
 	}
 
@@ -428,20 +407,20 @@ public class DataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "DataMessage [assignedSlot=" + assignSlot + ", reservationCode=" + reservationCode + ", ledStatusList="
-				+ ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive="
-				+ entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus="
-				+ entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
+		return "DataMessage [confirmationInfo=" + confirmationInfo + ", ledStatusList=" + ledStatusList
+				+ ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive=" + entryGateArrive
+				+ ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus=" + entryGateStatus
+				+ ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
 				+ ", exitGateStatus=" + exitGateStatus + ", id=" + id + ", password=" + password + ", result=" + result
 				+ ", status=" + status + ", ledNumber=" + ledNumber + ", sensorNumber=" + sensorNumber + ", slotNumber="
 				+ slotNumber + ", driverOftenList=" + driverOftenList + ", gracePeriodList=" + gracePeriodList
 				+ ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList=" + parkingLotIDList
 				+ ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList=" + slotDriverIDList
 				+ ", slotTimeList=" + slotTimeList + ", address=" + address + ", cancelRate=" + cancelRate
-				+ ", confirmationInfo=" + confirmationInfo + ", driverID=" + driverID + ", name=" + name
-				+ ", occupancyRate=" + occupancyRate + ", paymentInfo=" + paymentInfo + ", period=" + period
-				+ ", reservationID=" + reservationID + ", reservationTime=" + reservationTime + ", revenue=" + revenue
-				+ ", type=" + type + ", value=" + value + ", parkingLotCount=" + parkingLotCount + ", slotCount="
-				+ slotCount + ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+				+ ", driverID=" + driverID + ", name=" + name + ", occupancyRate=" + occupancyRate + ", paymentInfo="
+				+ paymentInfo + ", period=" + period + ", reservationID=" + reservationID + ", reservationTime="
+				+ reservationTime + ", revenue=" + revenue + ", type=" + type + ", value=" + value
+				+ ", parkingLotCount=" + parkingLotCount + ", slotCount=" + slotCount + ", messageType=" + messageType
+				+ ", timestamp=" + timestamp + "]";
 	}
 }

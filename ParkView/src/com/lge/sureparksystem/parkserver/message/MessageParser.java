@@ -28,18 +28,16 @@ public class MessageParser {
 		message.setTimestamp(MessageParser.getInt(jsonObject, Message.TIMESTAMP));
 		
 		// Parking Lot
-		((DataMessage) message).setAssignSlot(MessageParser.getString(jsonObject, DataMessage.ASSIGN_SLOT));
 		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_LED_STATUS));
 		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_STATUS));
 		((DataMessage) message).setEntrygateArrive(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_ARRIVE));
 		((DataMessage) message).setExitGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_LED_STATUS));
 		((DataMessage) message).setExitGateStatus(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_STATUS));
 		((DataMessage) message).setExitgateArrive(MessageParser.getString(jsonObject, DataMessage.EXIT_GATE_ARRIVE));
-		((DataMessage) message).setId(MessageParser.getString(jsonObject, DataMessage.ID));
+		((DataMessage) message).setID(MessageParser.getString(jsonObject, DataMessage.ID));
 		((DataMessage) message).setLedNumber(MessageParser.getInt(jsonObject, DataMessage.LED_NUMBER));
 		((DataMessage) message).setLedStatusList(MessageParser.getStringList(jsonObject, DataMessage.LED_STATUS));
 		((DataMessage) message).setPassword(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
-		((DataMessage) message).setReservationCode(MessageParser.getString(jsonObject, DataMessage.RESERVATION_CODE));
 		((DataMessage) message).setSensorNumber(MessageParser.getInt(jsonObject, DataMessage.SENSOR_NUMBER));
 		((DataMessage) message).setSlotNumber(MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER));
 		((DataMessage) message).setSlotStatus(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
@@ -81,12 +79,8 @@ public class MessageParser {
 			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
 
 		switch (message.getMessageType()) {
-		case RESERVATION_CODE:
-			jsonObject.put(DataMessage.RESERVATION_CODE, ((DataMessage) message).getReservationCode());
-			break;
-		case ASSIGN_SLOT:
-			jsonObject.put(DataMessage.ASSIGN_SLOT, ((DataMessage) message).getAssignSlot());
-			break;
+		
+		// Common
 		case AUTHENTICATION_REQUEST:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPassword());
@@ -94,6 +88,21 @@ public class MessageParser {
 		case AUTHENTICATION_RESPONSE:
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			break;
+		case AUTHENTICATION_OK:
+		case AUTHENTICATION_FAIL:
+			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
+			break;
+			
+		// ParkView
+		case CONFIRMATION_SEND:
+			jsonObject.put(DataMessage.CONFIRMATION_INFO, ((DataMessage) message).getConfirmationInfo());
+			break;
+		case CONFIRMATION_RESPONSE:
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
+			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());			
+			break;
+			
+		// Parking Lot
 		case ENTRY_GATE_LED_STATUS:
 		case ENTRY_GATE_STATUS:
 		case EXIT_GATE_LED_STATUS:

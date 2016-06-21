@@ -35,7 +35,7 @@ public class SocketForParkingLot extends SocketForClient {
 	public void testSend() {
 		Thread t = new Thread() {
 		    public void run() {
-//		    	while(true) {
+		    	while(true) {
 		    		out.println(TestMessage.getTestMessage());
 		    		
 		    		try {
@@ -44,7 +44,7 @@ public class SocketForParkingLot extends SocketForClient {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-//		    	}
+		    	}
 		    }
 		};
 		t.start();

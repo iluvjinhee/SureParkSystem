@@ -1,20 +1,21 @@
 package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
-	ACKNOWLEDGE("ACK"),
 	AUTHENTICATION_OK("AUTHENTICATION OK"),
 	AUTHENTICATION_FAIL("AUTHENTICATION FAIL"),
 	
-	// Park View
-	ASSIGN_SLOT("ASSIGN SLOT"),
-	NOT_RESERVED("NOT RESERVED"),
-	RESERVATION_CODE("RESERVATION CODE"),
-	SCAN_CONFIRM("SCAN CONFIRM"),
-	WELCOME_SUREPARK("WELCOME SUREPARK"),
-    
-    // Parking Lot
-    AUTHENTICATION_REQUEST("Authentication_Request"),
+	// Common
+	ACKNOWLEDGE("ACK"),	
+	AUTHENTICATION_REQUEST("Authentication_Request"),
     AUTHENTICATION_RESPONSE("Authentication_Response"),
+	
+	// Park View
+	CONFIRMATION_SEND("Confirmation_Send"),
+	QR_START("QR_Start"),
+	WELCOME_DISPLAY("Welcome_Display"),
+	CONFIRMATION_RESPONSE("Confirmation_Response"),
+    
+    // Parking Lot    
     ENTRYGATE_ARRIVE("EntryGate_Arrive"),
     ENTRYGATE_PASSBY("EntryGate_PassBy"),
     ENTRY_GATE_CONTROL("EntryGate_Control"),

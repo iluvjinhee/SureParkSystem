@@ -12,6 +12,7 @@ public class TestMessage {
 		rand = new Random();
 		
 		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"SP001\", \"pwd\" : \"SP001\"}");
 	}
 	
 	static public String getTestMessage() {

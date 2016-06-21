@@ -49,13 +49,12 @@ public class ParkViewNetworkManager extends NetworkManager {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
 		switch (messageType) {
-		case WELCOME_SUREPARK:
-		case SCAN_CONFIRM:
-		case ASSIGN_SLOT:
-		case NOT_RESERVED:
+		case WELCOME_DISPLAY:
+		case QR_START:
+		case CONFIRMATION_RESPONSE:
 			send(jsonObject);
 			break;
-		case RESERVATION_CODE:
+		case CONFIRMATION_SEND:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
 			break;
 		default:

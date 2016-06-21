@@ -3,58 +3,59 @@ package com.lge.sureparksystem.parkserver.message;
 import java.util.ArrayList;
 
 public class DataMessage extends Message {
-	public static String ASSIGN_SLOT = "ASSIGNED_SLOT";
-	public static String RESERVATION_CODE = "RESERVATION_CODE";
+	public static final String PORT = "port";
 	
-	public static String ENTRY_GATE_LED_STATUS = "entrygateled";
-	public static String ENTRY_GATE_ARRIVE = "entrygate_arrive";
-	public static String ENTRY_GATE_STATUS = "entrygate";
-	public static String EXIT_GATE_LED_STATUS = "exitgateled";
-	public static String EXIT_GATE_ARRIVE = "exitgate_arrive";
-	public static String EXIT_GATE_STATUS = "exitgate";
-	public static String ID = "id";
-	public static String LED_NUMBER = "led_number";
-	public static String LED_STATUS = "led_status";
-	public static String PASSWORD = "pwd";
-	public static String SENSOR_NUMBER = "sensor_number";
-	public static String SLOT_COUNT = "slot_count";
-	public static String SLOT_NUMBER = "slot_number";
-	public static String SLOT_STATUS = "slot_status";
-	public static String STATUS = "status";
-	public static String TIMESTAMP = "timestamp";
+	// Parking Lot
+	public static final String ENTRY_GATE_LED_STATUS = "entrygateled";
+	public static final String ENTRY_GATE_ARRIVE = "entrygate_arrive";
+	public static final String ENTRY_GATE_STATUS = "entrygate";
+	public static final String EXIT_GATE_LED_STATUS = "exitgateled";
+	public static final String EXIT_GATE_ARRIVE = "exitgate_arrive";
+	public static final String EXIT_GATE_STATUS = "exitgate";
+	public static final String ID = "id";
+	public static final String LED_NUMBER = "led_number";
+	public static final String LED_STATUS = "led_status";
+	public static final String PASSWORD = "pwd";
+	public static final String SENSOR_NUMBER = "sensor_number";
+	public static final String SLOT_COUNT = "slot_count";
+	public static final String SLOT_NUMBER = "slot_number";
+	public static final String SLOT_STATUS = "slot_status";
+	public static final String STATUS = "status";
+	public static final String TIMESTAMP = "timestamp";
 	
-	// Parking Here
-	public static String CONFIRMATION_INFO = "confirmationinfo";
-	public static String DRIVER_ID = "driver_id";
-	public static String DRIVER_OFTEN = "driver_often";
-	public static String GRACE_PERIOD = "graceperiod";
-	public static String MESSAGE_TYPE = "messagetype";
-	public static String PARKING_FEE = "parkingfee";
-	public static String PARKING_LOT_COUNT = "parkinglot_count";
-	public static String PARKING_LOT_ID = "parkinglot_id";
-	public static String PARKING_LOT_LOCATION = "parkinglot_location";
-	public static String PAYMENT_INFO = "paymentinfo";
-	public static String RESERVATION_ID = "reservation_id";
-	public static String RESERVATION_TIME = "reservation_time";
-	public static String SLOT_DRIVER_ID = "slot_driverid";
-	public static String SLOT_TIME = "slot_time";
-	public static String TYPE = "type";
+	// Park Here
+	public static final String CONFIRMATION_INFO = "confirmationinfo";
+	public static final String DRIVER_ID = "driver_id";
+	public static final String DRIVER_OFTEN = "driver_often";
+	public static final String GRACE_PERIOD = "graceperiod";
+	public static final String MESSAGE_TYPE = "messagetype";
+	public static final String PARKING_FEE = "parkingfee";
+	public static final String PARKING_LOT_COUNT = "parkinglot_count";
+	public static final String PARKING_LOT_ID = "parkinglot_id";
+	public static final String PARKING_LOT_LOCATION = "parkinglot_location";
+	public static final String PAYMENT_INFO = "paymentinfo";
+	public static final String RESERVATION_ID = "reservation_id";
+	public static final String RESERVATION_TIME = "reservation_time";
+	public static final String SLOT_DRIVER_ID = "slot_driverid";
+	public static final String SLOT_TIME = "slot_time";
+	public static final String TYPE = "type";
 	
-	public static String ADDRESS = "address";
-	public static String CANCEL_RATE = "cancel_rate";
-	public static String NAME = "name";
-	public static String OCCUPANCY_RATE = "occupancy_rate";
-	public static String PARKINGLOT_COUNT = "parkinglot_count";
-	public static String PERIOD = "period";
-	public static String REVENUE = "revenue";
-	public static String VALUE = "value";
+	public static final String ADDRESS = "address";
+	public static final String CANCEL_RATE = "cancel_rate";
+	public static final String NAME = "name";
+	public static final String OCCUPANCY_RATE = "occupancy_rate";
+	public static final String PARKINGLOT_COUNT = "parkinglot_count";
+	public static final String PERIOD = "period";
+	public static final String REVENUE = "revenue";
+	public static final String VALUE = "value";
 	
-	public static String COMMAND = "command";
-	public static String RESULT = "result";
+	public static final String COMMAND = "command";
+	public static final String RESULT = "result";
+	
+	int port;
 	
 	// ParkView
-	String assignSlot;
-	String reservationCode;
+	String confirmationInfo;
 	
 	// Parking Lot
 	ArrayList<String> ledStatusList;
@@ -84,7 +85,6 @@ public class DataMessage extends Message {
 	ArrayList<String> slotTimeList;
 	String address;
 	String cancelRate;
-	String confirmationInfo;
 	String driverID;
 	String name;
 	String occupancyRate;
@@ -104,22 +104,6 @@ public class DataMessage extends Message {
 
 	public DataMessage(MessageType messageType) {
 		super(messageType);
-	}
-
-	public String getAssignSlot() {
-		return assignSlot;
-	}
-
-	public void setAssignSlot(String assignSlot) {
-		this.assignSlot = assignSlot;
-	}
-
-	public String getReservationCode() {
-		return reservationCode;
-	}
-
-	public void setReservationCode(String reservationCode) {
-		this.reservationCode = reservationCode;
 	}
 
 	public int getSensorNumber() {
@@ -206,7 +190,7 @@ public class DataMessage extends Message {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setID(String id) {
 		this.id = id;
 	}
 
@@ -425,10 +409,18 @@ public class DataMessage extends Message {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
 
 	@Override
 	public String toString() {
-		return "DataMessage [assignedSlot=" + assignSlot + ", reservationCode=" + reservationCode + ", ledStatusList="
+		return "DataMessage [port=" + port + ", confirmationInfo=" + confirmationInfo + ", ledStatusList="
 				+ ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive="
 				+ entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus="
 				+ entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
@@ -438,10 +430,10 @@ public class DataMessage extends Message {
 				+ ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList=" + parkingLotIDList
 				+ ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList=" + slotDriverIDList
 				+ ", slotTimeList=" + slotTimeList + ", address=" + address + ", cancelRate=" + cancelRate
-				+ ", confirmationInfo=" + confirmationInfo + ", driverID=" + driverID + ", name=" + name
-				+ ", occupancyRate=" + occupancyRate + ", paymentInfo=" + paymentInfo + ", period=" + period
-				+ ", reservationID=" + reservationID + ", reservationTime=" + reservationTime + ", revenue=" + revenue
-				+ ", type=" + type + ", value=" + value + ", parkingLotCount=" + parkingLotCount + ", slotCount="
-				+ slotCount + ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+				+ ", driverID=" + driverID + ", name=" + name + ", occupancyRate=" + occupancyRate + ", paymentInfo="
+				+ paymentInfo + ", period=" + period + ", reservationID=" + reservationID + ", reservationTime="
+				+ reservationTime + ", revenue=" + revenue + ", type=" + type + ", value=" + value
+				+ ", parkingLotCount=" + parkingLotCount + ", slotCount=" + slotCount + ", messageType=" + messageType
+				+ ", timestamp=" + timestamp + "]";
 	}
 }

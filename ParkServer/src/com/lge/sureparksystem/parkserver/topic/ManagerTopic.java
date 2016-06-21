@@ -3,6 +3,7 @@ package com.lge.sureparksystem.parkserver.topic;
 import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
 
 public class ManagerTopic {
 	JSONObject jsonObject = null;
@@ -17,6 +18,10 @@ public class ManagerTopic {
 	}
 
 	public JSONObject getJsonObject() {
+		if(this.jsonObject == null) {
+			return MessageParser.convertToJSONObject(message);
+		}
+		
 		return jsonObject;
 	}
 
@@ -25,7 +30,11 @@ public class ManagerTopic {
 	}
 
 	public Message getMessage() {
-		return message;
+		if(this.message == null) {
+			return MessageParser.convertToMessage(jsonObject);
+		}
+		
+		return this.message;
 	}
 
 	public void setMessage(Message message) {

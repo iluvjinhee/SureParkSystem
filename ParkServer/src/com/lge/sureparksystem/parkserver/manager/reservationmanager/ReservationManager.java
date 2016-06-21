@@ -80,25 +80,37 @@ public class ReservationManager extends ManagerTask {
 	@Override
 	protected void process(JSONObject jsonObject) {
 		switch(MessageParser.getMessageType(jsonObject)) {
-		case RESERVATION_CODE:
+		case CONFIRMATION_SEND:
 			processVerification(jsonObject);
 			break;
+		case PARKING_LOT_INFORMATION:
+			storeParkingLotInformation(jsonObject);
+			break;		
 		default:
 			break;
 		}
 	}
 
-	private void processVerification(JSONObject jsonObject) {
-		String reservationCode = MessageParser.getString(jsonObject, "ReservationCode");
+	private void storeParkingLotInformation(JSONObject jsonObject) {
+		// TODO Auto-generated method stub
 		
-		if(isValid(reservationCode)) {
-			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
-			dataMessage.setAssignSlot(String.valueOf(getAvailableSlot()));
+	}
+
+	private void processVerification(JSONObject jsonObject) {
+		String confirmationInfo = MessageParser.getString(jsonObject, DataMessage.CONFIRMATION_INFO);
+		
+		if(isValid(confirmationInfo)) {
+			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
+			dataMessage.setResult("ok");
+			dataMessage.setSlotNumber(getAvailableSlot());
 			
 			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
 		}
 		else {
-			getEventBus().post(new ParkViewNetworkManagerTopic(new Message(MessageType.NOT_RESERVED)));
+			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
+			dataMessage.setResult("nok");
+			
+			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
 		}
 	}
 }
