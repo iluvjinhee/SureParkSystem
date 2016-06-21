@@ -22,7 +22,7 @@ public class ReservationManager extends ManagerTask {
 		public void onSubscribe(ReservationManagerTopic topic) {
 			System.out.println("ReservationManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -78,14 +78,19 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		switch(MessageParser.getMessageType(jsonObject)) {
 		case CONFIRMATION_SEND:
 			processVerification(jsonObject);
 			break;
 		case PARKING_LOT_INFORMATION:
 			storeParkingLotInformation(jsonObject);
-			break;		
+			break;
+		case RESERVATION_REQUEST:
+			break;
+		case RESERVATION_INFO_REQUEST:
+			break;
+
 		default:
 			break;
 		}

@@ -55,7 +55,7 @@ public class SocketForServer implements Runnable {
 		}
 		
 		try {
-			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
+			manager.receiveMessage((JSONObject) new JSONParser().parse(jsonMessage));
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

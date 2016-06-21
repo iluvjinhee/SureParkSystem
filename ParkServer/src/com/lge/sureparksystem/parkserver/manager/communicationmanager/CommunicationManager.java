@@ -4,12 +4,8 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
-import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
-import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
@@ -19,7 +15,7 @@ public class CommunicationManager extends ManagerTask {
 		public void onSubscribe(CommunicationManagerTopic topic) {
 			System.out.println("CommunicationManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -41,8 +37,17 @@ public class CommunicationManager extends ManagerTask {
 	}
 	
 	@Override
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		switch (MessageParser.getMessageType(jsonObject)) {
+		case ENTRY_GATE_ARRIVE:
+			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
+			break;
+		case ENTRY_GATE_PASSBY:
+			getEventBus().post(new ReservationManagerTopic(jsonObject));
+		case EXIT_GATE_ARRIVE:
+		case EXIT_GATE_PASSBY:
+		case SLOT_SENSOR_STATUS:
+			break;
 		default:
 			break;
 		}

@@ -16,7 +16,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 		public void onSubscribe(ParkViewNetworkManagerTopic topic) {
 			System.out.println("ParkViewNetworkManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -34,8 +34,8 @@ public class ParkViewNetworkManager extends NetworkManager {
 	}
 	
 	@Override
-	public void receive(JSONObject jsonObject) {
-		process(jsonObject);
+	public void receiveMessage(JSONObject jsonObject) {
+		processMessage(jsonObject);
 	}
 	
 	@Override
@@ -43,8 +43,8 @@ public class ParkViewNetworkManager extends NetworkManager {
 		super.onSocketAccepted(socket);
 	}
 	
-	protected void process(JSONObject jsonObject) {
-		super.process(jsonObject);
+	protected void processMessage(JSONObject jsonObject) {
+		super.processMessage(jsonObject);
 		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
@@ -52,7 +52,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 		case WELCOME_DISPLAY:
 		case QR_START:
 		case CONFIRMATION_RESPONSE:
-			send(jsonObject);
+			sendMessage(jsonObject);
 			break;
 		case CONFIRMATION_SEND:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
