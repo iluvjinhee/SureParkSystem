@@ -21,7 +21,7 @@ public class StatisticsManager extends ManagerTask {
         public void onSubscribe(StatisticsManagerTopic topic) {
             System.out.println("StatisticsManagerListener: " + topic);
 
-            process(topic.getJsonObject());
+            processMessage(topic.getJsonObject());
         }
     }
 
@@ -45,7 +45,7 @@ public class StatisticsManager extends ManagerTask {
     }
 
     @Override
-    protected void process(JSONObject jsonObject) {
+    protected void processMessage(JSONObject jsonObject) {
 
     }
 

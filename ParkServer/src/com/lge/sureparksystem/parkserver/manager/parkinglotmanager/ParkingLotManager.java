@@ -12,7 +12,7 @@ public class ParkingLotManager extends ManagerTask {
 		public void onSubscribe(ParkingLotManagerTopic topic) {
 			System.out.println("ParkingLotManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -34,7 +34,7 @@ public class ParkingLotManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		// TODO Auto-generated method stub
 		
 	}	

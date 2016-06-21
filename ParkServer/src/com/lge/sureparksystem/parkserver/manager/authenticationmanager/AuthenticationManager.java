@@ -22,7 +22,7 @@ public class AuthenticationManager extends ManagerTask {
 		public void onSubscribe(AuthenticationManagerTopic topic) {
 			System.out.println("AuthenticationManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class AuthenticationManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		DataMessage recvMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
 		
 		switch(recvMessage.getMessageType()) {

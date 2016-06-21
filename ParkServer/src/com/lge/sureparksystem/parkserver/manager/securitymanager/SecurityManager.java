@@ -12,7 +12,7 @@ public class SecurityManager extends ManagerTask {
 		public void onSubscribe(SecurityManagerTopic topic) {
 			System.out.println("SecurityManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -34,7 +34,7 @@ public class SecurityManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		// TODO Auto-generated method stub
 		
 	}	

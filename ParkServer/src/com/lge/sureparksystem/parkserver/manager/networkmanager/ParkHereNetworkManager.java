@@ -16,7 +16,7 @@ public class ParkHereNetworkManager extends NetworkManager {
 		public void onSubscribe(ParkHereNetworkManagerTopic topic) {
 			System.out.println("ParkHereNetworkManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -29,23 +29,23 @@ public class ParkHereNetworkManager extends NetworkManager {
 		super(serverPort);
 	}
 	
-	public void send(JSONObject jsonObject) {
+	public void sendMessage(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			socketForServer.send(jsonObject);
 		}
 	}
 	
 	@Override
-	public void receive(JSONObject jsonObject) {
-		process(jsonObject);
+	public void receiveMessage(JSONObject jsonObject) {
+		processMessage(jsonObject);
 	}
 	
 	public void run() {
 		super.run();
 	}
 	
-	protected void process(JSONObject jsonObject) {
-		super.process(jsonObject);
+	protected void processMessage(JSONObject jsonObject) {
+		super.processMessage(jsonObject);
 		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		

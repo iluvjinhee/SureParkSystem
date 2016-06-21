@@ -26,7 +26,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		public void onSubscribe(NetworkManagerTopic topic) {
 			System.out.println("NetworkManagerListener: " + topic);
 			
-			process(topic.getJsonObject());
+			processMessage(topic.getJsonObject());
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		socketList.remove(socketForServer);
 	}
 	
-	public void send(JSONObject jsonObject) {
+	public void sendMessage(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {
 				socketForServer.send(jsonObject);
@@ -126,11 +126,11 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	public void receive(JSONObject jsonObject) {
-		process(jsonObject);
+	public void receiveMessage(JSONObject jsonObject) {
+		processMessage(jsonObject);
 	}
 	
-	protected void process(JSONObject jsonObject) {
+	protected void processMessage(JSONObject jsonObject) {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		DataMessage dataMessage = null;
 		
@@ -153,14 +153,14 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 			dataMessage = new DataMessage();
 			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("ok");
-			send(MessageParser.convertToJSONObject(dataMessage));
+			sendMessage(MessageParser.convertToJSONObject(dataMessage));
 			break;
 		case AUTHENTICATION_FAIL:
 			Logger.log("Unauthorized!!! Connection close.");
 			dataMessage = new DataMessage();
 			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("nok");
-			send(MessageParser.convertToJSONObject(dataMessage));
+			sendMessage(MessageParser.convertToJSONObject(dataMessage));
 			
 			disconnectServer();
 			break;

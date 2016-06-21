@@ -161,7 +161,7 @@ public class KeyboardInManager extends ManagerTask {
 	}
 
 	@Override
-	protected void process(JSONObject topic) {
+	protected void processMessage(JSONObject topic) {
 		// TODO Auto-generated method stub
 		
 	}

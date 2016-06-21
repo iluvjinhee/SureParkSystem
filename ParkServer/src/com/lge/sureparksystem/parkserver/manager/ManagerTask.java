@@ -8,7 +8,7 @@ public abstract class ManagerTask implements Runnable {
 	private static EventBus eventBus = null;
 	protected boolean loop = true;
 	
-	protected abstract void process(JSONObject jsonObject);
+	protected abstract void processMessage(JSONObject jsonObject);
 	
 	public ManagerTask() {
 		if(eventBus == null)
