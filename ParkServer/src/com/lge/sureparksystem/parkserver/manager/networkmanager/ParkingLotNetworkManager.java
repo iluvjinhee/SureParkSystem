@@ -7,6 +7,7 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class ParkingLotNetworkManager extends NetworkManager {
@@ -46,7 +47,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 
 		switch (messageType) {
 		case PARKING_LOT_INFORMATION:
-			dataMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
+			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
 		case AUTHENTICATION_RESPONSE:
 		case ENTRY_GATE_CONTROL:
@@ -56,10 +57,19 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case SLOT_LED_CONTROL:
 			send(jsonObject);
 		case AUTHENTICATION_OK:
+			Logger.log("Authentication OK");
+			dataMessage = new DataMessage();
+			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("ok");
+			send(MessageParser.convertToJSONObject(dataMessage));
 			break;
 		case AUTHENTICATION_FAIL:
 			Logger.log("Unauthorized Parking Lot!!! Connection close.");
-			// socket.close();
+			dataMessage = new DataMessage();
+			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
+			dataMessage.setResult("nok");
+			send(MessageParser.convertToJSONObject(dataMessage));
+			//socket.close();
 			break;
 
 		default:
@@ -68,6 +78,4 @@ public class ParkingLotNetworkManager extends NetworkManager {
 
 		return;
 	}
-	
-	
 }

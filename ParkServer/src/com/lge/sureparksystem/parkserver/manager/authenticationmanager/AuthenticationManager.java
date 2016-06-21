@@ -9,6 +9,7 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 
 public class AuthenticationManager extends ManagerTask {
@@ -51,12 +52,12 @@ public class AuthenticationManager extends ManagerTask {
 			boolean isValidUser = dbProvider.verifyParkingLot(recvMessage.getID(), recvMessage.getPassword());
 			if(isValidUser) {
 				DataMessage sendMessage = new DataMessage(MessageType.AUTHENTICATION_OK);
-				sendMessage.setId(recvMessage.getID());
+				sendMessage.setID(recvMessage.getID());
 				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 			}
 			else {
 				DataMessage sendMessage = new DataMessage(MessageType.AUTHENTICATION_FAIL);
-				sendMessage.setId(recvMessage.getID());
+				sendMessage.setID(recvMessage.getID());
 				getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 			}
 			break;

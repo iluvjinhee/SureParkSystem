@@ -12,6 +12,7 @@ public class TestMessage {
 		rand = new Random();
 		
 		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"SP001\", \"pwd\" : \"SP001\"}");
 		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 4, \"slot_status\" : [\"1\", \"1\", \"0\", \"1\"], \"led_status\" : [\"0\", \"0\", \"0\", \"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
 		/*strArray.add(
 				"{\"messagetype\" : \"Parkingslot_Sensor\", \"slot_number\" : 2, \"status\" : \"empty\", \"timestamp\" : 10}");
@@ -29,7 +30,6 @@ public class TestMessage {
 	}
 	
 	static public String getTestMessage() {
-//		return strArray.get(rand.nextInt(strArray.size())); 
-		return strArray.get(0);
+		return strArray.get(rand.nextInt(strArray.size())); 
 	}
 }

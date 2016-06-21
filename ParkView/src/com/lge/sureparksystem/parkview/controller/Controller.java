@@ -62,11 +62,10 @@ public class Controller {
 			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
-				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_CODE);
-				dataMessage.setReservationCode(qrcode);
-				JSONObject jsonObject = MessageParser.convertToJSONObject(dataMessage);				
+				DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_SEND);
+				dataMessage.setConfirmationInfo(qrcode);
 				
-				clientSocket.send(jsonObject);			
+				clientSocket.send(MessageParser.convertToJSONObject(dataMessage));			
 			}
 		}
 	}
@@ -78,11 +77,11 @@ public class Controller {
 		tts.speak(msg);
 	}
 	
-	public void assignSlot(int slot) {
-		String msg = "Hello Diniel, Your Park Slot is ";		
+	public void assignSlot(int slotNumber) {
+		String msg = "Hello, Your Park Slot is ";		
 		
-		fullScreen.setDisplay(String.valueOf(slot), 250);				
-		tts.speak(msg + slot);
+		fullScreen.setDisplay(String.valueOf(slotNumber), 250);				
+		tts.speak(msg + slotNumber);
 	}
 	
 	public void notReserved() {
@@ -103,17 +102,17 @@ public class Controller {
 		Message message = MessageParser.convertToMessage(jsonMessage);
 		
 		switch(message.getMessageType()) {
-		case WELCOME_SUREPARK:
+		case WELCOME_DISPLAY:
 			welcome();
 			break;
-		case SCAN_CONFIRM:
+		case QR_START:
 			scanConfirmation();
 			break;
-		case ASSIGN_SLOT:
-			assignSlot(Integer.parseInt(((DataMessage) message).getAssignSlot()));
-			break;
-		case NOT_RESERVED:
-			notReserved();
+		case AUTHENTICATION_RESPONSE:
+			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
+				assignSlot(((DataMessage) message).getSlotNumber());
+			else
+				notReserved();
 			break;
 		default:
 			break;		

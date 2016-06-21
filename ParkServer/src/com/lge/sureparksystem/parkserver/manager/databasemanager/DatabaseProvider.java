@@ -591,7 +591,7 @@ public class DatabaseProvider {
         try {
             StringBuilder where = new StringBuilder(" where ");
             where.append(ParkingLot.Columns.LOGIN_ID + "='" + loginId + "'");
-            where.append(" AND " + ParkingLot.Columns.PASSWORD + "='" + password + "'");
+            where.append(" AND " + ParkingLot.Columns.PASSWORD + "=" + getSqlStringForEncryption(password));
             String sql = "select  count(*) from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
             pstmt = mDBConn.prepareStatement(sql);

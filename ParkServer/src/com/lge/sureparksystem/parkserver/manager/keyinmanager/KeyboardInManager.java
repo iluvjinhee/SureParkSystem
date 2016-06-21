@@ -118,17 +118,19 @@ public class KeyboardInManager extends ManagerTask {
 		JSONObject jsonObject = null;
 		
 		if (containsCaseInsensitive(typedMessage, KeyInCorpus.WelcomeSurePark)) {
-			DataMessage dataMessage = new DataMessage(MessageType.WELCOME_SUREPARK);
+			DataMessage dataMessage = new DataMessage(MessageType.WELCOME_DISPLAY);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.ScanReservationCode)) {
-			DataMessage dataMessage = new DataMessage(MessageType.SCAN_CONFIRM);
+			DataMessage dataMessage = new DataMessage(MessageType.QR_START);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.AssignSlot)) {
-			DataMessage dataMessage = new DataMessage(MessageType.ASSIGN_SLOT);
-			dataMessage.setAssignSlot("4");
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.Reserved)) {
+			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
+			dataMessage.setResult("ok");
+			dataMessage.setSlotNumber(3);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.NotReserved)) {
-			DataMessage dataMessage = new DataMessage(MessageType.NOT_RESERVED);
+			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
+			dataMessage.setResult("nok");
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		}
 		

@@ -14,10 +14,8 @@ public class KeyInCorpus {
 		"welcome sure park system"
 	};
 	
-	public static final String[] AssignSlot = {
-		"Assign",
-		"Assigned Slot",
-		"assign slot"
+	public static final String[] Reserved = {
+		"Reserved",
 	};
 	
 	public static final String[] NotReserved = {
