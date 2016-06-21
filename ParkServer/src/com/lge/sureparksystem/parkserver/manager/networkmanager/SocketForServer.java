@@ -43,7 +43,7 @@ public class SocketForServer implements Runnable {
 	}
 
 	private void receive(String jsonMessage) {
-		if(!jsonMessage.contains("HEARTBEAT"))
+		if(!jsonMessage.contains(MessageType.HEARTBEAT.getText()))
 			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
 		Message message = MessageParser.convertToMessage(jsonMessage);

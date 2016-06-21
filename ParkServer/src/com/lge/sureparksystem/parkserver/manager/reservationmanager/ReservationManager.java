@@ -9,11 +9,9 @@ import org.json.simple.parser.ParseException;
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
-import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.ManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class ReservationManager extends ManagerTask {
@@ -90,7 +88,6 @@ public class ReservationManager extends ManagerTask {
 			break;
 		case RESERVATION_INFO_REQUEST:
 			break;
-
 		default:
 			break;
 		}
@@ -104,18 +101,19 @@ public class ReservationManager extends ManagerTask {
 	private void processVerification(JSONObject jsonObject) {
 		String confirmationInfo = MessageParser.getString(jsonObject, DataMessage.CONFIRMATION_INFO);
 		
-		if(isValid(confirmationInfo)) {
+//		if(isValid(confirmationInfo)) {
+		if(true) {
 			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			dataMessage.setResult("ok");
 			dataMessage.setSlotNumber(getAvailableSlot());
 			
-			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
+			getEventBus().post(new CommunicationManagerTopic(dataMessage));
 		}
 		else {
 			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			dataMessage.setResult("nok");
 			
-			getEventBus().post(new ParkViewNetworkManagerTopic(dataMessage));
+			getEventBus().post(new CommunicationManagerTopic(dataMessage));
 		}
 	}
 }

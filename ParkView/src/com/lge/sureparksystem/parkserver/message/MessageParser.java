@@ -27,6 +27,8 @@ public class MessageParser {
 		message.setMessageType(MessageType.fromText(MessageParser.getString(jsonObject, Message.MESSAGE_TYPE)));
 		message.setTimestamp(MessageParser.getInt(jsonObject, Message.TIMESTAMP));
 		
+		((DataMessage) message).setPort(MessageParser.getInt(jsonObject, DataMessage.PORT));
+		
 		// Parking Lot
 		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_LED_STATUS));
 		((DataMessage) message).setEntryGateStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_STATUS));
@@ -289,7 +291,11 @@ public class MessageParser {
 		int value = -1;
 
 		if (jsonObject.get(key) != null) {
-			value = ((Long) jsonObject.get(key)).intValue();
+			Object obj = jsonObject.get(key);
+			if(obj instanceof String)
+				value = ((Long) jsonObject.get(key)).intValue();
+			else if(obj instanceof Integer)
+				value = (Integer) jsonObject.get(key);
 		}
 
 		return value;

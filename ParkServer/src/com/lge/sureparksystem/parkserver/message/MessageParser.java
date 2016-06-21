@@ -64,6 +64,7 @@ public class MessageParser {
 		((DataMessage) message).setReservationId(MessageParser.getString(jsonObject, DataMessage.RESERVATION_ID));
 		((DataMessage) message).setReservationTime(MessageParser.getString(jsonObject, DataMessage.RESERVATION_TIME));
 		((DataMessage) message).setRevenue(MessageParser.getString(jsonObject, DataMessage.REVENUE));
+		((DataMessage) message).setResult(MessageParser.getString(jsonObject, DataMessage.RESULT));
 		((DataMessage) message).setType(MessageParser.getString(jsonObject, DataMessage.TYPE));
 		((DataMessage) message).setValue(MessageParser.getString(jsonObject, DataMessage.VALUE));
 		((DataMessage) message).setParkingLotCount(MessageParser.getInt(jsonObject, DataMessage.PARKING_LOT_COUNT));

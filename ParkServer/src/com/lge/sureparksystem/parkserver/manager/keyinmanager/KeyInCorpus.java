@@ -21,6 +21,11 @@ public class KeyInCorpus {
 	public static final String[] NotReserved = {
 		"Not Reserved",
 	};
+	
+	public static final String[] ResetParkingLot = {
+		"Reset",
+		"Reset Parking Lot",
+	};
 
 	public static final String[] OpenEntryGate = {
 		"Open Entry Gate",

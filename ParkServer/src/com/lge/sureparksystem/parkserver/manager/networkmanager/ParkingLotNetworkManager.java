@@ -3,6 +3,7 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
@@ -42,6 +43,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		super.processMessage(jsonObject);
 		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
+		DataMessage message = null;
 
 		switch (messageType) {
 		case ENTRY_GATE_ARRIVE:
@@ -50,6 +52,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case EXIT_GATE_PASSBY:
 		case SLOT_SENSOR_STATUS:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			break;
 		case PARKING_LOT_INFORMATION:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
@@ -59,6 +62,25 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
 			sendMessage(jsonObject);
+			break;
+		case ENTRY_GATE_STATUS:
+			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
+			if(message.getStatus().equalsIgnoreCase("UP")) {
+				DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+				outMessage.setCommand("green");
+				
+				sendMessage(MessageParser.convertToJSONObject(outMessage));				
+			}
+			break;
+		case EXIT_GATE_STATUS:
+			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
+			if(message.getStatus().equalsIgnoreCase("UP")) {
+				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
+				outMessage.setCommand("green");
+				
+				sendMessage(MessageParser.convertToJSONObject(outMessage));	
+			}
+			break;
 		default:
 			break;
 		}
