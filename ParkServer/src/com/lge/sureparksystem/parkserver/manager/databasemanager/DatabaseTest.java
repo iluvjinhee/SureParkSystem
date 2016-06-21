@@ -37,14 +37,14 @@ public class DatabaseTest {
         //        updateParkingInfo_Test();
         //        updateParkingParkedSlot_Test();
         //        updateParkingUnparkedTime_Test();
-        
-//        getChangingHistory_Test();
+
+        //        getChangingHistory_Test();
 
         //        ucreateOccupancyRatePerHour_Test();
 
-        //        createStatisticsInfo_Test();
-
-//        createStatisticsInfo_Test();
+        //        createStatisticsData();
+        //        updateDailyStatisticsInfo_Test();
+        getStatisticsInfo_Test();
     }
 
     /*************************************************************************************/
@@ -169,14 +169,15 @@ public class DatabaseTest {
         Calendar cal = Calendar.getInstance();
         Date endTime = cal.getTime();
         LogHelper.log("endTime is " + endTime);
-        
-       long startTime = cal.getTimeInMillis() - javax.management.timer.Timer.ONE_WEEK;
+
+        long startTime = cal.getTimeInMillis() - javax.management.timer.Timer.ONE_WEEK;
         cal.setTimeInMillis(startTime);
         LogHelper.log("startTime is " + cal.getTime());
-        
-        mDatabaseProvider.getChangingHistory(cal.getTime(), endTime, 1);
-        mDatabaseProvider.getChangingHistory(cal.getTime(), endTime, 2);
+        String parkinglotId = mDatabaseProvider.getParkingLotList().get(0);
+        mDatabaseProvider.getChangingHistory(parkinglotId, cal.getTime(), endTime, 1);
+        mDatabaseProvider.getChangingHistory(parkinglotId, cal.getTime(), endTime, 2);
     }
+
     /*************************************************************************************/
     //  For Occupancy rate
     /*************************************************************************************/
@@ -193,12 +194,41 @@ public class DatabaseTest {
     ArrayList<String> mParkingLotId = new ArrayList<String>();
     ArrayList<Integer> mParkingState = new ArrayList<Integer>();
 
-    public void createStatisticsInfo_Test() {
+    public void updateDailyStatisticsInfo_Test() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(2014, 6, 21, 0, 0, 0);
+        mDatabaseProvider.updateDailyStatisticsInfo(cal.getTime());
+    }
+
+    public void getStatisticsInfo_Test() {
+        Calendar cal = Calendar.getInstance();
+        String parkinglotId = mDatabaseProvider.getParkingLotList().get(0);
+        cal.set(2014, 6, 21, 0, 0, 0);
+        Date startTime = cal.getTime();
+        cal.set(2014, 12, 21, 0, 0, 0);
+        Date endTime = cal.getTime();
+        mDatabaseProvider.getStatisticsInfo(parkinglotId, startTime, endTime);
+    }
+
+    public void createStatisticsData() {
         generateInitDataSet();
-        //        generateUserData();
-        //        generateReservationData();
-        //        generateOccupancyRatePerHourData();
+        generateUserData();
+        generateReservationData();
+        generateOccupancyRatePerHourData();
         generateChangingHitoryData();
+        generateStatisticsInfoData();
+    }
+
+    private void generateStatisticsInfoData() {
+        Calendar cal = Calendar.getInstance();
+        for (int year = 2015; year < 2017; year++) {
+            for (int month = 0; month < 12; month++) {
+                for (int day = 0; day < 29; day++) {
+                    cal.set(year, month, day, 0, 0, 0);
+                    mDatabaseProvider.updateDailyStatisticsInfo(cal.getTime());
+                }
+            }
+        }
     }
 
     private void generateChangingHitoryData() {
@@ -237,7 +267,7 @@ public class DatabaseTest {
         Random random = new Random();
 
         for (String parkinglot : mParkingLotId) {
-            for (int year = 2014; year < 2015; year++) {
+            for (int year = 2015; year < 2017; year++) {
                 for (int month = 0; month < 12; month++) {
                     for (int date = 0; date < 29; date += 3) {
                         for (int hourOfDay = 0; hourOfDay < 24; hourOfDay++) {
@@ -260,7 +290,7 @@ public class DatabaseTest {
         for (String driver : mDriverList) {
             for (String parkinglot : mParkingLotId) {
                 for (int state = 1; state < 5; state++) {
-                    for (int year = 2014; year < 2017; year++) {
+                    for (int year = 2015; year < 2017; year++) {
                         for (int month = 0; month < 12; month++) {
                             for (int time = 0; time < 10; time++) {
                                 reservation.setUserEmail(driver);

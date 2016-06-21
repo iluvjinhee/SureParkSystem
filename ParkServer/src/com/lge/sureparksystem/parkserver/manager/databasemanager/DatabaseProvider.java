@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.ChangingHistory;
@@ -19,7 +20,9 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Pa
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Reservation;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.StatisticsInfo;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.User;
+import com.lge.sureparksystem.parkserver.util.Logger;
 import com.sun.istack.internal.Nullable;
+import com.sun.javafx.collections.MappingChange.Map;
 
 public class DatabaseProvider {
 
@@ -591,7 +594,8 @@ public class DatabaseProvider {
         try {
             StringBuilder where = new StringBuilder(" where ");
             where.append(ParkingLot.Columns.LOGIN_ID + "='" + loginId + "'");
-            where.append(" AND " + ParkingLot.Columns.PASSWORD + "=" + getSqlStringForEncryption(password));
+            where.append(" AND " + ParkingLot.Columns.PASSWORD + "="
+                    + getSqlStringForEncryption(password));
             String sql = "select  count(*) from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
             pstmt = mDBConn.prepareStatement(sql);
@@ -730,7 +734,6 @@ public class DatabaseProvider {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return parkingLotList;
         }
-        ParkingLotData parkinglot = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -742,7 +745,7 @@ public class DatabaseProvider {
                 do {
                     parkingLotList.add(rs.getString(ParkingLot.Columns.LOGIN_ID));
                 } while (rs.next());
-                LogHelper.log(TAG, "reservation = " + parkinglot.toString());
+                LogHelper.log(TAG, "reservation = " + parkingLotList.toString());
             } else {
                 LogHelper.log(TAG, "parkinglot is not exist.");
             }
@@ -765,7 +768,7 @@ public class DatabaseProvider {
         LogHelper.log(TAG, "size of ParkingLot list  = " + parkingLotList.size());
         return parkingLotList;
     }
-    
+
     //if not exist, return null
     @Nullable
     public ParkingLotData getParkingLotInfo(String id) {
@@ -1228,8 +1231,9 @@ public class DatabaseProvider {
         return result;
     }
 
-    public List<String> getChangingHistory(Date start, Date end, int type) {
-        List<String> historyList = new ArrayList<String>();
+    public HashMap<Date, String> getChangingHistory(String parkinglotId, Date start, Date end,
+            int type) {
+        HashMap<Date, String> historyList = new HashMap<Date, String>();
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return historyList;
@@ -1238,10 +1242,12 @@ public class DatabaseProvider {
         ResultSet rs = null;
         try {
             StringBuilder where = new StringBuilder(" where ");
-            where.append(ChangingHistory.Columns.CHANGED_TYPE + "=" + type);
+            where.append(ChangingHistory.Columns.PARKINGLOT_ID + "='" + parkinglotId + "'");
+            where.append(" AND " + ChangingHistory.Columns.CHANGED_TYPE + "=" + type);
             if (start != null && end != null) {
                 where.append(" AND " + ChangingHistory.Columns.CHANGED_TIME + " between ");
-                where.append("'" + mDateFormat.format(start) + "' AND '" + mDateFormat.format(end) + "'");
+                where.append("'" + mDateFormat.format(start) + "' AND '" + mDateFormat.format(end)
+                        + "'");
             }
 
             String sql = "select * from " + ChangingHistory.HISTORY_TABLE + where.toString();
@@ -1250,7 +1256,13 @@ public class DatabaseProvider {
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 do {
-                    historyList.add(rs.getString(ChangingHistory.Columns.CHANGED_VALUE));
+                    try {
+                        historyList.put(mDateFormat
+                                .parse(rs.getString(ChangingHistory.Columns.CHANGED_TIME)),
+                                rs.getString(ChangingHistory.Columns.CHANGED_VALUE));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 } while (rs.next());
                 LogHelper.log(TAG, "changingHistory = " + historyList.toString());
             } else {
@@ -1280,6 +1292,50 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Occupancy rate
     /*************************************************************************************/
+    private float getDailyOccupancyRate(String parkinglotId, int year, int month, int day) {
+        float dailyRate = 0.0f;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            StringBuilder where = new StringBuilder(" where ");
+            where.append(OccupancyRatePerHour.Columns.PARKINGLOT_ID + "='" + parkinglotId + "'");
+            where.append(" AND " + OccupancyRatePerHour.Columns.YEAR + "=" + year);
+            where.append(" AND " + OccupancyRatePerHour.Columns.MONTH + "=" + month);
+            where.append(" AND " + OccupancyRatePerHour.Columns.DAY + "=" + day);
+            String sql = "select  avg(" + OccupancyRatePerHour.Columns.OCCUPANCY_RATE + ") from "
+                    + OccupancyRatePerHour.OCCUPANCYRATE_TABLE + where.toString();
+            LogHelper.log(TAG, "sql = " + sql);
+            pstmt = mDBConn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                dailyRate = rs.getInt(1);
+                if (rs.next()) {
+                    LogHelper.log(TAG, "Warnning : count is not one.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LogHelper.log(TAG,
+                "parkinglotId = " + parkinglotId + ", year = " + year + ", month = " + month
+                        + ", day = " + day);
+        LogHelper.log(TAG, "dailyRate = " + dailyRate);
+        return dailyRate;
+    }
+
     public boolean createOccupancyRatePerHour(Date date, String parkinglotId, float rate) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
@@ -1317,6 +1373,83 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Statistics information
     /*************************************************************************************/
+    private float getDailyRevenue(String parkinglotId, Date startTime, Date endTime) {
+        float dailyRevenue = 0.0f;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            StringBuilder where = new StringBuilder(" where ");
+            where.append(Reservation.Columns.LOT_ID + "='" + parkinglotId + "'");
+            where.append(" AND " + Reservation.Columns.RESERVATION_TIME + " between '");
+            where.append(
+                    mDateFormat.format(startTime) + "' AND '" + mDateFormat.format(endTime) + "'");
+
+            String sql = "select  sum(" + Reservation.Columns.PAYMENT + ") from "
+                    + Reservation.RESERVATION_TABLE + where.toString();
+            LogHelper.log(TAG, "sql = " + sql);
+            pstmt = mDBConn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                dailyRevenue = rs.getInt(1);
+                if (rs.next()) {
+                    LogHelper.log(TAG, "Warnning : count is not one.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LogHelper.log(TAG, "dailyRevenue = " + dailyRevenue);
+        return dailyRevenue;
+    }
+
+    private float getDailyCancelRate(String parkinglotId, Date startTime, Date endTime) {
+        float dailyCancelRate = 0.0f;
+        int totCount = 0;
+        int CancelCount = 0;
+        StringBuilder where = new StringBuilder(" where ");
+        where.append(Reservation.Columns.LOT_ID + "='" + parkinglotId + "'");
+        where.append(
+                " AND " + Reservation.Columns.RESERVATION_STATE + "!="
+                        + Reservation.STATE_TYPE.RESERVED);
+        where.append(" AND " + Reservation.Columns.RESERVATION_TIME + " between '");
+        where.append(
+                mDateFormat.format(startTime) + "' AND '" + mDateFormat.format(endTime) + "'");
+
+        totCount = doExecGetCountSQL(Reservation.RESERVATION_TABLE, where.toString());
+
+        StringBuilder cancelWhere = new StringBuilder(" where ");
+        cancelWhere.append(Reservation.Columns.LOT_ID + "='" + parkinglotId + "'");
+        cancelWhere.append(" AND " + Reservation.Columns.RESERVATION_STATE + "="
+                + Reservation.STATE_TYPE.CANCELED);
+        cancelWhere.append(" AND " + Reservation.Columns.RESERVATION_TIME + " between '");
+        cancelWhere.append(
+                mDateFormat.format(startTime) + "' AND '" + mDateFormat.format(endTime) + "'");
+
+        CancelCount = doExecGetCountSQL(Reservation.RESERVATION_TABLE, cancelWhere.toString());
+
+        LogHelper.log(TAG, "totCount = " + totCount);
+        LogHelper.log(TAG, "CancelCount = " + CancelCount);
+        if (totCount > 0) {
+            dailyCancelRate = CancelCount * 100 / totCount;
+        }
+        LogHelper.log(TAG, "dailyCancelRate = " + dailyCancelRate);
+        return dailyCancelRate;
+    }
+
     public boolean createStatisticsInfo(Date date, String parkinglotId, float revenue,
             float occupancyRate, float cancelRate) {
         if (mDBConn == null) {
@@ -1326,10 +1459,11 @@ public class DatabaseProvider {
         boolean result = false;
         int count = 0;
         StringBuilder columns = new StringBuilder();
-        columns.append(StatisticsInfo.Columns.YEAR);
+        columns.append(StatisticsInfo.Columns.PARKINGLOT_ID);
+        columns.append(", " + StatisticsInfo.Columns.DATE_TIME);
+        columns.append(", " + StatisticsInfo.Columns.YEAR);
         columns.append(", " + StatisticsInfo.Columns.MONTH);
         columns.append(", " + StatisticsInfo.Columns.DAY);
-        columns.append(", " + StatisticsInfo.Columns.PARKINGLOT_ID);
         columns.append(", " + StatisticsInfo.Columns.REVENUE);
         columns.append(", " + StatisticsInfo.Columns.OCCUPANCY_RATE);
         columns.append(", " + StatisticsInfo.Columns.CANCEL_RATE);
@@ -1338,10 +1472,11 @@ public class DatabaseProvider {
         cal.setTime(date);
 
         StringBuilder values = new StringBuilder();
-        values.append(cal.get(Calendar.YEAR));
+        values.append("'" + parkinglotId + "'");
+        values.append(", '" + mDateFormat.format(date) + "'");
+        values.append(", " + cal.get(Calendar.YEAR));
         values.append(", " + (cal.get(Calendar.MONTH) + 1));
         values.append(", " + cal.get(Calendar.DAY_OF_MONTH));
-        values.append(", '" + parkinglotId + "'");
         values.append(", " + revenue);
         values.append(", " + occupancyRate);
         values.append(", " + cancelRate);
@@ -1353,25 +1488,93 @@ public class DatabaseProvider {
         LogHelper.log(TAG, "result = " + result);
         return result;
     }
-    
+
+    public List<StatisticsData> getStatisticsInfo(String parkinglotId, Date startTime,
+            Date endTime) {
+        List<StatisticsData> statisticsListData = new ArrayList<StatisticsData>();
+        if (mDBConn == null) {
+            LogHelper.log(TAG, "Error : There is no connection with sql server");
+            return statisticsListData;
+        }
+        LogHelper.log("TAG", "startTime = " + startTime.toString());
+        LogHelper.log("TAG", "endTime = " + endTime.toString());
+
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            StringBuilder where = new StringBuilder(" where ");
+            where.append(StatisticsInfo.Columns.PARKINGLOT_ID + "='" + parkinglotId + "'");
+            where.append(" AND " + StatisticsInfo.Columns.DATE_TIME + " between '");
+            where.append(
+                    mDateFormat.format(startTime) + "' AND '" + mDateFormat.format(endTime) + "'");
+
+            String sql = "select * from " + StatisticsInfo.STATISTICSINFO_TABLE + where.toString();
+            LogHelper.log(TAG, "sql = " + sql);
+            pstmt = mDBConn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                do {
+                    StatisticsData data = new StatisticsData();
+                    data.setYear(rs.getInt(StatisticsInfo.Columns.YEAR));
+                    data.setMonth(rs.getInt(StatisticsInfo.Columns.MONTH));
+                    data.setDay(rs.getInt(StatisticsInfo.Columns.DAY));
+                    data.setRevenue(rs.getFloat(StatisticsInfo.Columns.REVENUE));
+                    data.setOccupancyRate(rs.getFloat(StatisticsInfo.Columns.OCCUPANCY_RATE));
+                    data.setCancelRate(rs.getFloat(StatisticsInfo.Columns.CANCEL_RATE));
+                    statisticsListData.add(data);
+                } while (rs.next());
+                LogHelper.log(TAG, "changingHistory = " + statisticsListData.toString());
+            } else {
+                LogHelper.log(TAG, "parkinglot is not exist.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        LogHelper.log(TAG, "statisticsListData.size() = " + statisticsListData.size());
+        return statisticsListData;
+    }
+
     public boolean updateDailyStatisticsInfo(Date date) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return false;
         }
         boolean result = false;
-        int count = 0;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Logger.log("startTime = " + cal.getTime());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        List<String>  parkingLotList = getParkingLotList();
+        long timeAfterOneDay = cal.getTimeInMillis() + javax.management.timer.Timer.ONE_DAY;
+        cal.setTimeInMillis(timeAfterOneDay);
+        Date endDate = cal.getTime();
+        Logger.log("endTime = " + cal.getTime());
+
+        List<String> parkingLotList = getParkingLotList();
         for (String parkinglot : parkingLotList) {
-            float revenue = 0;
-            float occupancy = 0;
-            float cancel = 0;
-            
-            createStatisticsInfo(date, parkinglot, revenue, occupancy, cancel);
+            float revenue = getDailyRevenue(parkinglot, date, endDate);
+            float occupancy = getDailyOccupancyRate(parkinglot, year, month, day);
+            float cancel = getDailyCancelRate(parkinglot, date, endDate);
+
+            result = createStatisticsInfo(date, parkinglot, revenue, occupancy, cancel);
         }
 
-        result = (count == 1) ? true : false;
         LogHelper.log(TAG, "result = " + result);
         return result;
     }
