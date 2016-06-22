@@ -3,7 +3,7 @@ package com.lge.sureparksystem;
 import com.lge.sureparksystem.model.AttendantModel;
 import com.lge.sureparksystem.model.BaseModel;
 import com.lge.sureparksystem.view.AttendantView;
-import com.lge.sureparksystem.view.BaseView;
+import com.lge.sureparksystem.view.BaseFragment;
 
 public class AttendantFactory extends AbstractFactory{
 
@@ -14,9 +14,9 @@ public class AttendantFactory extends AbstractFactory{
     }
 
     @Override
-    BaseView createView() {
-        mBaseView = new AttendantView();
-        return mBaseView;
+    BaseFragment createView() {
+        mBaseFragment = new AttendantView();
+        return mBaseFragment;
     }
 
 }

@@ -2,7 +2,7 @@ package com.lge.sureparksystem;
 
 import com.lge.sureparksystem.model.BaseModel;
 import com.lge.sureparksystem.model.OwnerModel;
-import com.lge.sureparksystem.view.BaseView;
+import com.lge.sureparksystem.view.BaseFragment;
 import com.lge.sureparksystem.view.OwnerView;
 
 public class OwnerFactory extends AbstractFactory {
@@ -14,9 +14,9 @@ public class OwnerFactory extends AbstractFactory {
     }
 
     @Override
-    BaseView createView() {
-        mBaseView = new OwnerView();
-        return mBaseView;
+    BaseFragment createView() {
+        mBaseFragment = new OwnerView();
+        return mBaseFragment;
     }
 
 }

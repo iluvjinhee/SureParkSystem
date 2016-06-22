@@ -1,6 +1,7 @@
 package com.lge.sureparksystem.view;
 
-public interface BaseView {
-//    void setContentView(int ResourceID);
+import android.os.Bundle;
 
+public interface BaseView {
+    void requsetServer(RequestData rd, Bundle bundle);
 }

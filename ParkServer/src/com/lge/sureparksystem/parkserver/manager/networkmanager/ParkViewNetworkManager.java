@@ -5,9 +5,11 @@ import java.net.Socket;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 
 public class ParkViewNetworkManager extends NetworkManager {
@@ -34,7 +36,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 	}
 	
 	@Override
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
@@ -52,7 +54,8 @@ public class ParkViewNetworkManager extends NetworkManager {
 		case WELCOME_DISPLAY:
 		case QR_START:
 		case CONFIRMATION_RESPONSE:
-			sendMessage(jsonObject);
+			send(jsonObject);
+			callAttendant("confirmation information error");
 			break;
 		case CONFIRMATION_SEND:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
@@ -62,5 +65,12 @@ public class ParkViewNetworkManager extends NetworkManager {
 		}
 		
 		return;
+	}
+
+	private void callAttendant(String string) {
+		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
+		message.setType(string);
+		
+		getEventBus().post(new ParkHereNetworkManagerTopic(message));		
 	}
 }

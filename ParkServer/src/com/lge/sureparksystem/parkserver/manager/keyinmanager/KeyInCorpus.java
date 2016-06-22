@@ -155,7 +155,7 @@ public class KeyInCorpus {
 		"Turn Off Slot 5",
 	};
 
-	public static final String[] SuccessAuthetication = {
+	public static final String[] SuccessAuthentication = {
 		"Success Authentication",
 		"Success Login"
 	};

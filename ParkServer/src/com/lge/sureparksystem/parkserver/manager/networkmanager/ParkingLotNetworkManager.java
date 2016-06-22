@@ -35,7 +35,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 	}
 	
 	@Override
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
@@ -62,7 +62,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case ENTRY_GATE_LED_CONTROL:
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
-			sendMessage(jsonObject);
+			send(jsonObject);
 			break;
 		case ENTRY_GATE_STATUS:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
@@ -70,13 +70,13 @@ public class ParkingLotNetworkManager extends NetworkManager {
 				DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
 				outMessage.setCommand("green");
 				
-				sendMessage(MessageParser.convertToJSONObject(outMessage));				
+				send(MessageParser.convertToJSONObject(outMessage));				
 			} else {
 				if(message.getStatus().equalsIgnoreCase("DOWN")) {
 					DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
 					outMessage.setCommand("red");
 					
-					sendMessage(MessageParser.convertToJSONObject(outMessage));				
+					send(MessageParser.convertToJSONObject(outMessage));				
 				}
 			}
 			break;
@@ -86,12 +86,12 @@ public class ParkingLotNetworkManager extends NetworkManager {
 				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
 				outMessage.setCommand("green");
 				
-				sendMessage(MessageParser.convertToJSONObject(outMessage));	
+				send(MessageParser.convertToJSONObject(outMessage));	
 			} else if(message.getStatus().equalsIgnoreCase("DOWN")) {
 				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
 				outMessage.setCommand("red");
 				
-				sendMessage(MessageParser.convertToJSONObject(outMessage));	
+				send(MessageParser.convertToJSONObject(outMessage));	
 			}
 			break;
 		default:

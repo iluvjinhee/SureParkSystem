@@ -8,6 +8,7 @@ import java.util.Random;
 import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
@@ -98,13 +99,17 @@ public class KeyboardInManager extends ManagerTask {
 			dataMessage.setSlotNumber(Integer.valueOf(typedMessage.replaceAll("[^0-9]", "")));
 			dataMessage.setCommand("off");
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
-		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthetication)) {
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.SuccessAuthentication)) {
 			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("ok");
+			dataMessage.setAuthority(DatabaseInfo.Authority.ID_TYPE.DRIVER);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.FailAuthetication)) {
 			DataMessage dataMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
 			dataMessage.setResult("nok");
+			jsonObject = MessageParser.convertToJSONObject(dataMessage);
+		} else if (containsCaseInsensitive(typedMessage, KeyInCorpus.ResetParkingLot)) {
+			DataMessage dataMessage = new DataMessage(MessageType.RESET);
 			jsonObject = MessageParser.convertToJSONObject(dataMessage);
 		}
 		

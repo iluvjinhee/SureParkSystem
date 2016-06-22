@@ -5,9 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.lge.sureparksystem.parkserver.manager.securitymanager.AES;
-import com.lge.sureparksystem.parkserver.manager.securitymanager.XXTEA;
 
-public class AESTest {
+public class XXTEATest {
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -21,10 +20,10 @@ public class AESTest {
 		String plaintext = "test text 123\0\0\0";
 		String encryptionKey = "0123456789abcdef";
 		
-		byte[] decrypted = null;
+		String decrypted = null;
 		try {
-			byte[] cipher = XXTEA.encrypt(plaintext, encryptionKey);
-			decrypted = XXTEA.decrypt(cipher, encryptionKey);
+			byte[] cipher = AES.encrypt(plaintext, encryptionKey);
+			decrypted = AES.decrypt(cipher, encryptionKey);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,10 +37,10 @@ public class AESTest {
 		String plaintext = "{\"EventType\":\"OPEN_THE_GATE\"";
 		String encryptionKey = "1234567890";
 		
-		byte[] decrypted = null;
+		String decrypted = null;
 		try {
-			byte[] cipher = XXTEA.encrypt(plaintext, encryptionKey);
-			decrypted = XXTEA.decrypt(cipher, encryptionKey);
+			byte[] cipher = AES.encrypt(plaintext, encryptionKey);
+			decrypted = AES.decrypt(cipher, encryptionKey);
 		} catch (Exception e) {
 			;
 		}

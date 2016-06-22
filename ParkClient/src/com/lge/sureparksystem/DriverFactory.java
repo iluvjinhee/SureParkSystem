@@ -2,7 +2,7 @@ package com.lge.sureparksystem;
 
 import com.lge.sureparksystem.model.BaseModel;
 import com.lge.sureparksystem.model.DriverModel;
-import com.lge.sureparksystem.view.BaseView;
+import com.lge.sureparksystem.view.BaseFragment;
 import com.lge.sureparksystem.view.DriverView;
 
 public class DriverFactory extends AbstractFactory {
@@ -14,9 +14,9 @@ public class DriverFactory extends AbstractFactory {
     }
 
     @Override
-    BaseView createView() {
-        mBaseView = new DriverView();
-        return mBaseView;
+    BaseFragment createView() {
+        mBaseFragment = new DriverView();
+        return mBaseFragment;
     }
 
 }

@@ -3,12 +3,12 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
-import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Logger;
+import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.StatisticsManagerTopic;
 
 public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {
@@ -29,14 +29,14 @@ public class ParkHereNetworkManager extends NetworkManager {
 		super(serverPort);
 	}
 	
-	public void sendMessage(JSONObject jsonObject) {
+	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			socketForServer.send(jsonObject);
 		}
 	}
 	
 	@Override
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
@@ -50,6 +50,34 @@ public class ParkHereNetworkManager extends NetworkManager {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
 		switch (messageType) {
+		case CREATE_DRIVER:
+		case CREATE_ATTENDANT:
+		case REMOVE_ATTENDANT:
+			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
+			break;
+		case PARKING_LOT_INFO_REQUEST:
+		case PARKING_LOT_STATUS_REQUEST:
+		case RESERVATION_REQUEST:
+		case RESERVATION_INFO_REQUEST:
+		case CANCEL_REQUEST:
+		case CHANGE_PARKING_FEE:
+		case CHANGE_GRACE_PERIOD:
+		case ADD_PARKING_LOT:
+		case REMOVE_PARKING_LOT:
+			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			break;
+		case RESPONSE:
+		case PARKING_LOT_LIST:
+		case PARKING_LOT_STATUS:
+		case NOTIFICATION:
+		case RESERVATION_INFORMATION:
+		case PARKING_LOT_STATISTICS:
+		case CHANGE_RESPONSE:
+			send(jsonObject);
+			break;
+		case PARKING_LOT_STATS_REQUEST:
+			getEventBus().post(new StatisticsManagerTopic(jsonObject));
+			break;
 		default:
 			break;
 		}

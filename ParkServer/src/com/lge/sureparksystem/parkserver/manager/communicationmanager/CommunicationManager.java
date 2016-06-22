@@ -61,7 +61,6 @@ public class CommunicationManager extends ManagerTask {
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			
 			controlEntryGate("down");
-			
 			break;	
 		case EXIT_GATE_ARRIVE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));

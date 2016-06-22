@@ -244,6 +244,10 @@ public class DatabaseProvider {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return false;
         }
+        if (newuser.getEmail() == null) {
+            LogHelper.log(TAG, "Error : email is null.");
+            return false;
+        }
         if (isExistingUser(newuser.getEmail())) {
             LogHelper.log(TAG, "Error : email is alreday exist.");
             return false;
@@ -513,7 +517,7 @@ public class DatabaseProvider {
                 if (rs.next()) {
                     LogHelper.log(TAG, "Warning :: there are many reservation.");
                 }
-                LogHelper.log(TAG, "reservation = " + reservation.toString());
+                LogHelper.log(TAG, "reservation  = " + reservation.toString());
             } else {
                 LogHelper.log(TAG, "matched reservation is not exist.");
             }
@@ -533,45 +537,49 @@ public class DatabaseProvider {
                 e.printStackTrace();
             }
         }
-        LogHelper.log(TAG, "size of reservation  = " + reservation);
         return reservation;
     }
 
-    public int updateReservationState(int id, int state) {
+    public boolean updateReservationState(int reservationId, String email, int state) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
-            return -1;
+            return false;
         }
         int count = 0;
+        boolean result = false;
         StringBuilder set = new StringBuilder(" set ");
         set.append(Reservation.Columns.RESERVATION_STATE + "=" + state);
 
         StringBuilder where = new StringBuilder(" where ");
-        where.append(Reservation.Columns.ID + "=" + id);
+        where.append(Reservation.Columns.ID + "=" + reservationId);
+        where.append(" AND " + Reservation.Columns.USER_EMAIL + "='" + email + "'");
 
         count = doExecUpdateSQL(Reservation.RESERVATION_TABLE, set.toString(), where.toString());
 
-        LogHelper.log(TAG, "updated count = " + count);
-        return count;
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
     }
 
-    public int updateReservationPayment(int id, int state, float payment) {
+    public boolean updateReservationPayment(int reservationId, int state, float payment) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
-            return -1;
+            return false;
         }
         int count = 0;
+        boolean result = false;
         StringBuilder set = new StringBuilder(" set ");
         set.append(Reservation.Columns.RESERVATION_STATE + "=" + state);
         set.append(", " + Reservation.Columns.PAYMENT + "=" + payment);
 
         StringBuilder where = new StringBuilder(" where ");
-        where.append(Reservation.Columns.ID + "=" + id);
+        where.append(Reservation.Columns.ID + "=" + reservationId);
 
         count = doExecUpdateSQL(Reservation.RESERVATION_TABLE, set.toString(), where.toString());
 
-        LogHelper.log(TAG, "updated count = " + count);
-        return count;
+        result = (count == 1) ? true : false;
+        LogHelper.log(TAG, "result = " + result);
+        return result;
     }
 
     /*************************************************************************************/
@@ -738,9 +746,9 @@ public class DatabaseProvider {
                 do {
                     parkingLotList.add(rs.getString(ParkingLot.Columns.LOGIN_ID));
                 } while (rs.next());
-                LogHelper.log(TAG, "reservation = " + parkingLotList.toString());
+                LogHelper.log(TAG, "parkingLotList = " + parkingLotList.toString());
             } else {
-                LogHelper.log(TAG, "parkinglot is not exist.");
+                LogHelper.log(TAG, "parkingLotList is not exist.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -774,9 +782,9 @@ public class DatabaseProvider {
         ResultSet rs = null;
         try {
             StringBuilder where = new StringBuilder(" where ");
-            where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+            where.append(ParkingLot.Columns.LOGIN_ID + "='" + id +"'");
 
-            String sql = "select * from " + Reservation.RESERVATION_TABLE + where.toString();
+            String sql = "select * from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
             pstmt = mDBConn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -792,7 +800,7 @@ public class DatabaseProvider {
                 if (rs.next()) {
                     LogHelper.log(TAG, "Warning :: result is not one.");
                 }
-                LogHelper.log(TAG, "reservation = " + parkinglot.toString());
+                LogHelper.log(TAG, "parkinglot = " + parkinglot.toString());
             } else {
                 LogHelper.log(TAG, "matched reservation is not exist.");
             }
