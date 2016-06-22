@@ -57,14 +57,6 @@
             android:prompt="@string/card_info" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/qr_iamge"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:gravity="start"
-        android:src="@drawable/qr_image"
-        android:textColor="@color/white" />
-
     <TextView
         android:id="@+id/reserved_time"
         android:layout_width="match_parent"
@@ -112,6 +104,14 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:text="@string/park_description"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/qr_iamge"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="start"
+        android:src="@drawable/qr_image"
         android:textColor="@color/white" />
 
     <Button

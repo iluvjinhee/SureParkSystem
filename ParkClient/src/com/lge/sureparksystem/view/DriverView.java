@@ -49,12 +49,12 @@ public class DriverView extends BaseFragment implements OnClickListener {
     private ImageView mQRImage;
     private Button mButton;
     private EditText mCard_number;
-    private boolean mIsReservedUser = false; // Check if reserved info exist
+    private boolean mIsReservedUser = false; // If reserved info exist
     private DriverModel mDriverModel;
     private int mSelectedTime = 0;
     private int mSelectedParkId = 0;
     private String mSelectedConfirmationNum;
-    private ImageView mSelectedWQImage;
+    private Bitmap mCurrentQRImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -163,6 +163,10 @@ public class DriverView extends BaseFragment implements OnClickListener {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 LayoutInflater lf = getActivity().getLayoutInflater();
                 View layout = lf.inflate(R.layout.qr_image_dialog, null);
+                if (mCurrentQRImage != null) {
+                    ImageView iv = (ImageView)layout.findViewById(R.id.confirmation_iamge);
+                    iv.setImageBitmap(mCurrentQRImage);
+                }
                 dialog.setView(layout).setTitle(R.string.qr_dialog_title);
                 dialog.setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -174,7 +178,10 @@ public class DriverView extends BaseFragment implements OnClickListener {
             }
         });
 
-        if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
+        if (mIsReservedUser && mDriverModel != null && mDriverModel.mReservation_Information != null) {
+            Point point = new Point(900, 900);
+            CreateQRCodeAsyncTask ct = new CreateQRCodeAsyncTask(point);
+            ct.execute(mDriverModel.mReservation_Information.confirmationinfo);
         }
         mButton.setOnClickListener(this);
         if (mIsReservedUser) {
@@ -292,91 +299,71 @@ public class DriverView extends BaseFragment implements OnClickListener {
         }
     }
 
-    // public void getQRImage(String codeurl) {
-    // try {
-    // QRCodeWriter qrCodeWriter = new QRCodeWriter();
-    // BitMatrix bitMatrix = qrCodeWriter.encode(codeurl, BarcodeFormat.QR_CODE,
-    // 200, 200);
-    // MatrixToImageConfig matrixToImageConfig = new
-    // MatrixToImageConfig(0xFF2e4e96, 0xFFFFFFFF);
-    // BufferedImage bufferedImage =
-    // MatrixToImageWriter.toBufferedImage(bitMatrix, matrixToImageConfig);
-    // ImageIO.write(bufferedImage, "png", new File("C:\\qrcode.png"));
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
+    private class CreateQRCodeAsyncTask extends AsyncTask<String, Void, Bitmap> {
+        // QR code 색상
+        private static final int WHITE = 0xFFFFFFFF;
+        private static final int BLACK = 0xFF000000;
 
-//    private class CreateQRCodeAsyncTask extends AsyncTask<String, Void, Bitmap> {
-//        // QR code 색상
-//        private static final int WHITE = 0xFFFFFFFF;
-//        private static final int BLACK = 0xFF000000;
-//
-//        // QR code bitmap 크기 비율
-//        private static final float REDUCE_RATIO = 0.8f;
-//
-//        // 타겟 image view
-//        private ImageView mTagetView;
-//
-//        // 화면 크기
-//        private Point mDisplaySize;
-//
-//        public CreateQRCodeAsyncTask(Imageview taget, Point displaySize) {
-//            mTagetView = taget;
-//            mDisplaySize = displaySize;
-//        }
-//
-//        @Override
-//        protected Bitmap doInBackground(String... params) {
-//            // zxing library class (QR code writer)
-//            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-//
-//            try {
-//                // 화면 비율 대비 QR 코드 이미지 크기 조정
-//                int temp = mDisplaySize.x;
-//
-//                if (temp > mDisplaySize.y) {
-//                    temp = mDisplaySize.y;
-//                }
-//
-//                int dWidth = (int)((float)temp * REDUCE_RATIO);
-//                int dHeight = (int)((float)temp * REDUCE_RATIO);
-//
-//                // QR code로 인코딩해서 비트맵 array 정보를 얻어옴 zxing 자체 class임
-//                BitMatrix result = qrCodeWriter.encode(params[0], BarcodeFormat.QR_CODE, dWidth, dHeight);
-//                int width = result.getWidth();
-//                int height = result.getHeight();
-//
-//                // Bitmap pixel array
-//                int[] pixels = new int[width * height];
-//
-//                // BitMatrix 정보를 바탕으로 bitmap 픽셀 array 에 color 입력
-//                // All are 0, or black, by default
-//                for (int y = 0; y < height; y++) {
-//                    int offset = y * width;
-//                    for (int x = 0; x < width; x++) {
-//                        pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
-//                    }
-//                }
-//
-//                // pixel array 크기의 bitmap 생성
-//                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//
-//                // bitmap에 pixel 정보 입력
-//                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-//
-//                return bitmap;
-//            } catch (Exception e) {
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap result) {
-//            if (result != null && mTagetView != null) {
-//                // image view 에 QR code 업데이트
-//                mTagetView.setImageBitmap(result);
-//                mTagetView.invalidate();
-//            }
-//        }
-//    }
+        // QR code bitmap 크기 비율
+        private static final float REDUCE_RATIO = 0.8f;
+
+        // 화면 크기
+        private Point mDisplaySize;
+
+        public CreateQRCodeAsyncTask(Point displaySize) {
+            mDisplaySize = displaySize;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            // zxing library class (QR code writer)
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+
+            try {
+                // 화면 비율 대비 QR 코드 이미지 크기 조정
+                int temp = mDisplaySize.x;
+
+                if (temp > mDisplaySize.y) {
+                    temp = mDisplaySize.y;
+                }
+
+                int dWidth = (int)((float)temp * REDUCE_RATIO);
+                int dHeight = (int)((float)temp * REDUCE_RATIO);
+
+                // QR code로 인코딩해서 비트맵 array 정보를 얻어옴 zxing 자체 class임
+                BitMatrix result = qrCodeWriter.encode(params[0], BarcodeFormat.QR_CODE, dWidth, dHeight);
+                int width = result.getWidth();
+                int height = result.getHeight();
+
+                // Bitmap pixel array
+                int[] pixels = new int[width * height];
+
+                // BitMatrix 정보를 바탕으로 bitmap 픽셀 array 에 color 입력
+                // All are 0, or black, by default
+                for (int y = 0; y < height; y++) {
+                    int offset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+                    }
+                }
+
+                // pixel array 크기의 bitmap 생성
+                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+                // bitmap에 pixel 정보 입력
+                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+
+                return bitmap;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            if (result != null) {
+                mCurrentQRImage = result;
+            }
+        }
+    }
 }
