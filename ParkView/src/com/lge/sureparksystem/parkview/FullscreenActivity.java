@@ -1,12 +1,6 @@
 package com.lge.sureparksystem.parkview;
 
-import java.util.Random;
-
 import com.lge.sureparksystem.parkview.controller.Controller;
-import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
-import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
-import com.lge.sureparksystem.parkview.qrcode.IntentResult;
-import com.lge.sureparksystem.parkview.tts.TTSWrapper;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,12 +8,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.

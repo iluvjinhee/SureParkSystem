@@ -9,7 +9,8 @@ import org.json.simple.JSONObject;
 import com.lge.sureparksystem.parkview.controller.Controller;
 
 public class SocketForClient {
-	public static final String IP_ADDRESS = "192.168.1.184";
+	//public static final String IP_ADDRESS = "192.168.1.184";
+	public static final String IP_ADDRESS = "192.168.43.214";
 	public static final int PORT = 9898;
 
 	String dstAddress;
@@ -37,7 +38,6 @@ public class SocketForClient {
 			    	if(socket == null) {
 				        try {
 				        	socket = new Socket(dstAddress, dstPort);
-				        	
 				    		receiver = new ReceiverAsync(controller);
 				    		
 				        	if(socket.isConnected()) {			

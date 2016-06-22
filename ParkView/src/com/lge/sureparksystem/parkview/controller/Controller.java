@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.util.Log;
 
 public class Controller {
+	private final String TAG = "ParkView";
+	
 	private String name = null;
 	private FullscreenActivity fullScreen = null;	
 	private SocketForClient clientSocket = null;	
@@ -31,8 +33,6 @@ public class Controller {
 		intentIntegrator = new IntentIntegrator(fullScreen);
 		
 		connectServer();
-		
-		welcome();
 	}
 	
 	public void destroy() {
@@ -78,29 +78,35 @@ public class Controller {
 	}
 
 	private void setName(String qrcode) {
-		JSONParser jsonParser = new JSONParser();
+		/*JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = null;
+		
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(qrcode);
+			if(jsonParser.parse(qrcode) != null)
+				jsonObject = (JSONObject) jsonParser.parse(qrcode);
+			else
+				return;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		name = (String) jsonObject.get("name");
+		if(jsonObject.get("name") != null) {
+			name = (String) jsonObject.get("name");
+		}*/
 	}
 
 	public void welcome() {
-		String msg = "Welcome, Sure Park System. Good morning friend!";
+		String msg = "Sure Park";
 		
-		fullScreen.setDisplay("Welcome!\n Sure Park.", 50);				
-		tts.speak(msg);
+		fullScreen.setDisplay(msg, 100);				
+//		tts.speak(msg);
 	}
 	
 	public void assignSlot(int slotNumber, String name) {
 		String msg = "Hello" + name + ", A wonderful morning to a wonderful friend like you! Your Parking Slot is ";		
 		
-		fullScreen.setDisplay(String.valueOf(slotNumber), 250);				
+		fullScreen.setDisplay("" + slotNumber, 250);				
 		tts.speak(msg + slotNumber);
 	}
 	
@@ -112,7 +118,7 @@ public class Controller {
 	}
 	
 	public void scanConfirmation() {
-		String msg = "Scan your confirmation information.";	
+		String msg = "Welcome, Scan your confirmation information.";	
 	    
 		tts.speak(msg);
 		intentIntegrator.initiateScan();
@@ -123,12 +129,15 @@ public class Controller {
 		
 		switch(message.getMessageType()) {
 		case WELCOME_DISPLAY:
+			Log.d(TAG, MessageType.WELCOME_DISPLAY.getText());
 			welcome();
 			break;
 		case QR_START:
+			Log.d(TAG, MessageType.QR_START.getText());
 			scanConfirmation();
 			break;
-		case AUTHENTICATION_RESPONSE:
+		case CONFIRMATION_RESPONSE:
+			Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText());
 			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
 				assignSlot(((DataMessage) message).getSlotNumber(), getName());
 			else
