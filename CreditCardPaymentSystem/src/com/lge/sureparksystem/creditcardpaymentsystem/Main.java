@@ -9,10 +9,14 @@ import java.net.Socket;
 import org.apache.commons.validator.CreditCardValidator;
 
 public class Main {
-	static CreditCardValidator creditCardValidator = null;
+	@SuppressWarnings("deprecation")
+	private static CreditCardValidator creditCardValidator = null;
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws IOException {
 		creditCardValidator = new CreditCardValidator();
+		
+		System.out.println("Credit Card Payment System is running.");
 
 		while (true) {
 			ServerSocket listener = new ServerSocket(9090);
@@ -30,8 +34,10 @@ public class Main {
 					boolean isValid = validateCard(input);
 					if (isValid) {
 						out.println("OK");
+						System.out.println("A credit card is validated to ok!");
 					} else {
 						out.println("ERROR");
+						System.out.println("A credit card is validated to error!");
 					}
 				}
 			} finally {
@@ -42,6 +48,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static boolean validateCard(String card) {
 		return creditCardValidator.isValid(card);
 	}
