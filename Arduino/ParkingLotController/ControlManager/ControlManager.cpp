@@ -25,13 +25,16 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
+#include <SPI.h>
 #include "ControlManager.h"
 #include "..\CommManager\CommManager.h"
 
 #include "SensorManager.h"
+#include "ConfigManager.h"
 #include "..\DeviceDriver\LEDDriver.h"
 #include "..\DeviceDriver\EntryExitBeamDriver.h"
 #include "..\DeviceDriver\GateLiftDriver.h"
+
 
 
 
@@ -39,6 +42,12 @@ static void DoWhen_DriverArriveAtEntryGate(void);
 static void DoWhen_DriverLeaveAtEntryGate(void);
 static void DoWhen_DriverArriveAtExitGate(void);
 static void DoWhen_DriverLeaveAtExitGate(void);
+static void DoWhen_DriverArriveAtParkingSlot(int iSlot);
+static void DoWhen_DriverLeaveAtParkingSlot(int iSlot);
+static void SetChangedSlot(int iSlot);
+
+static int iChangedSlot;
+static int iRequestedLed;
 
 void ControlManagerSetup()  
 {
@@ -47,20 +56,40 @@ void ControlManagerSetup()
 	GateLiftSetup();
 					   
 	SensorManagerSetup();  
+
+	ConfigManagerSetup();  
+
+	ClrChangedSlot();
+	ClrRequestedLed();
+	
 }
 
 void ControlManagerLoop() 
 {
 	bool bOnOff;
-	
-	SensorManagerLoop();
+	static int iSlot=0;
 
+	SensorManagerLoop();
+	ConfigManagerLoop();
+	LEDLoop();
+	
 	if( GetStallSensorReady() )
 	{
-		SetParkingStallLED(PARKSLOT_001, CheckParkSlotOccupied(PARKSLOT_001));
-		SetParkingStallLED(PARKSLOT_002, CheckParkSlotOccupied(PARKSLOT_002));
-		SetParkingStallLED(PARKSLOT_003, CheckParkSlotOccupied(PARKSLOT_003));
-		SetParkingStallLED(PARKSLOT_004, CheckParkSlotOccupied(PARKSLOT_004));
+//		SetParkingStallLED(PARKSLOT_001, !CheckParkSlotOccupied(PARKSLOT_001));
+//		SetParkingStallLED(PARKSLOT_002, !CheckParkSlotOccupied(PARKSLOT_002));
+//		SetParkingStallLED(PARKSLOT_003, !CheckParkSlotOccupied(PARKSLOT_003));
+//		SetParkingStallLED(PARKSLOT_004, !CheckParkSlotOccupied(PARKSLOT_004));
+
+		if( iSlot >= PARKSLOT_MAX )
+		{
+			iSlot = 0;
+		}
+		else
+		{
+			DoWhen_DriverArriveAtParkingSlot(iSlot);
+			DoWhen_DriverLeaveAtParkingSlot(iSlot);
+			iSlot++;
+		}
 
 		if( DriverArriveAtEntryGate() == true )
 		{
@@ -98,101 +127,100 @@ void ControlManagerLoop()
 			;
 		}
 	}
-
-
-	
-	
-
 } //  LOOP
 
 static void DoWhen_DriverArriveAtEntryGate(void)
 {
-	EntryGateOpen();
-	SetEntryGateLED_Green();
-/*
-	PARKINGLOT_STATUS
-	DRIVER_ARRIVED_ATENTRYGATE,
-	DRIVER_LEAVE_ATENTRYGATE,
-	DRIVER_ARRIVED_ATEXITGATE,
-	DRIVER_LEAVE_ATEXITGATE,
-	DRIVERATRIVED_SLOT1,
-	DRIVERATRIVED_SLOT2,
-	DRIVERATRIVED_SLOT3,
-	DRIVERATRIVED_SLOT4,	
-	CLIENTTOSERVERMSG_MAX
-*/	
-	
-	SetMsgNumber(DRIVER_ARRIVED_ATENTRYGATE);
-	SetSendToServer(true);
+//	EntryGateOpen();
+//	SetEntryGateLED_Green();
 
+	SetMsgNumber(CS_EntryGate_Arrive);
+	SetSendToServer(true);
 }
 
 static void DoWhen_DriverLeaveAtEntryGate(void)
 {
-	EntryGateClose();
-	SetEntryGateLED_Red();
-/*
-	PARKINGLOT_STATUS
-	DRIVER_ARRIVED_ATENTRYGATE,
-	DRIVER_LEAVE_ATENTRYGATE,
-	DRIVER_ARRIVED_ATEXITGATE,
-	DRIVER_LEAVE_ATEXITGATE,
-	DRIVERATRIVED_SLOT1,
-	DRIVERATRIVED_SLOT2,
-	DRIVERATRIVED_SLOT3,
-	DRIVERATRIVED_SLOT4,	
-	CLIENTTOSERVERMSG_MAX
-*/	
-	
-	SetMsgNumber(DRIVER_LEAVE_ATENTRYGATE);
+//	EntryGateClose();
+//	SetEntryGateLED_Red();
+
+	SetMsgNumber(CS_EntryGate_PassBy);
 	SetSendToServer(true);
 
 }
 
 static void DoWhen_DriverArriveAtExitGate(void)
 {
-	ExitGateOpen();
-	SetExitGateLED_Green();
-/*
-	PARKINGLOT_STATUS
-	DRIVER_ARRIVED_ATENTRYGATE,
-	DRIVER_LEAVE_ATENTRYGATE,
-	DRIVER_ARRIVED_ATEXITGATE,
-	DRIVER_LEAVE_ATEXITGATE,
-	DRIVERATRIVED_SLOT1,
-	DRIVERATRIVED_SLOT2,
-	DRIVERATRIVED_SLOT3,
-	DRIVERATRIVED_SLOT4,	
-	CLIENTTOSERVERMSG_MAX
-*/	
-	
-	SetMsgNumber(DRIVER_ARRIVED_ATEXITGATE);
+//	ExitGateOpen();
+//	SetExitGateLED_Green();
+
+	SetMsgNumber(CS_ExitGate_Arrive);
 	SetSendToServer(true);
 
 }
 
 static void DoWhen_DriverLeaveAtExitGate(void)
 {
-	ExitGateClose();
-	SetExitGateLED_Red();
-/*
-	PARKINGLOT_STATUS
-	DRIVER_ARRIVED_ATENTRYGATE,
-	DRIVER_LEAVE_ATENTRYGATE,
-	DRIVER_ARRIVED_ATEXITGATE,
-	DRIVER_LEAVE_ATEXITGATE,
-	DRIVERATRIVED_SLOT1,
-	DRIVERATRIVED_SLOT2,
-	DRIVERATRIVED_SLOT3,
-	DRIVERATRIVED_SLOT4,	
-	CLIENTTOSERVERMSG_MAX
-*/	
-	SetMsgNumber(DRIVER_LEAVE_ATEXITGATE);
+//	ExitGateClose();
+//	SetExitGateLED_Red();
+
+	SetMsgNumber(CS_ExitGate_PassBy);
 	SetSendToServer(true);
 
 }
 
 
+static void DoWhen_DriverArriveAtParkingSlot(int iSlot)
+{
+	if( GetStallSensorChanged((T_StallSensorID)iSlot) == true &&  GetStallSensorOccupied((T_StallSensorID)iSlot) == OCCUFIED )
+	{
+		SetStallSensorChanged((T_StallSensorID)iSlot, false);
+		SetMsgNumber(CS_Parkingslot_Sensor);
+		SetChangedSlot(iSlot);
+		SetSendToServer(true);
+	}
+}
+
+static void DoWhen_DriverLeaveAtParkingSlot(int iSlot)
+{
+	if( GetStallSensorChanged((T_StallSensorID)iSlot) == true &&  GetStallSensorOccupied((T_StallSensorID)iSlot) == UNOCCUFIED )
+	{
+		SetStallSensorChanged((T_StallSensorID)iSlot, false);
+		SetMsgNumber(CS_Parkingslot_Sensor);
+		SetChangedSlot(iSlot);
+		SetSendToServer(true);
+	}
+}
+
+static void SetChangedSlot(int iSlot)
+{
+	iChangedSlot = iSlot;
+}
+
+int GetChangedSlot(void)
+{
+	return iChangedSlot;
+}
+
+int ClrChangedSlot(void)
+{
+	iChangedSlot = NOT;
+}
+
+
+int SetRequestedLed(int iSlot)
+{
+	iRequestedLed = iSlot;
+}
+
+int GetRequestedLed(void)
+{
+	return iRequestedLed;
+}
+
+int ClrRequestedLed(void)
+{
+	iRequestedLed = NOT;
+}
 
 
 

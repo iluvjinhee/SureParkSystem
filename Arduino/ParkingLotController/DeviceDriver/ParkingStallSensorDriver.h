@@ -28,6 +28,21 @@
 #ifndef _PARKINGSTALLSENSORDRIVER_H_
 #define _PARKINGSTALLSENSORDRIVER_H_
 
+#define AVG_CNT		5		//
+#define STALLSENSOR_SAMPLING_CALLBACK_TIMER		20		//
+
+#define DEFAULT_SENSITIVITY				5
+
+#define AUTO_CALI_ENSITIVITY			5	// sensor average/AUTO_CALI_ENSITIVITY
+#define AUTO_CALI_ENSITIVITY_MAX		10	// 
+#define AUTO_CALI_ENSITIVITY_MIN		3	//
+
+#define STALLSENSOR_INITCNT_MAX			10
+#define STALLSENSOR_UNOCCUFIED_MIN		19
+
+/* ABS */
+#define ABS(a) ((a) >= 0 ? (a) : -(a))
+
 typedef enum
 {
 	STALLSENSOR_001 = 0,	///< Stall Sensor 1
@@ -40,13 +55,15 @@ typedef enum
 #define OCCUFIED		1
 #define UNOCCUFIED	0
 
-int __debug_print_stallsensor(void);
+int PrintParkingLostStatus(void);
 
 void ParkingStallSensorSetup();
 void ParkingStallSensorLoop();
 
 int GetStallSensorReady(void);
 int GetStallSensorOccupied(T_StallSensorID t_StallSensorId);
+int GetStallSensorChanged(T_StallSensorID t_StallSensorId);
+int SetStallSensorChanged(T_StallSensorID t_StallSensorId, int iStatus);
 int SetStallSensorSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt);
 
 #endif // _PARKINGSTALLSENSORDRIVER_H_

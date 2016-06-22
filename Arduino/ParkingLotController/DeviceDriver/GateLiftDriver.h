@@ -22,12 +22,17 @@
 #ifndef _GATELIFTDRIVER_H_
 #define _GATELIFTDRIVER_H_
 
+#define Open  90
+#define Close 0
+
 void GateLiftSetup(void);
 void EntryGateClose(void);
 void EntryGateOpen(void);
 void ExitGateClose(void);
 void ExitGateOpen(void);
 
+int GetEntryGateServo(void);
+int GetExitGateServo(void);
 
 #endif // _GATELIFTDRIVER_H_
 

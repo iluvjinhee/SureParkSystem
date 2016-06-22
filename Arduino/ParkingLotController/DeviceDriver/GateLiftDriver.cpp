@@ -23,12 +23,14 @@
 
 #define EntryGateServoPin 5
 #define ExitGateServoPin 6
-#define Open  90
-#define Close 0
 
 static int delayvalue = 1000;
 static Servo EntryGateServo;
 static Servo ExitGateServo;
+
+static int iEntryGateStatus;
+static int iExitGateStatus;
+
 
 void GateLiftSetup() 
 { 
@@ -66,25 +68,53 @@ void GateLiftLoop()
 #endif  
 } 
 
+static void SetEntryGateServo(int iStatus)
+{
+	iEntryGateStatus = iStatus;
+}
+
+static void SetExitGateServo(int iStatus)
+{
+	iExitGateStatus = iStatus; 
+}
+
 void EntryGateClose(void)
 {
 	EntryGateServo.write(Close); 
+	SetEntryGateServo(Close);
 }
 
 void EntryGateOpen(void)
 {
-	EntryGateServo.write(Open); 
+	EntryGateServo.write(Open);
+	SetEntryGateServo(Open);
 }
 
 void ExitGateClose(void)
 {
 	ExitGateServo.write(Close);  
+	SetExitGateServo(Close);
 }
 
 void ExitGateOpen(void)
 {
 	ExitGateServo.write(Open);  
+	SetExitGateServo(Open);
 }
+
+int GetEntryGateServo(void)
+{
+	return iEntryGateStatus;
+}
+
+int GetExitGateServo(void)
+{
+	return iExitGateStatus; 
+}
+
+
+
+
 
 
 

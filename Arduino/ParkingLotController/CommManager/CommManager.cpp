@@ -26,39 +26,65 @@
 *
 ************************************************************************************************/
 #include <WiFi.h>
+#include <Timer.h>
+
 #include <ArduinoJson.h>
+#include <xxtea-iot-crypt.h>
 
 #include "CommManager.h"
 #include "..\ControlManager\ControlManager.h"
-#include "..\libraries\Timer\Timer.h"
+#include "..\ControlManager\SensorManager.h"
+#include "..\ControlManager\ConfigManager.h"
+
+#define __DEBUG
 
 //debug
+#ifdef __DEBUG
 #include "..\DeviceDriver\ParkingStallSensorDriver.h"
+#include "..\DeviceDriver\GateLiftDriver.h"
+#endif
 
 #define MAX_TARGET_NUM 5
 #define MAX_WIFI_STRING_LENGTH 50
 
-
-JsonObject& EncodingStrucMsgToJSONmsg(JsonBuffer& buf);
-bool DecodingJSONmsgToStructMsg(JsonBuffer& buf, char *stringMsgJSONformat);
+JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx);
+bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat);
 
 static void printConnectionStatus();
 static void ConnectToWiFi(void);
-static void HeartBeatComm(void){SetMsgNumber(0); SetSendToServer(true); __debug_print_stallsensor();}
+static void HeartBeatComm(void)
+{
+	SetMsgNumber(CS_HeartBeat);
+	SetSendToServer(true);
 
-#define PORTID  550               // IP socket port ID
+	if( GetRunningMode() & 1<<RUN_PRINT_MODE ) PrintParkingLostStatus();
+}
+
+
+#define TEST_LOCAL
+
+#ifdef TEST_LOCAL
+#define PORTID  9897               // IP socket port ID
+
+static IPAddress server(192,168,1,6);  // The server's IP address
+
+#else
+#define PORTID  9897               // IP socket port ID
+static IPAddress server(192,168,1,184);  // The server's IP address
+
+#endif
 
 static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
 static char pass[] = "16swarchitect";
 static char c;                           // Character read from server
 static int status = WL_IDLE_STATUS;      // Network connection status
-static IPAddress server(192,168,1,6);  // The server's IP address
 static WiFiClient client;                // The client (our) socket
 static IPAddress ip;                     // The IP address of the shield
 static IPAddress subnet;                 // The IP address of the shield
 static long rssi;                        // Wifi shield signal strength
 static byte mac[6];                      // Wifi shield MAC address
 
+static int iServerConnected=false;
 
 static int iSendToServer=false;
 static Timer t_HeartBeatTimer;
@@ -66,200 +92,562 @@ static Timer t_HeartBeatTimer;
 static String inputLine;	// Data from server
 static int iMsgNumber=0;
 
-char stringbuf[256]={0};
+static unsigned int iTimeStamp=0;
 
-struct sMessage
+char strBuff[2048]={0};
+
+String CryptResult; 
+char cEncryptBuf[0xff]={0};
+
+String clientMsg[] = {
+	"Authentication_Request",
+	"Parkinglot_Information",
+	"Parkingslot_Sensor",
+	"Parkingslot_LED",
+	"EntryGate_Servo",
+	"ExitGate_Servo",
+	"EntryGate_LED",
+	"ExitGate_LED",
+	"EntryGate_Arrive",
+	"EntryGate_PassBy",
+	"ExitGate_Arrive",
+	"ExitGate_PassBy",
+	"HeartBeat"
+};										//
+
+String serverMsg[] = {
+	"Authentication_Response",
+	"ParkInfo_Request",
+	"EntryGate_Control",
+	"ExitGate_Control",
+	"EntryGate_LED_Control",
+	"ExitGate_LED_Control",
+	"Parkingslot_LED_Control",
+	"Parkingslot_Reset",
+	"Ack"
+};										//
+
+
+
+//--------------------------------------------------- interface start
+// Client to Server
+void CS_JSON_Authentification_Request(char *pcID, char *pcPWD)
 {
-  String send1;
-  String send2;
-  String send3;
-} jTxMsg, jRxMsg;
+}
 
-/*
-void SendStringWiFiClient(void)
+// Server to Client
+void SC_JSON_Authentication_Response(char *pcKey)
 {
-  sendStringMsg = String(stringbuf);
-  client.println(sendStringMsg.substring(0,20));
-  for(int i = 0 ; i < sendStringMsg.length() ; i+=MAX_WIFI_STRING_LENGTH)
-  {
-    client.println(sendStringMsg.substring(i,i+MAX_WIFI_STRING_LENGTH-1));      
-  }
-} */    
-
-static String serverMsg[] = {
-	"OpenEntryGate\n",
-	"OpenExitGate\n",
-	"CloseEntryGate\n",
-	"OpenExitGate\n",
-	"SetEntryGateLED_Green\n",
-	"SetEntryGateLED_Red\n",
-	"SetExitGateLED_Green\n",
-	"SetExitGateLED_Red\n",
-	"SetSlotLedOn\n",
-	"SetSlotLedOff\n"
-};										//
-
-#if 0
-static String clientMsg[] = {
-	"ParkingLotStatus:",
-	"DriverArrivedAtEntryGate",
-	"DriverLeaveAtEntryGate",
-	"DriverArrivedAtExitGate",
-	"DriverLeaveAtExitGate",
-	"DriverAtrived_Slot1",
-	"DriverAtrived_Slot2",
-	"DriverAtrived_Slot3",
-	"DriverAtrived_Slot4",
-};										//
-#endif
-
-static String clientMsg[] = {
-	"Status:00000000",
-	"ArrivedEntryGate",
-	"LeaveEntryGate",
-	"ArrivedExitGate",
-	"LeaveExitGate",
-	"DriverAtrived_Slot1",
-	"DriverAtrived_Slot2",
-	"DriverAtrived_Slot3",
-	"DriverAtrived_Slot4",
-};										//
+}
+//--------------------------------------------------- interface end
 
 
+String Encrypt(const char * msg)
+{
+	String keybuf = F(__CRYPTION_KEY);
+
+	Serial.println();
+	Serial.print("msg:");
+	Serial.println(msg);
+	
+//	Serial.print(F(" Password : "));
+//	Serial.println(keybuf);
+
+	// Setup the Key - Once
+	if(!xxtea.setKey(keybuf))
+	{
+		Serial.println(" Assignment Failed!");
+		return CryptResult;
+	}
+
+	String plaintext = msg;
+//	Serial.print(" Plain Text: ");
+//	Serial.println(plaintext);
+
+	// Perform Encryption on the Data
+	CryptResult = xxtea.encrypt(plaintext);
+	if(CryptResult == F("-FAIL-"))
+	{
+	Serial.println(" Encryption Failed!");
+	return CryptResult;
+	}
+	else
+	{
+	Serial.print(F(" Encrypted Data: "));
+	Serial.println(CryptResult);
+	}
+
+	return CryptResult;
+}
+
+String Decrypt(const char * msg)
+{
+	String keybuf = F(__CRYPTION_KEY);
+//	Serial.print(F(" Password : "));
+//	Serial.println(keybuf);
+
+	Serial.println();
+	Serial.print("msg:");
+	Serial.println(msg);
+
+	// Setup the Key - Once
+	if(!xxtea.setKey(keybuf))
+	{
+		Serial.println(" Assignment Failed!");
+		return CryptResult;
+	}
+
+	// Perform Decryption
+	CryptResult = xxtea.decrypt(msg);
+	if(CryptResult == F("-FAIL-"))
+	{
+	Serial.println(" Decryption Failed!");
+	return CryptResult;
+	}
+	else
+	{
+	Serial.print(F(" Decrypted Data: "));
+	Serial.println(CryptResult);
+	}
+
+	return CryptResult;
+}
+
+
+
+
+JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx)
+{
+	JsonObject& root = buf.createObject();
+
+	root[__STR_MESSAGETYPE]  = clientMsg[iTx];
+
+	switch( iTx )
+	{
+		case CS_Authentication_Request :
+//			root[__STR_ID]  = Encrypt(__ID);		// id:string
+//			root[__STR_PASSWORD] = Encrypt(__PWD);	// pwd:string
+//			root[__STR_ID]  = __ID;		// id:string
+//			root[__STR_PASSWORD] = __PWD;	// pwd:string
+			root[__STR_ID]  = Get_ID();		// id:string
+			root[__STR_PASSWORD] = Get_PWD();	// pwd:string
+			break;
+			
+		case CS_Parkinglot_Information :
+			/*
+			1. slot_number (int)
+			2. slot_status (string[])
+			3. led_status (string[])
+			4. entrygate (string)
+			5. exitgate (string)
+			6. entrygateled (string)
+			7. exitgateled (string)
+			8. entrygate_arrive (string)
+			9. exitgate_arrive (string)
+			*/
+			//1. slot_number (int)
+			root[__STR_SLOT_COUNT] = (int)PARKSLOT_MAX;
+
+			//2. slot_status (string[])
+			{
+				JsonArray& sl_status = root.createNestedArray(__STR_SLOTSTATUS);
+				for( int i=0 ; i<PARKSLOT_MAX ; i++ )
+				{
+					sl_status.add(GetStallSensorOccupied((T_StallSensorID)i) == OCCUFIED ? __STR_1 : __STR_0);	// status : "empty" or "occupied"
+				}
+			}
+
+			//3. led_status (string[])
+			{
+				JsonArray& jled_status =  root.createNestedArray(__STR_LEDSTATUS);
+				for( int i=0 ; i<PARKSLOT_MAX ; i++ )
+				{
+					jled_status.add(GetParkingStallLED(i) == ON ? __STR_1 : __STR_0);	// status : "on" or "off"
+				}
+			}
+			//4. entrygate_status (string)
+			root[__STR_ENTRYGATE] = GetEntryGateServo() == Open ? __STR_1 : __STR_0;	// status : "up" or "down"
+
+			//5. exitgate_status (string)
+			root[__STR_EXITGATE] = GetExitGateServo() == Open ? __STR_1 : __STR_0;	// status : "up" or "down"
+			
+			//6. entrygateled_status (string)
+			root[__STR_ENTRY_LED] = GetEntryGateLED() == GRN ? __STR_1 : __STR_0;	// status : "red" or "green"
+
+			//7. exitgateled_status (string)
+			root[__STR_EXIT_LED] = GetExitGateLED() == GRN ? __STR_1 : __STR_0;	// status : "red" or "green"
+
+			//8. entrygate_arrive (string)
+			root[__STR_ENTRYGATE_ARRIVE] = GetEntryBeamStatus() == BROKEN ? __STR_1 : __STR_0;	// status : "yes" or "no"
+
+			//9. exitgate_arrive (string)
+			root[__STR_EXITGATE_ARRIVE] = GetExitBeamStatus() == BROKEN ? __STR_1 : __STR_0;	// status : "yes" or "no"			
+			break;
+			
+		case CS_Parkingslot_Sensor :
+			root[__STR_SLOT_NUMBER] = GetChangedSlot()+1;
+			root[__STR_STATUS] = GetStallSensorOccupied((T_StallSensorID)GetChangedSlot()) == OCCUFIED ? __STR_OCCUFIED : __STR_EMPTY;	// status : "empty" or "occupied"
+			ClrChangedSlot();
+			break;
+			
+		case CS_Parkingslot_LED :
+			root[__STR_SLOT_NUMBER] = GetParkingStallLED(GetRequestedLed())+1;
+			root[__STR_STATUS] = GetParkingStallLED(GetRequestedLed()) == ON ? __STR_ON : __STR_OFF;	// status : "on" or "off"
+			ClrRequestedLed();
+			break;
+			
+		case CS_EntryGate_Servo :
+			root[__STR_STATUS] = GetEntryGateServo() == Open ? __STR_UP : __STR_DOWN;	// status : "up" or "down"
+			break;
+			
+		case CS_ExitGate_Servo :
+			root[__STR_STATUS] = GetExitGateServo() == Open ? __STR_UP : __STR_DOWN;	// status : "up" or "down"
+			break;
+			
+		case CS_EntryGate_LED :
+			root[__STR_STATUS] = GetEntryGateLED() == RED ? __STR_RED : __STR_GRN;	// status : "red" or "green"
+			break;
+			
+		case CS_ExitGate_LED :
+			root[__STR_STATUS] = GetExitGateLED() == RED ? __STR_RED : __STR_GRN;	// status : "red" or "green"
+			break;
+			
+		case CS_EntryGate_Arrive :
+			break;
+			
+		case CS_EntryGate_PassBy :
+			break;
+			
+		case CS_ExitGate_Arrive :
+			break;
+			
+		case CS_ExitGate_PassBy :
+			break;
+			
+		case CS_HeartBeat :
+			break;
+			
+		default :
+			break;
+	}
+
+	root[__STR_TIMESTAMP] = iTimeStamp++;	// 0 ~ 4294967295(4Bytes)
+	
+	Serial.println();
+	Serial.print("CS-");
+	root.printTo(Serial);
+	
+//	Serial.println("EncodingTxToJSONmsg");
+	return root;
+	
+}
+
+
+bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
+{
+	String sKey;
+	int iMsgIndex;
+	String str;
+	const char* ccMsgType;
+	int iSlotNumber;
+	
+	JsonObject& root = buf.parseObject(stringMsgJSONformat);
+
+	if (!root.success()) {
+		Serial.println("parseObject() failed");
+		return false;
+	}
+
+	ccMsgType = root[__STR_MESSAGETYPE];
+
+	sKey = ccMsgType;
+
+	for( iMsgIndex=0 ; iMsgIndex<SC_CLIENTTOSERVERMSG_MAX ; iMsgIndex++ )
+	{
+		if( sKey.equalsIgnoreCase(serverMsg[iMsgIndex]) == true ) break;
+	}
+
+	switch( iMsgIndex )
+	{
+		case SC_Authentication_Response :
+			str = (const char*)root[__STR_RESULT];
+
+			if( str.equalsIgnoreCase(__STR_OK) )
+			{
+				SetMsgNumber(CS_Parkinglot_Information);
+				SetMsgNumber(CS_Parkinglot_Information);
+				SetSendToServer(true);
+			}
+			else if(str.equalsIgnoreCase(__STR_NOK) )
+			{
+				Serial.println();
+				Serial.println("Authentication Fail.");
+			}
+			break;
+
+		case SC_ParkInfo_Request :
+			Serial.println();
+			Serial.print(sKey);
+			SetMsgNumber(CS_Parkinglot_Information);
+			SetSendToServer(true);
+			break;
+			
+		case SC_EntryGate_Control :
+			str = (const char*)root[__STR_COMMAND];
+
+			if( str.equalsIgnoreCase(__STR_UP) )
+			{
+				EntryGateOpen();
+			}
+			else if( str.equalsIgnoreCase(__STR_DOWN) )
+			{
+				EntryGateClose();
+			}
+			// reply directly
+			SetMsgNumber(CS_EntryGate_Servo);
+			SetSendToServer(true);
+			break;
+
+		case SC_ExitGate_Control :
+			str = (const char*)root[__STR_COMMAND];
+
+			if( str.equalsIgnoreCase(__STR_UP) )
+			{
+				ExitGateOpen();
+			}
+			else if( str.equalsIgnoreCase(__STR_DOWN) )
+			{
+				ExitGateClose();
+			}
+			// reply directly
+			SetMsgNumber(CS_ExitGate_Servo);
+			SetSendToServer(true);
+			break;
+
+		case SC_EntryGate_LED_Control :
+			str = (const char*)root[__STR_COMMAND];
+
+			if( str.equalsIgnoreCase(__STR_GRN) )
+			{
+				SetEntryGateLED_Green();
+			}
+			else if( str.equalsIgnoreCase(__STR_RED) )
+			{
+				SetEntryGateLED_Red();
+			}
+			// reply directly
+			SetMsgNumber(CS_EntryGate_LED);
+			SetSendToServer(true);
+			break;
+
+		case SC_ExitGate_LED_Control :
+			str = (const char*)root[__STR_COMMAND];
+
+			if( str.equalsIgnoreCase(__STR_GRN) )
+			{
+				SetExitGateLED_Green();
+			}
+			else if( str.equalsIgnoreCase(__STR_RED) )
+			{
+				SetExitGateLED_Red();
+			}
+			// reply directly
+			SetMsgNumber(CS_ExitGate_LED);
+			SetSendToServer(true);
+			break;
+
+		case SC_Parkingslot_LED_Control :
+			iSlotNumber = (int)(root[__STR_SLOT_NUMBER]);
+			str = (const char*)root[__STR_COMMAND];
+
+			if( iSlotNumber == 0 )
+			{
+				if( str.equalsIgnoreCase(__STR_ON) )
+				{
+					for( int i=0 ; i<PARKSLOT_MAX ; i++ ) 
+						SetParkingStallLED(i, true);
+				}
+				else if( str.equalsIgnoreCase(__STR_OFF) )
+				{
+					for( int i=0 ; i<PARKSLOT_MAX ; i++ ) 
+						SetParkingStallLED(i, false);
+				}
+			}
+			else if( iSlotNumber > 0 && iSlotNumber < PARKSLOT_MAX )
+			{
+				if( str.equalsIgnoreCase(__STR_ON) )
+				{
+					SetParkingStallLED(iSlotNumber, true);
+				}
+				else if( str.equalsIgnoreCase(__STR_OFF) )
+				{
+					SetParkingStallLED(iSlotNumber, false);
+				}
+				// reply directly
+				SetRequestedLed(iSlotNumber);
+				SetMsgNumber(CS_Parkingslot_LED);
+				SetSendToServer(true);
+			}
+			break;
+			
+		case SC_Parkingslot_Reset :
+			ParkingLotReset();
+			break;
+			
+		case SC_Ack :
+			Serial.println();
+			Serial.print(sKey);
+			Serial.println("-Received.");
+			//SetSendToServer(false);
+			break;
+					
+		default :
+			Serial.println();
+			Serial.print("Not found key..");
+			Serial.println("-Received.");
+			//SetSendToServer(false);
+			break;
+	}
+
+	Serial.println();
+	Serial.print("SC-");
+	root.printTo(Serial);
+
+//	Serial.println("DecodingJSONmsgToRx");
+	return true;
+}
 
 void CommManagerSetup()  
 {
 	ConnectToWiFi();
 	t_HeartBeatTimer.every(5000, HeartBeatComm);
-	SetMsgNumber(0);
-
+	SetMsgNumber(CS_Authentication_Request);
 }
 
 static void ConnectToWiFi(void)
 {
-	Serial.println("Attempting to connect to network...");
-	Serial.print("SSID: ");
-	Serial.println(ssid);
 
-	// Attempt to connect to Wifi network.
-	while ( status != WL_CONNECTED) 
-	{ 
-		Serial.print("Attempting to connect to SSID: ");
+	if( status != WL_CONNECTED )
+	{
+		Serial.println("Attempting to connect to network...");
+		Serial.print("SSID: ");
 		Serial.println(ssid);
-		status = WiFi.begin(ssid, pass);
-	}  
 
-	Serial.println( "Connected to network:" );
-	Serial.println( "\n----------------------------------------" );
+		// Attempt to connect to Wifi network.
+		while ( status != WL_CONNECTED) 
+		{ 
+			Serial.print("Attempting to connect to SSID: ");
+			Serial.println(ssid);
+			status = WiFi.begin(ssid, pass);
+		}  
 
-	// Print the basic connection and network information.
-	printConnectionStatus();
+		Serial.println( "Connected to network:" );
+		Serial.println( "\n----------------------------------------" );
 
-	Serial.println( "\n----------------------------------------\n" );
+		// Print the basic connection and network information.
+		printConnectionStatus();
+
+		Serial.println( "\n----------------------------------------\n" );
+	}
 
 	// Attempt to connect to server
 	while( !client.connect(server, PORTID) )
 	{
 		Serial.println("Attempt to connect to server..");
-		delay(2000);
+		iServerConnected = false;
+		delay(5000);
+		return;
 	}
+	
     
     Serial.println("Connected.");
+	iServerConnected = true;
     Serial.println();
 }
 
 void CommManagerLoop() 
 {
+	StaticJsonBuffer<300> JsonBuffer;  
+	int strBuffIndex = 0;
+
+	// wait for sensor init
+	if( GetStallSensorReady() == false ) return;
+
+	// heartbeat timer update
 	t_HeartBeatTimer.update();
 
-	// Here we attempt connect to the server on the port specified above
-	StaticJsonBuffer<200> jsonBuffer;  
-	int stringbufIndex = 0;
-	Serial.print("\nAttempting to connect to server...");
-
-	if (client.connect(server, PORTID)) 
+	//------------------------------------	
+	// Check socket
+	//------------------------------------
+	if (!client.connected())
 	{
-	  Serial.println("connected");
+		ClrTimeStamp();
+		iServerConnected = false;
+	    Serial.println();
+	    Serial.println("disconnecting.");
+	    client.stop();
+	    ConnectToWiFi();
+		return;
+	}
 
-	  // We write a couple of messages to the server
-	  Serial.print("Server Message: ");
-	  
-	  char c = ' ';      
-	  stringbufIndex = 0;
-	  while (1)
-	  {
-	    if (client.available()) 
-	    {
-	      c = client.read();
-	      if( c == ';' )
-	      {
-	        stringbuf[stringbufIndex] = 0;
-	        break;
-	      }
-	      stringbuf[stringbufIndex++] = c;
-	    }
-	  }       
-	  DecodingJSONmsgToStructMsg(jsonBuffer, stringbuf);
-	  jTxMsg = jRxMsg;
-	  JsonObject& messageEncoding = EncodingStrucMsgToJSONmsg(jsonBuffer);     
-	  messageEncoding.prettyPrintTo(Serial);   
-	  messageEncoding.printTo(stringbuf,sizeof(stringbuf)); 
-	  delay(1000);
-	  String sendStringMsg = stringbuf;
-
-
-	  for(int i = 0 ; i < sendStringMsg.length() ; i+=MAX_WIFI_STRING_LENGTH)
-	  {
-	    client.print(sendStringMsg.substring(i,i+MAX_WIFI_STRING_LENGTH));      
-	  } 
-	  client.println(); 
-	  client.println("Bye.");     
-	  client.println(); 
-	  delay(2000);
-
-	  // That's it. We wait a second, then do it all again.
-	  client.stop();
-	  Serial.println();
-	  Serial.println( "Send JSON message Done...");
-	  delay(1000);
-	  
-	} // if
-	
-#if 0
-	if( iSendToServer )
+	// message for schedule
+	switch( GetTimeStamp() )
 	{
-		// We write a couple of messages to the server
-		client.println(clientMsg[iMsgNumber]);
+		case 0 : SetMsgNumber(CS_Authentication_Request); break;
+		default :
+			break;
+	}
 
-		
-		// Now read a message from the server
-		char c = ' ';  
-		while ( c!= '\n' )
+	if( iSendToServer == true )
+	{
+		//------------------------------------
+		// Write to socket
+		//------------------------------------
+//		Serial.println("write to socket.");
+		JsonObject& messageEncoding = EncodingTxToJSONmsg(JsonBuffer, iMsgNumber);     
+		//messageEncoding.prettyPrintTo(Serial);
+
+		messageEncoding.printTo(strBuff,sizeof(strBuff)); 
+		String sendStringBuf = strBuff;
+		for( int i=0 ; i<sendStringBuf.length() ; i+=MAX_WIFI_STRING_LENGTH)
 		{
-			if( client.available() )
+			client.print(sendStringBuf.substring(i,i+MAX_WIFI_STRING_LENGTH));      
+		}
+		client.println();
+		strBuff[0] = 0;
+		strBuffIndex = 0;
+		SetSendToServer(false);
+	}
+	else
+	{
+		//------------------------------------	
+		// Read from socket
+		//------------------------------------
+//		Serial.println("Read from socket");
+		char c = ' ';      
+		strBuffIndex = 0;
+		while(1)
+		{
+			if (client.available()) 
 			{
-			  c = client.read();
-			  inputLine += c;
+				c = client.read();
+				if( c == '\n' )
+				{
+					strBuff[strBuffIndex] = 0;
+					break;
+				}
+				strBuff[strBuffIndex++] = c;
 			}
 			else break;
 		}
-
-		Serial.println("From Server : ");
-		Serial.println(inputLine);
-		Serial.println();
-
-		inputLine = "";
-		SetSendToServer(false);
-
-		if (!client.connected())
+		
+		if( strBuffIndex > 0 )
 		{
-		    Serial.println();
-		    Serial.println("disconnecting.");
-		    client.stop();
-		    ConnectToWiFi();
-		}
+			DecodingJSONmsgToRx(JsonBuffer, strBuff);
+			strBuff[0] = 0;
+			strBuffIndex = 0;
+		}		
 	}
-#endif	
 } //  LOOP
 
 void SetMsgNumber(int iMsgIndex)
@@ -278,36 +666,20 @@ int GetSendToServer(void)
 	return iSendToServer;
 }
 
-
-
-JsonObject& EncodingStrucMsgToJSONmsg(JsonBuffer& buf)
+int GetServerConnected(void)
 {
-  JsonObject& msg = buf.createObject();
-
-  msg["send1"] = jTxMsg.send1.c_str();
-  msg["send2"] = jTxMsg.send2.c_str();
-  msg["send3"] = jTxMsg.send3.c_str();
-  
-
-  return msg;
+	return iServerConnected;
 }
 
 
-bool DecodingJSONmsgToStructMsg(JsonBuffer& buf, char *stringMsgJSONformat)
+int GetTimeStamp(void)
 {
+	return iTimeStamp;
+}
 
-  JsonObject& msg = buf.parseObject(stringMsgJSONformat);
-
-  if (!msg.success()) {
-    Serial.println("parseObject() failed");
-    return false;
-  }
-
-  jRxMsg.send1 = (const char*)(msg["send1"]);
-  jRxMsg.send2 = (const char*)(msg["send2"]);
-  jRxMsg.send3 = (const char*)(msg["send3"]);
-
-  return true;
+void ClrTimeStamp(void)
+{
+	iTimeStamp=0;
 }
 
 /************************************************************************************************

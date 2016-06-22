@@ -22,6 +22,7 @@
 #ifndef _SENSORMANAGER_H_
 #define _SENSORMANAGER_H_
 
+#include "..\DeviceDriver\LEDDriver.h"
 #include "..\DeviceDriver\ParkingStallSensorDriver.h"
 #include "..\DeviceDriver\EntryExitBeamDriver.h"
 

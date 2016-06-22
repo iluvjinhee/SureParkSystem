@@ -25,24 +25,15 @@
 * to ensure they are off. 
 ***************************************************************/
 #include <SPI.h>
+#include <Timer.h>
 #include "ParkingStallSensorDriver.h"
-#include "..\libraries\Timer\Timer.h"
+
+// debug
+#include "LEDDriver.h"
 
 
-#define AVG_CNT		10		//
-#define STALLSENSOR_SAMPLING_CALLBACK_TIMER		10		//
 
-#define DEFAULT_SENSITIVITY				5
-
-#define AUTO_CALI_ENSITIVITY			5	// sensor average/AUTO_CALI_ENSITIVITY
-#define AUTO_CALI_ENSITIVITY_MAX		10	// 
-#define AUTO_CALI_ENSITIVITY_MIN		1	//
-
-#define STALLSENSOR_INITCNT_MAX			10
-#define STALLSENSOR_UNOCCUFIED_MIN		20
-
-
-static void StallSensorSampling(void);
+void StallSensorSampling(void);
 static long ProximityVal(int Pin);
 
 
@@ -68,10 +59,11 @@ static unsigned char aucStallSensorSensitivity[STALLSENSOR_MAX];
 //final result
 static int aiStallSensorStatus[STALLSENSOR_MAX];
 static int aiStallSensorStatusPrev[STALLSENSOR_MAX];
+static int aiStallSensorStatusChanged[STALLSENSOR_MAX];
 
-static int iStallSensorReady=0;
+static int iStallSensorReady;
 
-Timer t_StallSensorSamplingTimer;	
+Timer t_StallSensorSamplingTimer;
 
 
 void ParkingStallSensorSetup()
@@ -81,10 +73,15 @@ void ParkingStallSensorSetup()
 	SetStallSensorSensitivity(STALLSENSOR_003, DEFAULT_SENSITIVITY);
 	SetStallSensorSensitivity(STALLSENSOR_004, DEFAULT_SENSITIVITY);
 
-	for(int i=0; i<STALLSENSOR_MAX ; i++ ) aiStallSensorStatus[i] = UNOCCUFIED;
-
+	for(int i=0; i<STALLSENSOR_MAX ; i++ )
+	{
+		aiStallSensorStatus[i] = UNOCCUFIED;
+		aiStallSensorStatusPrev[i] = UNOCCUFIED;
+	}
+	
 	t_StallSensorSamplingTimer.every(STALLSENSOR_SAMPLING_CALLBACK_TIMER, StallSensorSampling);
 
+	iStallSensorReady = 0;
 }
 
 void ParkingStallSensorLoop()
@@ -93,65 +90,89 @@ void ParkingStallSensorLoop()
 	t_StallSensorSamplingTimer.update();	
 }
 
-static void StallSensorSampling(void)
+void StallSensorSampling(void)
 {
-	static int i=0;
-	static int j=0;
-	static int iStallSensorStatusPrev=0;
+	static int iStallID=0;
+	static int iAvgCnt=0;
+	static int iInitStallSensitivity = false;
 	
-	alStallSensorVal[i] = ProximityVal(acStallSensorPin[i]);
+	alStallSensorVal[iStallID] = ProximityVal(acStallSensorPin[iStallID]);
 
-	auiStallSensorSum[i] += map(alStallSensorVal[i], 0, 1023, 0, 255);
+	auiStallSensorSum[iStallID] += map(alStallSensorVal[iStallID], 0, 1023, 0, 255);
 
-	i++;
+	iStallID++;
 
 	// every turn change sensor
-	if( i >= STALLSENSOR_MAX )
+	if( iStallID >= STALLSENSOR_MAX )
 	{
-		i=0;
-		j++;
-	}
+		iStallID=0;
 
-	//data smoothing
-	if( j >= AVG_CNT )
-	{
-		j=0;
-
-		for( int k=0 ; k<STALLSENSOR_MAX ; k++ )
+		//data smoothing
+		if( iAvgCnt >= AVG_CNT )
 		{
-			aucStallSensorPrev[k] = aucStallSensorCur[k];
-			aucStallSensorCur[k] = auiStallSensorSum[k]/AVG_CNT;
-			auiStallSensorSum[k] = 0;
+			for( int k=0 ; k<STALLSENSOR_MAX ; k++ )
+			{
+				aucStallSensorCur[k] = auiStallSensorSum[k]/AVG_CNT;
+				auiStallSensorSum[k] = 0;
 
-			if( GetStallSensorReady() == false )
-			{
-				aiStallSensorStatus[k] = aucStallSensorCur[k]  < STALLSENSOR_UNOCCUFIED_MIN ? UNOCCUFIED : OCCUFIED;
-			}
-			else
-			{
-				switch( aiStallSensorStatus[k] )
+				if( GetStallSensorReady() == false )
 				{
-					case OCCUFIED :
-						aiStallSensorStatus[k] = aucStallSensorPrev[k] - aucStallSensorCur[k] > aucStallSensorSensitivity[k] ? UNOCCUFIED : OCCUFIED;
-						break;
-
-					case UNOCCUFIED :
-						aiStallSensorStatus[k] = aucStallSensorCur[k] - aucStallSensorPrev[k] > aucStallSensorSensitivity[k] ? OCCUFIED : UNOCCUFIED;
-						break;
-
-					default :
-						break;
+					aiStallSensorStatus[k] = aucStallSensorCur[k] < STALLSENSOR_UNOCCUFIED_MIN ? OCCUFIED : UNOCCUFIED;
+					if( aiStallSensorStatus[k] == UNOCCUFIED )
+					{
+						SetStallSensorSensitivity((T_StallSensorID)k, constrain(aucStallSensorPrev[k]/AUTO_CALI_ENSITIVITY, AUTO_CALI_ENSITIVITY_MIN, AUTO_CALI_ENSITIVITY_MAX));			
+					}
 				}
+				else
+				{
+					switch( aiStallSensorStatus[k] )
+					{
+						case OCCUFIED :
+							
+							aiStallSensorStatus[k] = (int)(aucStallSensorCur[k] - aucStallSensorPrev[k]) > (int)aucStallSensorSensitivity[k] ? UNOCCUFIED : OCCUFIED;
+							break;
+
+						case UNOCCUFIED :
+							aiStallSensorStatus[k] = (int)(aucStallSensorPrev[k] - aucStallSensorCur[k]) > (int)aucStallSensorSensitivity[k] ? OCCUFIED : UNOCCUFIED;
+							break;
+
+						default :
+							break;
+					}
+
+					if( aiStallSensorStatusPrev[k] != aiStallSensorStatus[k] )
+					{
+						aiStallSensorStatusChanged[k] = true;
+					}
+					else
+					{
+						aiStallSensorStatusChanged[k] = false;
+					}
+
+					aiStallSensorStatusPrev[k] = aiStallSensorStatus[k];
+
+
+					if( aiStallSensorStatus[k] == OCCUFIED )
+					{
+						SetStallSensorSensitivity((T_StallSensorID)k, AUTO_CALI_ENSITIVITY);			
+					}
+					else
+					{
+						SetStallSensorSensitivity((T_StallSensorID)k, constrain(aucStallSensorCur[k]/AUTO_CALI_ENSITIVITY, AUTO_CALI_ENSITIVITY_MIN, AUTO_CALI_ENSITIVITY_MAX));			
+					}
+					
+				}
+
+				aucStallSensorPrev[k] = aucStallSensorCur[k];
 			}
 
-			// Sensitivity Setting When stall sensor change from UNOCCUFIED to OCCUFIED
-			if( aiStallSensorStatusPrev[k] == UNOCCUFIED && aiStallSensorStatus[k] == OCCUFIED )
-			{
-				SetStallSensorSensitivity((T_StallSensorID)k, constrain(aucStallSensorPrev[k]/AUTO_CALI_ENSITIVITY, AUTO_CALI_ENSITIVITY_MIN, AUTO_CALI_ENSITIVITY_MAX));			
-			}
+			if( GetStallSensorReady() == false ) iStallSensorReady++;
+
+			iAvgCnt=0;
+			
 		}
 
-		if( GetStallSensorReady() == false ) iStallSensorReady++;
+		iAvgCnt++;
 		
 	}
 }
@@ -168,6 +189,34 @@ int GetStallSensorOccupied(T_StallSensorID t_StallSensorId)
 	else return aiStallSensorStatus[t_StallSensorId]; 
 }
 
+int GetStallSensorChanged(T_StallSensorID t_StallSensorId)
+{
+	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
+	else
+	{
+		return aiStallSensorStatusChanged[t_StallSensorId];
+/*	
+		if( aiStallSensorStatusChanged[t_StallSensorId] == true )
+		{
+			aiStallSensorStatusChanged[t_StallSensorId] = false;
+			return true;
+		}
+		else return false;
+*/
+	}
+}
+
+int SetStallSensorChanged(T_StallSensorID t_StallSensorId, int iStatus)
+{
+	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
+	else
+	{
+		aiStallSensorStatusChanged[t_StallSensorId] = iStatus;
+		return true;
+	}
+}
+
+
 int SetStallSensorSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucSt)
 {
 	if( t_StallSensorId >= STALLSENSOR_MAX ) return -1;	// error
@@ -178,26 +227,52 @@ int SetStallSensorSensitivity(T_StallSensorID t_StallSensorId, unsigned char ucS
 }
 
 
-int __debug_print_stallsensor(void)
+int PrintParkingLostStatus(void)
 {
-		Serial.print("StallSensorVal : ");
-		Serial.print(aucStallSensorCur[0]);
-		Serial.print(", ");
-		Serial.print(aucStallSensorCur[1]);
-		Serial.print(", ");
-		Serial.print(aucStallSensorCur[2]);
-		Serial.print(", ");
-		Serial.println(aucStallSensorCur[3]);
-		Serial.print("Sensitivity : ");
-		Serial.print(aucStallSensorSensitivity[0]);
-		Serial.print(", ");
-		Serial.print(aucStallSensorSensitivity[1]);
-		Serial.print(", ");
-		Serial.print(aucStallSensorSensitivity[2]);
-		Serial.print(", ");
-		Serial.print(aucStallSensorSensitivity[3]);
-		Serial.println("\n");
+	Serial.println();
+	Serial.print("-- StallSensorVal : ");
+	Serial.print(aucStallSensorCur[0]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorCur[1]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorCur[2]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorCur[3]);
+	Serial.println();
+	Serial.print("-- Sensitivity    : ");
+	Serial.print(aucStallSensorSensitivity[0]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorSensitivity[1]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorSensitivity[2]);
+	Serial.print(", ");
+	Serial.print(aucStallSensorSensitivity[3]);
+	Serial.println();
+	Serial.print("-- Occufied       : ");
+	Serial.print(aiStallSensorStatus[0]);
+	Serial.print(", ");
+	Serial.print(aiStallSensorStatus[1]);
+	Serial.print(", ");
+	Serial.print(aiStallSensorStatus[2]);
+	Serial.print(", ");
+	Serial.print(aiStallSensorStatus[3]);
+	Serial.println();
+	Serial.print("-- Stall LED      : ");
+	Serial.print(GetParkingStallLED(0));
+	Serial.print(", ");
+	Serial.print(GetParkingStallLED(0));
+	Serial.print(", ");
+	Serial.print(GetParkingStallLED(0));
+	Serial.print(", ");
+	Serial.print(GetParkingStallLED(0));
+	Serial.println();
 
+	Serial.print("-- EntryGate LED  : ");
+	Serial.print(GetEntryGateLED()?"green":"red");
+	Serial.println();
+	Serial.print("-- ExitGate LED  : ");
+	Serial.print(GetExitGateLED()?"green":"red");
+	Serial.println();
 
 }
 

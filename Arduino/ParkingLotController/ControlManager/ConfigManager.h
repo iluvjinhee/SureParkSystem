@@ -19,23 +19,33 @@
 * to ensure they are off. 
 ***************************************************************/
 
-#ifndef _ENTERYEXITBEAMDRIVER_H_
-#define _ENTERYEXITBEAMDRIVER_H_
+#ifndef _CONFIGMANAGER_H_
+#define _CONFIGMANAGER_H_
 
 
-typedef enum
-{
-	BROKEN = 0,	///< Beam Status : Broken
-	NOTBROKEN,	///< Beam Status : Not Broken
-}T_BeamStatus;
-
-void EntryExitBeamSetup();
-void EntryExitBeamLoop();
-int GetEntryGateStatus();
-int GetExitGateStatus();
+enum ParkingLotRunningMode  {
+	RUN_NORMAL = 0,
+	RUN_PRINT_MODE,
+	RUN_MODE_MAX
+};
 
 
-#endif // _ENTERYEXITBEAMDRIVER_H_
+void ConfigManagerSetup(void);
+void ConfigManagerLoop(void);
+
+void SetRunningMode(int iMode);
+int GetRunningMode(void);
+
+void ParkingLotReset(void);
+
+String Get_ID(void);
+String Get_PWD(void);
+
+void Set_ID(String id);
+void Set_PWD(String pwd);
+
+
+#endif // _CONFIGMANAGER_H_
 
 /* End of File */
 

@@ -22,10 +22,16 @@
 #ifndef _CONTROLMANAGER_H_
 #define _CONTROLMANAGER_H_
 
+#define NOT	(-1)
 
 void ControlManagerSetup();
 void ControlManagerLoop();
+int GetChangedSlot(void);
+int ClrChangedSlot(void);
 
+int GetRequestedLed(void);
+int SetRequestedLed(int iSlot);
+int ClrRequestedLed(void);
 
 #endif // _CONTROLMANAGER_H_
 

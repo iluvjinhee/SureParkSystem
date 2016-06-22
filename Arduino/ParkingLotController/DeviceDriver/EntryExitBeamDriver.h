@@ -22,6 +22,9 @@
 #ifndef _ENTERYEXITBEAMDRIVER_H_
 #define _ENTERYEXITBEAMDRIVER_H_
 
+#define CHATTERING_CNT	20
+#define BEAMSENSOR_SAMPLING_CALLBACK_TIMER 	50	
+
 
 typedef enum
 {
@@ -31,8 +34,11 @@ typedef enum
 
 void EntryExitBeamSetup();
 void EntryExitBeamLoop();
-int GetEntryGateStatus();
-int GetExitGateStatus();
+int GetEntryBeamStatus();
+int GetExitBeamStatus();
+
+int GetEntryBeamChatCnt(void);
+int GetExitBeamChatCnt(void);
 
 
 #endif // _ENTERYEXITBEAMDRIVER_H_

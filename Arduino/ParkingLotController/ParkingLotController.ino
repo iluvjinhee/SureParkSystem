@@ -1,3 +1,9 @@
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <WiFiServer.h>
+#include <WiFiUdp.h>
+
+
 /**************************************************************
 * File: ClientDemo
 * Project: LG Exec Ed Program
@@ -25,6 +31,8 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
+
+
 #include "CommManager\CommManager.h"
 #include "ControlManager\ControlManager.h"
 
@@ -45,6 +53,7 @@ void loop()
 	CommManagerLoop();	
 	ControlManagerLoop();
 } //  LOOP
+
 
 
 
