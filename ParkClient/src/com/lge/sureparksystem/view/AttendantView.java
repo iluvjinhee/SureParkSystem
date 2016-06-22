@@ -86,7 +86,7 @@ public class AttendantView  extends BaseFragment implements BaseView {
     }
 
     @Override
-    public void requsetServer(RequestData rd, String data) {
+    public void requsetServer(RequestData rd, Bundle bundle) {
         // TODO Auto-generated method stub
         
     }

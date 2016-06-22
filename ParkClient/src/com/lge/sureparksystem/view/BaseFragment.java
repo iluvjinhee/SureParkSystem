@@ -2,8 +2,12 @@ package com.lge.sureparksystem.view;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.util.Log;
+
+import com.lge.sureparksystem.model.BaseModel;
 
 public class BaseFragment extends Fragment {
+    static final String TAG = "BaseFragment";
     public BaseView mCallback;
 
     @Override
@@ -16,4 +20,11 @@ public class BaseFragment extends Fragment {
         }
     }
 
+    public void updateFlag(boolean value) {
+        Log.d(TAG, "Not override");
+    }
+
+    public void setBaseModel(BaseModel baseModel) {
+        Log.d(TAG, "Not override");
+    }
 }

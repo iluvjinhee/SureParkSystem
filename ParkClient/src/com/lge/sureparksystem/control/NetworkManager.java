@@ -19,17 +19,17 @@ import java.net.UnknownHostException;
 
 public class NetworkManager {
 
-    private static final String TAG = "CommunicationManager";
+    private static final String TAG = "NetworkManager";
 
     private Socket mSocket = null;
     private ReceiverAysnc mReceiver = null;
     private Thread mSocketThread;
-    private String mDstAddress;
+    private InetAddress mDstAddress;
     private int mDstPort;
     private NetworkToActivity mNetworkToManager;
     private PrintWriter mPrintWriter;
 
-    public NetworkManager(String addr, int port, NetworkToActivity ntm) {
+    public NetworkManager(InetAddress addr, int port, NetworkToActivity ntm) {
         mDstAddress = addr;
         mDstPort = port;
         mNetworkToManager = ntm;
@@ -41,17 +41,20 @@ public class NetworkManager {
 
                 @Override
                 public void run() {
-                    try {
-                        mSocket = new Socket(mDstAddress, mDstPort);
-                        mReceiver = new ReceiverAysnc();
-
-                        if (mSocket.isConnected()) {
-                            mPrintWriter = new PrintWriter(
-                                    mSocket.getOutputStream(), true);
+                    if (mSocket == null) {
+                        try {
+                            Log.d(TAG, "mSocketThread run");
+                            mSocket = new Socket(mDstAddress, mDstPort);
+                            mReceiver = new ReceiverAysnc();
+                            if (mSocket.isConnected()) {
+                                Log.d(TAG, "mSocket.isConnected()");
+                                mPrintWriter = new PrintWriter(mSocket.getOutputStream(), true);
+                            }
+                            mReceiver.execute(mSocket);
+                        } catch (Exception e) {
+                            Log.d(TAG, "Exception : " + e.toString());
+                            e.printStackTrace();
                         }
-                        mReceiver.execute(mSocket);
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             });
@@ -75,7 +78,7 @@ public class NetworkManager {
         }
         mSocketThread = null;
     }
-    
+
     public void sendMessage(JSONObject jsonObject) {
         Log.d(TAG, "sendMessage : " + jsonObject.toJSONString());
         mPrintWriter.println(jsonObject.toJSONString());
@@ -88,17 +91,17 @@ public class NetworkManager {
         @Override
         protected Void doInBackground(Socket... params) {
             Socket socket = params[0];
+            Log.d(TAG, "doInBackground");
             try {
                 if (socket.isConnected()) {
-                    mBufferedReader = new BufferedReader(new InputStreamReader(
-                            socket.getInputStream()));
+                    mBufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String jsonMessage = "";
                     while (true) {
                         jsonMessage = mBufferedReader.readLine();
                         if (jsonMessage != null && !jsonMessage.equals("")) {
+                            Log.d(TAG, "recevied " + jsonMessage.toString());
                             publishProgress(jsonMessage);
                         }
-
                     }
                 }
             } catch (UnknownHostException uhe) {
