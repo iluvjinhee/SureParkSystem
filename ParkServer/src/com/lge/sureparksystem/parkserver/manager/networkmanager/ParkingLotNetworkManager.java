@@ -65,6 +65,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case ENTRY_GATE_LED_CONTROL:
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
+		case RESET:
 			send(jsonObject);
 			break;
 		case ENTRY_GATE_STATUS:
