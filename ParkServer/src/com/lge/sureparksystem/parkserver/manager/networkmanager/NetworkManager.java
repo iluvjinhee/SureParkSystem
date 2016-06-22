@@ -166,7 +166,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 				setSocketID(message.getID());
 			} else if(message.getResult().equalsIgnoreCase("nok")) {
 				Logger.log("Unauthentication !!!");
-				disconnectServer();
+				//disconnectServer();
 			}
 			
 			id = null;			
