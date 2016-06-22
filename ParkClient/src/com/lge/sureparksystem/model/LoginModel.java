@@ -133,7 +133,7 @@ public class LoginModel implements BaseModel {
 
     public class Response implements BaseInterface {
         String messagetype;
-        String result;
+        public String result;
         String type;
 
         public Response(JSONObject jsonObject) {

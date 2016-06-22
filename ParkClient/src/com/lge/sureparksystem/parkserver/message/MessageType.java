@@ -23,7 +23,6 @@ public enum MessageType {
     // return RESERVATION_INFORMATION("Reservation_Information"),
 
     CANCEL_REQUEST("Cancel_Request"),
-    CANCEL_RESPONSE("Response"),
 
     // Attendant
     PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
