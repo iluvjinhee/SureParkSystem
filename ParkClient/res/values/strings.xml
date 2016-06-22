@@ -47,4 +47,5 @@
     <string name="parking_driver_often">Slot</string>
     <string name="parking_slot_time">Time</string>
     <string name="park_status">Park_status</string>
+    <string name="notification">Notification</string>
 </resources>

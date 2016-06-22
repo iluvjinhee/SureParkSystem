@@ -95,7 +95,7 @@ public class AttendantModel implements BaseModel {
     // type reallocation, confirmation information error, payment error
     public class Notification implements BaseInterface {
         String messagetype;
-        String type;
+        public String type;
 
         public Notification(JSONObject jsonObject) {
             String smessagetype = MessageParser.getString(jsonObject, MESSAGETYPE);

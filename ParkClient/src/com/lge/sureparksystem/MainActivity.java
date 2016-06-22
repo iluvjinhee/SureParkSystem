@@ -272,6 +272,11 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             refreshFragemnt(mAttendantFactory);
             break;
         case NOTIFICATION:
+            AttendantModel notification_response = (AttendantModel)mAttendantFactory.mBaseModel;
+            notification_response.mParkinglotStatus = notification_response.new ParkinglotStatus(jsonObject);
+            mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
+            mAttendantFactory.mBaseFragment.updateFlag(true);
+            refreshFragemnt(mAttendantFactory);
             break;
         default:
             break;

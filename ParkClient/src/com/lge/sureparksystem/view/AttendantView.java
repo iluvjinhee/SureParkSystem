@@ -1,5 +1,7 @@
 package com.lge.sureparksystem.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ public class AttendantView extends BaseFragment implements BaseView {
     private AttendantModel mAttendantModel;
     private LinearLayout mTableLayout;
     private LayoutInflater mLayoutInflater;
+    private boolean mNoficationComming = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,37 +44,61 @@ public class AttendantView extends BaseFragment implements BaseView {
 
     @Override
     public void onResume() {
-//        if (true) {
-        if (mAttendantModel != null && mAttendantModel.mParkinglotStatus != null) {
-            View tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
-            mTableLayout.addView(tableView);
-            int count = mAttendantModel.mParkinglotStatus.slot_count;
-            String[] staute = mAttendantModel.mParkinglotStatus.slot_status;
-            String[] driver = mAttendantModel.mParkinglotStatus.slot_driverid;
-            String[] often = mAttendantModel.mParkinglotStatus.driver_often;
-            String[] time = mAttendantModel.mParkinglotStatus.slot_time;
-//            int count = 5;
-//            String[] staute = {"q", "w", "e", "r", "t"};
-//            String[] driver = {"d1", "s2", "d3", "d4", "d5"};
-//            String[] often = {"1", "2", "3", "4", "5"};
-//            String[] time = {"t1", "t2", "t3", "t4", "t5"};
-            for (int i = 0; i < count; i++) {
-                tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
-                TextView tv1 = (TextView)tableView.findViewById(R.id.first_column);
-                tv1.setText(String.valueOf(i+1));
-                TextView tv2 = (TextView)tableView.findViewById(R.id.second_column);
-                tv2.setText(staute[i]);
-                TextView tv3 = (TextView)tableView.findViewById(R.id.third_column);
-                tv3.setText(driver[i]);
-                TextView tv4 = (TextView)tableView.findViewById(R.id.fourth_column);
-                tv4.setText(often[i]);
-                TextView tv5 = (TextView)tableView.findViewById(R.id.fifth_column);
-                tv5.setText(time[i]);
-                mTableLayout.addView(tableView);
+        if (mNoficationComming) {
+//            if (true) {
+            if (mAttendantModel != null && mAttendantModel.mNotification != null) {
+                AlertDialog.Builder notiAlert = new AlertDialog.Builder(getActivity());
+                notiAlert.setIcon(android.R.drawable.ic_dialog_alert);
+                notiAlert.setTitle(R.string.notification);
+                notiAlert.setMessage(mAttendantModel.mNotification.type);
+//                notiAlert.setMessage("Reallocation");
+                notiAlert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+    
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+    
+                    }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+    
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        mNoficationComming = false;
+                    }
+                }).create().show();
             }
-            mTableLayout.setVisibility(View.VISIBLE);
         } else {
-            mTableLayout.setVisibility(View.GONE);
+            // if (true) {
+            if (mAttendantModel != null && mAttendantModel.mParkinglotStatus != null) {
+                View tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
+                mTableLayout.addView(tableView);
+                int count = mAttendantModel.mParkinglotStatus.slot_count;
+                String[] staute = mAttendantModel.mParkinglotStatus.slot_status;
+                String[] driver = mAttendantModel.mParkinglotStatus.slot_driverid;
+                String[] often = mAttendantModel.mParkinglotStatus.driver_often;
+                String[] time = mAttendantModel.mParkinglotStatus.slot_time;
+                // int count = 5;
+                // String[] staute = {"q", "w", "e", "r", "t"};
+                // String[] driver = {"d1", "s2", "d3", "d4", "d5"};
+                // String[] often = {"1", "2", "3", "4", "5"};
+                // String[] time = {"t1", "t2", "t3", "t4", "t5"};
+                for (int i = 0; i < count; i++) {
+                    tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
+                    TextView tv1 = (TextView)tableView.findViewById(R.id.first_column);
+                    tv1.setText(String.valueOf(i + 1));
+                    TextView tv2 = (TextView)tableView.findViewById(R.id.second_column);
+                    tv2.setText(staute[i]);
+                    TextView tv3 = (TextView)tableView.findViewById(R.id.third_column);
+                    tv3.setText(driver[i]);
+                    TextView tv4 = (TextView)tableView.findViewById(R.id.fourth_column);
+                    tv4.setText(often[i]);
+                    TextView tv5 = (TextView)tableView.findViewById(R.id.fifth_column);
+                    tv5.setText(time[i]);
+                    mTableLayout.addView(tableView);
+                }
+                mTableLayout.setVisibility(View.VISIBLE);
+            } else {
+                mTableLayout.setVisibility(View.GONE);
+            }
         }
         super.onResume();
     }
@@ -98,6 +125,12 @@ public class AttendantView extends BaseFragment implements BaseView {
     public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
+    }
+
+    @Override
+    public void updateFlag(boolean value) {
+        mNoficationComming = value;
+        super.updateFlag(value);
     }
 
     @Override
