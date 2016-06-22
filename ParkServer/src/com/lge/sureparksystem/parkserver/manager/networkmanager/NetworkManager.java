@@ -16,7 +16,7 @@ import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.WatchDogTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
@@ -153,7 +153,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 			DataMessage sendMessage = (DataMessage) new Message(MessageType.ACKNOWLEDGE, message.getTimestamp());
 			send(sendMessage);
 			
-			getEventBus().post(new WatchDogTopic(jsonObject));
+			getEventBus().post(new ParkingLotWatchDogTopic(jsonObject));
 			break;
 		case AUTHENTICATION_REQUEST:
 			id = message.getID();

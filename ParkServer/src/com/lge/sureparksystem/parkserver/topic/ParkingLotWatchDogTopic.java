@@ -4,12 +4,12 @@ import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkserver.message.Message;
 
-public class WatchDogTopic extends ManagerTopic {
-	public WatchDogTopic(JSONObject jsonObject) {
+public class ParkingLotWatchDogTopic extends ManagerTopic {
+	public ParkingLotWatchDogTopic(JSONObject jsonObject) {
 		super(jsonObject);
 	}
 
-	public WatchDogTopic(Message message) {
+	public ParkingLotWatchDogTopic(Message message) {
 		super(message);
 	}
 

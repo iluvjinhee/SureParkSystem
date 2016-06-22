@@ -33,11 +33,11 @@ public enum MessageType {
     RESET("Reset"),
     
     // ParkHere
-	ADD_PARKINGLOT("Add_Parkinglot"),
+	ADD_PARKING_LOT("Add_Parkinglot"),
 	CANCEL_REQUEST("Cancel_Request"),
 	CANCEL_RESPONSE("Cancel_Response"),
-	CHANGE_GRACEPERIOD("Change_graceperiod"),
-	CHANGE_PARKINGFEE("Change_parkingfee"),
+	CHANGE_GRACE_PERIOD("Change_graceperiod"),
+	CHANGE_PARKING_FEE("Change_parkingfee"),
 	CHANGE_RESPONSE("Change_Response"),
 	CREATE_ATTENDANT("Create_Attendant"),
 	CREATE_DRIVER("Create_Driver"),
@@ -49,7 +49,7 @@ public enum MessageType {
 	PARKING_LOT_STATUS("ParkinglotStatus"),
 	PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
 	REMOVE_ATTENDANT("Remove_Attendant"),
-	REMOVE_PARKINGLOT("Remove_Parkinglot"),
+	REMOVE_PARKING_LOT("Remove_Parkinglot"),
 	RESERVATION_INFORMATION("Reservation_Information"),
 	RESERVATION_INFO_REQUEST("ReservationInfo_Request"),
 	RESERVATION_REQUEST("Reservation_Request"),

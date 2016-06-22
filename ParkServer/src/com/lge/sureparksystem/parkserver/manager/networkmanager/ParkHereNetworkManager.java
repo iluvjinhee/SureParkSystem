@@ -3,13 +3,12 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
-import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Logger;
+import com.lge.sureparksystem.parkserver.topic.StatisticsManagerTopic;
 
 public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {
@@ -52,6 +51,8 @@ public class ParkHereNetworkManager extends NetworkManager {
 		
 		switch (messageType) {
 		case CREATE_DRIVER:
+		case CREATE_ATTENDANT:
+		case REMOVE_ATTENDANT:
 			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;
 		case PARKING_LOT_INFO_REQUEST:
@@ -59,6 +60,10 @@ public class ParkHereNetworkManager extends NetworkManager {
 		case RESERVATION_REQUEST:
 		case RESERVATION_INFO_REQUEST:
 		case CANCEL_REQUEST:
+		case CHANGE_PARKING_FEE:
+		case CHANGE_GRACE_PERIOD:
+		case ADD_PARKING_LOT:
+		case REMOVE_PARKING_LOT:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
 		case RESPONSE:
@@ -66,7 +71,12 @@ public class ParkHereNetworkManager extends NetworkManager {
 		case PARKING_LOT_STATUS:
 		case NOTIFICATION:
 		case RESERVATION_INFORMATION:
+		case PARKING_LOT_STATISTICS:
+		case CHANGE_RESPONSE:
 			send(jsonObject);
+			break;
+		case PARKING_LOT_STATS_REQUEST:
+			getEventBus().post(new StatisticsManagerTopic(jsonObject));
 			break;
 		default:
 			break;

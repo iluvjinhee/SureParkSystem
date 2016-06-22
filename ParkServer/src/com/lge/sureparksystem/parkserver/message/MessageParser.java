@@ -188,11 +188,11 @@ public class MessageParser {
 			jsonObject.put(DataMessage.PERIOD, ((DataMessage) message).getPeriod());
 			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
 			break;
-		case CHANGE_PARKINGFEE:
+		case CHANGE_PARKING_FEE:
 			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
 			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
 			break;
-		case CHANGE_GRACEPERIOD:
+		case CHANGE_GRACE_PERIOD:
 			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
 			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
 			break;
@@ -210,14 +210,14 @@ public class MessageParser {
 		case REMOVE_ATTENDANT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			break;
-		case ADD_PARKINGLOT:
+		case ADD_PARKING_LOT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPassword());
 			jsonObject.put(DataMessage.ADDRESS, ((DataMessage) message).getAddress());
 			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
 			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
 			break;
-		case REMOVE_PARKINGLOT:
+		case REMOVE_PARKING_LOT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			break;
 		case PARKING_LOT_STATISTICS:
