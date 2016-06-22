@@ -110,7 +110,7 @@ public class DatabaseTest {
     }
 
     public void updateReservationState_Test() {
-        mDatabaseProvider.updateReservationState(26, 2);
+        mDatabaseProvider.updateReservationState(26,"tester2@lge.com", 2);
     }
 
     /*************************************************************************************/

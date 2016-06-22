@@ -248,7 +248,7 @@ public class DataMessage extends Message {
 		return gracePeriodList;
 	}
 
-	public void setGracePeriod(ArrayList<String> gracePeriodList) {
+	public void setGracePeriodList(ArrayList<String> gracePeriodList) {
 		this.gracePeriodList = gracePeriodList;
 	}
 

@@ -48,7 +48,7 @@ public class MessageParser {
 		
 		// ParkHere
 		((DataMessage) message).setDriverOften(MessageParser.getStringList(jsonObject, DataMessage.DRIVER_OFTEN));
-		((DataMessage) message).setGracePeriod(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
+		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
 		((DataMessage) message).setParkingFee(MessageParser.getStringList(jsonObject, DataMessage.PARKING_FEE));
 		((DataMessage) message).setParkingLotIDList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_ID));
 		((DataMessage) message).setParkingLotLocation(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_LOCATION));
@@ -163,7 +163,7 @@ public class MessageParser {
 			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
 			break;
 		case PARKING_LOT_LIST:
-			jsonObject.put(DataMessage.PARKING_LOT_COUNT, ((DataMessage) message).getDriverID());
+			jsonObject.put(DataMessage.PARKING_LOT_COUNT, ((DataMessage) message).getParkingLotCount());
 			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
 			putList(jsonObject, DataMessage.PARKING_LOT_LOCATION, ((DataMessage) message).getParkingLotLocationList());
 			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
@@ -322,16 +322,21 @@ public class MessageParser {
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {
 		ArrayList<String> resultList = new ArrayList<String>();
 		
-		JSONArray childrenList = (JSONArray) jsonObject.get(key);
+		Object object = jsonObject.get(key);
+		JSONArray childrenList = null;
+		if(object instanceof JSONArray) {
+		    childrenList = (JSONArray) jsonObject.get(key);
+			if(childrenList != null) {
+		        Iterator<String> i = childrenList.iterator();
 		
-		if(childrenList != null) {
-	        Iterator<String> i = childrenList.iterator();
-	
-	        while (i.hasNext()) {
-	            resultList.add(i.next());
-	        }
+		        while (i.hasNext()) {
+		            resultList.add(i.next());
+		        }
+			}
+		} else {
+		    resultList.add((String)jsonObject.get(key));
 		}
-        
+		
 		return resultList;
 	}
 }
