@@ -10,8 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.lge.sureparksystem.parkserver.message.Message;
-import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -102,5 +100,9 @@ public class SocketForServer implements Runnable {
 
 	public void setID(String id) {
 		this.id = id;		
+	}
+	
+	public String getID() {
+		return id;
 	}
 }

@@ -3,6 +3,7 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
@@ -27,17 +28,6 @@ public class ParkHereNetworkManager extends NetworkManager {
 	
 	public ParkHereNetworkManager(int serverPort) {
 		super(serverPort);
-	}
-	
-	public void send(JSONObject jsonObject) {
-		for(SocketForServer socketForServer : socketList) {
-			socketForServer.send(jsonObject);
-		}
-	}
-	
-	@Override
-	public void receive(JSONObject jsonObject) {
-		processMessage(jsonObject);
 	}
 	
 	public void run() {
@@ -70,9 +60,9 @@ public class ParkHereNetworkManager extends NetworkManager {
 		case PARKING_LOT_LIST:
 		case PARKING_LOT_STATUS:
 		case NOTIFICATION:
-		case RESERVATION_INFORMATION:
 		case PARKING_LOT_STATISTICS:
 		case CHANGE_RESPONSE:
+		case RESERVATION_INFORMATION:
 			send(jsonObject);
 			break;
 		case PARKING_LOT_STATS_REQUEST:

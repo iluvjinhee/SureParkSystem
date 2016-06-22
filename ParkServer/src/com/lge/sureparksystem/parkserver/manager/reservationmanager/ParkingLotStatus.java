@@ -10,6 +10,7 @@ public class ParkingLotStatus {
     private String parkingLotId;
     private int totalSlotNum;
     private HashMap<Integer, ParkingSlot> slotStatusMap = new HashMap<Integer, ParkingSlot>();
+    private ArrayList<ParkingSlot> slotList = new ArrayList<ParkingSlot>();
 
     public ParkingLotStatus() {
     }
@@ -18,11 +19,10 @@ public class ParkingLotStatus {
         this.parkingLotId = parkingLotId;
         Integer slotIndex = 0;
         for (String slotSatus : slotStatusList) {
-            this.slotStatusMap.put(slotIndex,
-                    new ParkingSlot(slotIndex, Integer.valueOf(slotSatus)));
-            slotIndex++;
+        	slotList.add(new ParkingSlot(slotIndex, Integer.valueOf(slotSatus)));
+        	slotIndex++;
         }
-        this.totalSlotNum = slotIndex;
+        this.totalSlotNum = slotList.size();
     }
 
     public ParkingLotStatus(String parkingLotId, int totalSlotNum,
@@ -31,7 +31,7 @@ public class ParkingLotStatus {
         this.totalSlotNum = totalSlotNum;
         Integer slotIndex = 0;
         for (String slotSatus : slotStatusList) {
-            slotStatusMap.put(slotIndex, new ParkingSlot(slotIndex, Integer.valueOf(slotSatus)));
+            slotList.add(new ParkingSlot(slotIndex, Integer.valueOf(slotSatus)));
             slotIndex++;
         }
     }
@@ -50,16 +50,16 @@ public class ParkingLotStatus {
     }
 
     public int getAvailableSlotCount() {
-        int availableSlotNum = 0;
-        Iterator<Integer> iterator = slotStatusMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            Integer slotIdx = iterator.next();
-            if (slotStatusMap.get(slotIdx).getStatus() == ParkingSlot.EMPTY) {
-                availableSlotNum++;
-            }
-        }
-        Logger.log("parkingLotId = " + parkingLotId + ", availableSlotNum count = "
-                + availableSlotNum);
+        int availableSlotNum = 4;
+//        Iterator<Integer> iterator = slotStatusMap.keySet().iterator();
+//        while (iterator.hasNext()) {
+//            Integer slotIdx = iterator.next();
+//            if (slotStatusMap.get(slotIdx).getStatus() == ParkingSlot.EMPTY) {
+//                availableSlotNum++;
+//            }
+//        }
+//        Logger.log("parkingLotId = " + parkingLotId + ", availableSlotNum count = "
+//                + availableSlotNum);
         return availableSlotNum;
     }
 
@@ -82,34 +82,21 @@ public class ParkingLotStatus {
     }
 
     public int getTotalSlotNum() {
-        if (slotStatusMap.size() != totalSlotNum) {
+        if (slotList.size() != totalSlotNum) {
             Logger.log("Warnning : totalSlotNum is not correct" + ", slotStatusMap.size() = "
-                    + slotStatusMap.size() + ", totalSlotNum = " + totalSlotNum);
-            totalSlotNum = slotStatusMap.size();
+                    + slotList.size() + ", totalSlotNum = " + totalSlotNum);
+            totalSlotNum = slotList.size();
         }
         return totalSlotNum;
     }
 
     public void setTotalSlotNum(int totalSlotNum) {
-        if (slotStatusMap.size() != totalSlotNum) {
+        if (slotList.size() != totalSlotNum) {
             Logger.log("Warnning : totalSlotNum is not correct" + ", slotStatusMap.size() = "
-                    + slotStatusMap.size() + ", totalSlotNum = " + totalSlotNum);
+                    + slotList.size() + ", totalSlotNum = " + totalSlotNum);
         }
         this.totalSlotNum = totalSlotNum;
     }
 
-    public HashMap<Integer, ParkingSlot> getSlotStatusMap() {
-        return slotStatusMap;
-    }
-
-    public void setSlotStatusMap(HashMap<Integer, ParkingSlot> slotStatusMap) {
-        this.slotStatusMap = slotStatusMap;
-    }
-
-    @Override
-    public String toString() {
-        return "ParkingLotStatus [parkingLotId=" + parkingLotId + ", totalSlotNum=" + totalSlotNum
-                + ", slotStatusMap=" + slotStatusMap + "]";
-    }
 
 }

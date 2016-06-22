@@ -16,6 +16,7 @@ import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
@@ -69,6 +70,8 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 					showConnectionInfo(socket.getLocalPort());
 					
 					onSocketAccepted(socket);
+					
+					initClient(socket.getLocalPort());
 				}
 			} catch (IOException e) {
 				if(e.toString().contains("Address already in use")) {
@@ -89,6 +92,12 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 	
+	private void initClient(int port) {
+		if(port == SocketInfo.PORT_PARKINGLOT) {
+			getEventBus().post(new ParkingLotNetworkManagerTopic(new Message(MessageType.RESET)));
+		}
+	}
+
 	private void showConnectionInfo(int i) {
 		if(i == SocketInfo.PORT_PARKVIEW) {
 			Logger.log("Connected to ParkView!");
@@ -163,7 +172,8 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		case AUTHENTICATION_RESPONSE:
 			if(message.getResult().equalsIgnoreCase("ok")) {
 				Logger.log("Authentication OK !!!");
-				setSocketID(message.getID());
+				
+				setID(id);
 			} else if(message.getResult().equalsIgnoreCase("nok")) {
 				Logger.log("Unauthentication !!!");
 				//disconnectServer();
@@ -178,7 +188,11 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	private void setSocketID(String id) {
+	private void setID(String id) {
 		currentSocketForServer.setID(id);
+	}
+	
+	protected String getID() {
+		return currentSocketForServer.getID();
 	}
 }

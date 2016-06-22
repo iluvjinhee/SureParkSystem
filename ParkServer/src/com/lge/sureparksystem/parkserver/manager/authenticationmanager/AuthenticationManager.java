@@ -11,6 +11,7 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvide
 import com.lge.sureparksystem.parkserver.manager.databasemanager.UserAccountData;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.SocketInfo;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
@@ -71,7 +72,7 @@ public class AuthenticationManager extends ManagerTask {
 				sendMessage.setResult("ok");
 			else
 				sendMessage.setResult("nok");
-			sendMessage.setType("create_driver");
+			sendMessage.setType(MessageValueType.CREATE_DRIVER);
 			
 			getEventBus().post(new ParkHereNetworkManagerTopic(sendMessage));	
 			break;
