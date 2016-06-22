@@ -198,34 +198,30 @@ public class DatabaseProvider {
         return result;
     }
 
-    public boolean verifyUser(String email, String password) {
+    public int verifyUser(String email, String password) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
-            return false;
+            return 0;
         }
-        int count = 0;
-        boolean result = false;
+        int authority = 0;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
             StringBuilder where = new StringBuilder(" where ");
             where.append(User.Columns.EMAIL + "='" + email + "'");
             where.append(" AND " + User.Columns.PW + "=" + getSqlStringForEncryption(password));
-            String sql = "select  count(*) from " + User.USER_TABLE + where.toString();
+            String sql = "select * from " + User.USER_TABLE + where.toString();
             LogHelper.log(TAG, "sql = " + sql);
             pstmt = mDBConn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 do {
-                    count = rs.getInt(1);
+                    authority = rs.getInt(User.Columns.AUTHORITY);
                 } while (rs.next());
-                LogHelper.log(TAG, "count = " + count);
             }
         } catch (SQLException e) {
-            count = 0;
             e.printStackTrace();
         } catch (NullPointerException ex) {
-            count = 0;
             ex.printStackTrace();
         } finally {
             try {
@@ -239,14 +235,17 @@ public class DatabaseProvider {
                 e.printStackTrace();
             }
         }
-        result = (count == 1) ? true : false;
-        LogHelper.log(TAG, "result = " + result);
-        return result;
+        LogHelper.log(TAG, "authority = " + authority);
+        return authority;
     }
 
     public boolean createUserAccount(UserAccountData newuser) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
+            return false;
+        }
+        if (newuser.getEmail() == null) {
+            LogHelper.log(TAG, "Error : email is null.");
             return false;
         }
         if (isExistingUser(newuser.getEmail())) {
@@ -582,13 +581,12 @@ public class DatabaseProvider {
     /*************************************************************************************/
     // For Parking Lot
     /*************************************************************************************/
-    public boolean verifyParkingLot(String loginId, String password) {
+    public int verifyParkingLot(String loginId, String password) {
         if (mDBConn == null) {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
-            return false;
+            return 0;
         }
         int count = 0;
-        boolean result = false;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -624,9 +622,8 @@ public class DatabaseProvider {
                 e.printStackTrace();
             }
         }
-        result = (count == 1) ? true : false;
-        LogHelper.log(TAG, "result = " + result);
-        return result;
+        LogHelper.log(TAG, "count = " + count);
+        return count;
     }
 
     boolean createParkingLot(ParkingLotData newlot) {
@@ -634,7 +631,7 @@ public class DatabaseProvider {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return false;
         }
-        if (verifyParkingLot(newlot.getLoginId(), newlot.getLoginPw())) {
+        if (verifyParkingLot(newlot.getLoginId(), newlot.getLoginPw()) == 0) {
             LogHelper.log(TAG, "Error : Alreay is exist.");
             return false;
         }

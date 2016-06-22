@@ -21,6 +21,11 @@ public class KeyInCorpus {
 	public static final String[] NotReserved = {
 		"Not Reserved",
 	};
+	
+	public static final String[] ResetParkingLot = {
+		"Reset",
+		"Reset Parking Lot",
+	};
 
 	public static final String[] OpenEntryGate = {
 		"Open Entry Gate",
@@ -150,7 +155,7 @@ public class KeyInCorpus {
 		"Turn Off Slot 5",
 	};
 
-	public static final String[] SuccessAuthetication = {
+	public static final String[] SuccessAuthentication = {
 		"Success Authentication",
 		"Success Login"
 	};

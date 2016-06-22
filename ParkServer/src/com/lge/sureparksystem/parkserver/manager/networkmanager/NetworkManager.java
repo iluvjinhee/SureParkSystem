@@ -11,15 +11,19 @@ import org.json.simple.JSONObject;
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.NetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
 	private int serverPort;
+	private String id = null;
 	protected List<SocketForServer> socketList = new ArrayList<SocketForServer>();
+	SocketForServer currentSocketForServer = null;
 	
 	public class NetworkManagerListener {
 		@Subscribe
@@ -43,10 +47,10 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
     
     @Override
 	public void onSocketAccepted(Socket socket) {
-		SocketForServer socketForServer = new SocketForServer(this, socket);
-		socketList.add(socketForServer);
+		currentSocketForServer = new SocketForServer(this, socket);
+		socketList.add(currentSocketForServer);
 		
-		Thread thread = new Thread(socketForServer, "Socket");
+		Thread thread = new Thread(currentSocketForServer, "Socket");
 		thread.start();
 	}
 
@@ -118,7 +122,17 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		socketList.remove(socketForServer);
 	}
 	
-	public void sendMessage(JSONObject jsonObject) {
+	public void send(JSONObject jsonObject) {
+		for(SocketForServer socketForServer : socketList) {
+			if(socketForServer.getSocket().isConnected()) {
+				socketForServer.send(jsonObject);
+			}
+		}
+	}
+	
+	public void send(Message message) {
+		JSONObject jsonObject = MessageParser.convertToJSONObject(message);
+		
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {
 				socketForServer.send(jsonObject);
@@ -126,46 +140,45 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
 	protected void processMessage(JSONObject jsonObject) {
-		MessageType messageType = MessageParser.getMessageType(jsonObject);
-		DataMessage dataMessage = null;
-		
-		if(messageType == null) {
-			System.out.println("");
-			System.out.println("NOT PARSABLE MESSAGE TYPE !!!!!:");
-			System.out.println(jsonObject.toJSONString());
-			System.out.println("");
-			
-			return;
-		}
-		
+		DataMessage message = (DataMessage) MessageParser.convertToMessage(jsonObject);
+		MessageType messageType = message.getMessageType();
+
 		switch(messageType) {
+		case HEARTBEAT:
+			DataMessage sendMessage = (DataMessage) new Message(MessageType.ACKNOWLEDGE, message.getTimestamp());
+			send(sendMessage);
+			
+			getEventBus().post(new ParkingLotWatchDogTopic(jsonObject));
+			break;
 		case AUTHENTICATION_REQUEST:
+			id = message.getID();
 			jsonObject.put(DataMessage.PORT, serverPort);
 			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
 			break;
-		case AUTHENTICATION_OK:
-			Logger.log("Authentication OK");
-			dataMessage = new DataMessage();
-			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
-			dataMessage.setResult("ok");
-			sendMessage(MessageParser.convertToJSONObject(dataMessage));
-			break;
-		case AUTHENTICATION_FAIL:
-			Logger.log("Unauthorized!!! Connection close.");
-			dataMessage = new DataMessage();
-			dataMessage.setMessageType(MessageType.AUTHENTICATION_RESPONSE);
-			dataMessage.setResult("nok");
-			sendMessage(MessageParser.convertToJSONObject(dataMessage));
+		case AUTHENTICATION_RESPONSE:
+			if(message.getResult().equalsIgnoreCase("ok")) {
+				Logger.log("Authentication OK !!!");
+				setSocketID(message.getID());
+			} else if(message.getResult().equalsIgnoreCase("nok")) {
+				Logger.log("Unauthentication !!!");
+				//disconnectServer();
+			}
 			
-			disconnectServer();
+			id = null;			
+			send(jsonObject);
+			
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void setSocketID(String id) {
+		currentSocketForServer.setID(id);
 	}
 }

@@ -8,9 +8,6 @@ import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkview.controller.Controller;
 
-import android.util.Log;
-import android.widget.TextView;
-
 public class SocketForClient {
 	public static final String IP_ADDRESS = "192.168.1.184";
 	public static final int PORT = 9898;
@@ -44,7 +41,9 @@ public class SocketForClient {
 				    		receiver = new ReceiverAsync(controller);
 				    		
 				        	if(socket.isConnected()) {			
-				    		    out = new PrintWriter(socket.getOutputStream(), true);		    
+				    		    out = new PrintWriter(socket.getOutputStream(), true);
+				    		    
+				    		    controller.welcome();
 				    		}
 				    		
 				    		receiver.execute(socket);

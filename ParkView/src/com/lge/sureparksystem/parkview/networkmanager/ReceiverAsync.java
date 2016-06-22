@@ -61,7 +61,7 @@ public class ReceiverAsync extends AsyncTask<Socket, String, Void> {
 	
 	@Override
     protected void onProgressUpdate(String... jsonMessage) {
-		controller.parseJSONMessage(jsonMessage[0]);
+		controller.processMessage(jsonMessage[0]);
     }
 
 	@Override

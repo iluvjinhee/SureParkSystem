@@ -20,7 +20,9 @@ public class SocketForServer implements Runnable {
 	private Socket socket = null;
 	
 	private BufferedReader in = null;
-	private PrintWriter out = null;	
+	private PrintWriter out = null;
+	
+	private String id = null;
 
 	public SocketForServer(NetworkManager manager, Socket socket) {
 		this.manager = manager;
@@ -43,31 +45,14 @@ public class SocketForServer implements Runnable {
 	}
 
 	private void receive(String jsonMessage) {
-		if(!jsonMessage.contains("HEARTBEAT"))
+		if(!jsonMessage.contains(MessageType.HEARTBEAT.getText()))
 			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
-		Message message = MessageParser.convertToMessage(jsonMessage);
-		
-		if(message != null &&
-		   message.getMessageType() != null &&
-		   message.getMessageType() == MessageType.HEARTBEAT) {
-			sendAck(message);
-		}
-		
 		try {
-			manager.receiveMessage((JSONObject) new JSONParser().parse(jsonMessage));
+			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-	}
-
-	private void sendAck(Message message) {
-		int timestamp = message.getTimestamp();
-		if (timestamp != -1) {
-			JSONObject ackJSONObject = MessageParser.convertToJSONObject(new Message(MessageType.ACKNOWLEDGE, timestamp));
-
-			send(ackJSONObject);
 		}
 	}
 
@@ -113,5 +98,9 @@ public class SocketForServer implements Runnable {
 		else {
 			Logger.log("Connection with client closed!");
 		}		
+	}
+
+	public void setID(String id) {
+		this.id = id;		
 	}
 }

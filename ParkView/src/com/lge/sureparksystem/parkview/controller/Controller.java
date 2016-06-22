@@ -28,6 +28,8 @@ public class Controller {
 		intentIntegrator = new IntentIntegrator(fullScreen);
 		
 		connectServer();
+		
+		welcome();
 	}
 	
 	public void destroy() {
@@ -44,7 +46,7 @@ public class Controller {
 		if(clientSocket == null) {
 			clientSocket = new SocketForClient(SocketForClient.IP_ADDRESS, SocketForClient.PORT, this);
 			clientSocket.connect();
-		}		
+		}
 	}
 	
 	public void disconnectServer() {
@@ -98,7 +100,7 @@ public class Controller {
 		intentIntegrator.initiateScan();
 	}
 
-	public void parseJSONMessage(String jsonMessage) {
+	public void processMessage(String jsonMessage) {
 		Message message = MessageParser.convertToMessage(jsonMessage);
 		
 		switch(message.getMessageType()) {
