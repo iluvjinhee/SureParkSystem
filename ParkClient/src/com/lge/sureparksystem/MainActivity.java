@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 
 import com.lge.sureparksystem.control.NetworkManager;
 import com.lge.sureparksystem.control.NetworkToActivity;
+import com.lge.sureparksystem.model.AttendantModel;
 import com.lge.sureparksystem.model.DriverModel;
 import com.lge.sureparksystem.model.LoginModel;
 import com.lge.sureparksystem.parkclient.R;
@@ -200,6 +201,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
         // Login
         case CREATE_DRVIER_RESOPNSE:
             String type = MessageParser.getString(jsonObject, "type");
+            Log.d(TAG, "type : " + type);
             if ("create_driver".equals(type)) {
                 LoginModel loginModel1 = (LoginModel)mLoginFactory.mBaseModel;
                 LoginModel.Response r = loginModel1.new Response(jsonObject);
@@ -218,8 +220,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 } else {
                     Utils.showToast(this, "Error check information");
                 }
-                mDriverFactory.mBaseFragment.onPause();
-                mDriverFactory.mBaseFragment.onResume();
+                refreshFragemnt(mDriverFactory);
             }
             break;
         case AUTHENTICATION_RESPONSE:
@@ -228,24 +229,24 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             if ("ok".equals(ar.getResult())) {
                 mCurrentAutority = ar.geAuthority();
                 if (Utils.DRIVERVIEW_FRAGMENT == mCurrentAutority) {
-                    viewLoadingView();
-                    decideFragment(Utils.DRIVERVIEW_FRAGMENT, null);
                     requsetServer(RequestData.RESERVATION_INFO_REQUEST, null);
+                } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
+                    requsetServer(RequestData.PARKING_LOT_STATUS_REQUEST, null);
                 } else {
-                    decideFragment(ar.geAuthority(), null);
                 }
+                decideFragment(ar.geAuthority(), null);
             } else {
                 mCurrentId = null;
                 mCurrentAutority = 0;
             }
+            goneLoadingView();
             break;
         // Driver
         case PARKINGLOT_LIST_RESPONSE:
             DriverModel parkinglot_list = (DriverModel)mDriverFactory.mBaseModel;
             parkinglot_list.mParkinglot_List = parkinglot_list.new Parkinglot_List(jsonObject);
             mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
-            mDriverFactory.mBaseFragment.onPause();
-            mDriverFactory.mBaseFragment.onResume();
+            refreshFragemnt(mDriverFactory);
             break;
         case RESERVATION_INFORMATION_RESPONSE:
             DriverModel information_response = (DriverModel)mDriverFactory.mBaseModel;
@@ -261,11 +262,14 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
             }
             // Driver fragment update
-            mDriverFactory.mBaseFragment.onPause();
-            mDriverFactory.mBaseFragment.onResume();
+            refreshFragemnt(mDriverFactory);
             break;
         // Attendant
         case PARKING_LOT_STATUS:
+            AttendantModel parking_lot_status_response = (AttendantModel)mAttendantFactory.mBaseModel;
+            parking_lot_status_response.mParkinglotStatus = parking_lot_status_response.new ParkinglotStatus(jsonObject);
+            mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
+            refreshFragemnt(mAttendantFactory);
             break;
         case NOTIFICATION:
             break;
@@ -273,6 +277,15 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             break;
         }
 
+    }
+
+    private void refreshFragemnt(AbstractFactory af) {
+        if (af == null || af.mBaseFragment == null) {
+            Log.e(TAG, "check factory method");
+            return;
+        }
+        af.mBaseFragment.onPause();
+        af.mBaseFragment.onResume();
     }
 
     @Override
@@ -291,6 +304,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             cd.putJSONObject(jsonObject);
             break;
         case LOGIN_USER:
+            viewLoadingView();
             LoginModel loginModel1 = (LoginModel)mLoginFactory.mBaseModel;
             messagetype = MessageType.AUTHENTICATION_REQUEST.getText();
             String email1 = bundle.getString("email");
@@ -330,6 +344,12 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             DriverModel.CancelRequest cr = driverModel3.new CancelRequest(messagetype, mCurrentId, reservation_id);
             cr.putJSONObject(jsonObject);
             break;
+
+        case PARKING_LOT_STATUS_REQUEST:
+            AttendantModel attendantModel = (AttendantModel)mAttendantFactory.mBaseModel;
+            messagetype = MessageType.PARKINGLOTINFO_REQUEST.getText();
+            AttendantModel.ParkinglotStatus_Request pr = attendantModel.new ParkinglotStatus_Request(messagetype);
+            pr.putJSONObject(jsonObject);
         default:
             break;
         }

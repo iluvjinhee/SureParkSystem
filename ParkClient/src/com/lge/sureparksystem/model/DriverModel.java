@@ -12,11 +12,16 @@ public class DriverModel implements BaseModel {
     final String RESERVATION_ID = "reservation_id";
     final String PARKINGLOT_COUNT = "parkinglot_count";
     final String PARKINGLOT_LOCATION = "parkinglot_location";
-    final String PARKINGFEE = "parkingfee";
+    final String PARKING_FEE = "parking_fee";
     final String GRACEPERIOD = "graceperiod";
-    final String RESULT = "result";
     final String CONFIRMATION_INFO = "confirmationinfo";
-    final String TYPE = "type";
+    
+    final String PARKINGLOT_ID_LIST = "parkinglot_id_list";
+    final String PARKINGLOT_LOCATION_LIST = "parkinglot_location_list";
+    final String PARKINGFEE_LIST = "parking_fee_list";
+    final String GRACEPERIOD_LIST = "graceperiod_list";
+    
+    
     public Response mResponse;
     public Reservation_Information mReservation_Information;
     public Parkinglot_List mParkinglot_List;
@@ -160,24 +165,24 @@ public class DriverModel implements BaseModel {
     public class Parkinglot_List implements BaseInterface {
         public String messagetype;
         public int parkinglot_count;
-        public String[] parkinglot_id;
-        public String[] parkinglot_location;
-        public String[] parkingfee;
-        public String[] graceperiod;
+        public String[] parkinglot_id_list;
+        public String[] parkinglot_location_list;
+        public String[] parkingfee_list;
+        public String[] graceperiod_list;
 
         public Parkinglot_List(JSONObject jsonObject) {
             String smessagetype = MessageParser.getString(jsonObject, MESSAGETYPE);
             int sparkinglot_count = MessageParser.getInt(jsonObject, PARKINGLOT_COUNT);
-            String[] sparkinglot_id = MessageParser.getStringList(jsonObject, PARKINGLOT_ID);
-            String[] sparkinglot_location = MessageParser.getStringList(jsonObject, PARKINGLOT_LOCATION);
-            String[] sparkingfee = MessageParser.getStringList(jsonObject, PARKINGFEE);
-            String[] sgraceperiod = MessageParser.getStringList(jsonObject, GRACEPERIOD);
+            String[] sparkinglot_id = MessageParser.getStringList(jsonObject, PARKINGLOT_ID_LIST);
+            String[] sparkinglot_location = MessageParser.getStringList(jsonObject, PARKINGLOT_LOCATION_LIST);
+            String[] sparkingfee = MessageParser.getStringList(jsonObject, PARKINGFEE_LIST);
+            String[] sgraceperiod = MessageParser.getStringList(jsonObject, GRACEPERIOD_LIST);
             this.messagetype = smessagetype;
             this.parkinglot_count = sparkinglot_count;
-            this.parkinglot_id = sparkinglot_id;
-            this.parkinglot_location = sparkinglot_location;
-            this.parkingfee = sparkingfee;
-            this.graceperiod = sgraceperiod;
+            this.parkinglot_id_list = sparkinglot_id;
+            this.parkinglot_location_list = sparkinglot_location;
+            this.parkingfee_list = sparkingfee;
+            this.graceperiod_list = sgraceperiod;
         }
 
         public Parkinglot_List(String messagetype, int parkinglot_count, String[] parkinglot_id,
@@ -185,10 +190,10 @@ public class DriverModel implements BaseModel {
             super();
             this.messagetype = messagetype;
             this.parkinglot_count = parkinglot_count;
-            this.parkinglot_id = parkinglot_id;
-            this.parkinglot_location = parkinglot_location;
-            this.parkingfee = parkingfee;
-            this.graceperiod = graceperiod;
+            this.parkinglot_id_list = parkinglot_id;
+            this.parkinglot_location_list = parkinglot_location;
+            this.parkingfee_list = parkingfee;
+            this.graceperiod_list = graceperiod;
         }
 
         @Override
@@ -200,10 +205,10 @@ public class DriverModel implements BaseModel {
         public JSONObject putJSONObject(JSONObject jsonObject) {
             jsonObject.put(MESSAGETYPE, this.messagetype);
             jsonObject.put(PARKINGLOT_COUNT, this.parkinglot_count);
-            jsonObject.put(PARKINGLOT_ID, this.parkinglot_id);
-            jsonObject.put(PARKINGLOT_LOCATION, this.parkinglot_location);
-            jsonObject.put(PARKINGFEE, this.parkingfee);
-            jsonObject.put(GRACEPERIOD, this.graceperiod);
+            jsonObject.put(PARKINGLOT_ID_LIST, this.parkinglot_id_list);
+            jsonObject.put(PARKINGLOT_LOCATION_LIST, this.parkinglot_location_list);
+            jsonObject.put(PARKINGFEE_LIST, this.parkingfee_list);
+            jsonObject.put(GRACEPERIOD_LIST, this.graceperiod_list);
             return jsonObject;
         }
     }
@@ -231,7 +236,7 @@ public class DriverModel implements BaseModel {
             String sreservation_time = MessageParser.getString(jsonObject, RESERVATION_TIME);
             String sparkinglot_id = MessageParser.getString(jsonObject, PARKINGLOT_ID);
             String sparkinglot_location = MessageParser.getString(jsonObject, PARKINGLOT_LOCATION);
-            String sparkingfee = MessageParser.getString(jsonObject, PARKINGFEE);
+            String sparkingfee = MessageParser.getString(jsonObject, PARKING_FEE);
             String sgraceperiod = MessageParser.getString(jsonObject, GRACEPERIOD);
             String spaymentinfo = MessageParser.getString(jsonObject, PAYMENT_INFO);
             String sconfirmationinfo = MessageParser.getString(jsonObject, CONFIRMATION_INFO);
@@ -276,7 +281,7 @@ public class DriverModel implements BaseModel {
             jsonObject.put(RESERVATION_TIME, this.reservation_time);
             jsonObject.put(PARKINGLOT_ID, this.parkinglot_id);
             jsonObject.put(PARKINGLOT_LOCATION, this.parkinglot_location);
-            jsonObject.put(PARKINGFEE, this.parkingfee);
+            jsonObject.put(PARKING_FEE, this.parkingfee);
             jsonObject.put(GRACEPERIOD, this.graceperiod);
             jsonObject.put(PAYMENT_INFO, this.paymentinfo);
             jsonObject.put(CONFIRMATION_INFO, this.confirmationinfo);
