@@ -70,19 +70,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	boolean isValidConfirmationNumber_Temporary(String reservationCode) {
-		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = null;
-		try {
-			jsonObject = (JSONObject)jsonParser.parse(reservationCode);
-		} catch (ParseException e) {
-			return false;
-		}
-
-		if (jsonObject.get("Name") != null) {
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	public int getAvailableSlot() {
@@ -263,8 +251,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processVerification(JSONObject jsonObject) {
-		String confirmationInfo = MessageParser.getString(jsonObject,
-				DataMessage.CONFIRMATION_INFO);
+		String confirmationInfo = MessageParser.getString(jsonObject, DataMessage.CONFIRMATION_INFO);
 
 		if (isValid(confirmationInfo)) {
 			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);

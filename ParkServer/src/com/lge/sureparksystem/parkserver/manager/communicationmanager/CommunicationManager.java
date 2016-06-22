@@ -9,6 +9,7 @@ import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -74,9 +75,14 @@ public class CommunicationManager extends ManagerTask {
 				controlEntryGate(MessageValueType.UP);
 				turnSlotLED(message.getSlotNumber(), MessageValueType.ON);
 			}
-			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
+			else {
+				callAttendant(MessageValueType.CONFIRMATION_INFORMATION_ERROR);
+			}
+			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));			
 			break;
 		case CONFIRMATION_SEND:
+			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			break;
 		case SLOT_SENSOR_STATUS:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			if(message.getStatus().equalsIgnoreCase(MessageValueType.OCCUPIED)) {
@@ -87,6 +93,13 @@ public class CommunicationManager extends ManagerTask {
 		default:
 			break;
 		}
+	}
+
+	private void callAttendant(String string) {
+		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
+		message.setType(string);
+		
+		getEventBus().post(new ParkHereNetworkManagerTopic(message));		
 	}
 
 	private void controlEntryGate(String command) {

@@ -12,4 +12,5 @@ public class MessageValueType {
 	public static final String OCCUPIED = "occupied";
 	public static final String ON = "on";
 	public static final String OFF = "off";
+	public static final String CONFIRMATION_INFORMATION_ERROR = "confirmation information error";
 }
