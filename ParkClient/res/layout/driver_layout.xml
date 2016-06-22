@@ -45,20 +45,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start"
-            android:text="@string/confirmation_info"
+            android:text="@string/card_info"
             android:textColor="@color/white" />
 
         <EditText
-            android:id="@+id/confirmation_number"
+            android:id="@+id/card_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text|number"
-            android:prompt="@string/confirmation_info" />
+            android:prompt="@string/card_info" />
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/confirmation_iamge"
+        android:id="@+id/qr_iamge"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:gravity="start"
@@ -70,16 +70,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:text="@string/reservation_time"
+        android:text="@string/reserved_time"
         android:textColor="@color/white"
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/park_position"
+        android:id="@+id/payment_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:text="@string/park_position"
+        android:text="@string/payment_info"
         android:textColor="@color/white" />
 
     <TextView
@@ -99,15 +99,15 @@
         android:textColor="@color/white" />
 
     <TextView
-        android:id="@+id/park_confirmation_info"
+        android:id="@+id/park_loacation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:text="@string/park_confirmation_info"
+        android:text="@string/parking_address"
         android:textColor="@color/white" />
 
     <TextView
-        android:id="@+id/park_loacation"
+        android:id="@+id/park_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"

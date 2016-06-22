@@ -212,13 +212,13 @@ public class DriverModel implements BaseModel {
         String messagetype;
         String result;
         public String reservation_id;
-        String reservation_time;
-        String parkinglot_id;
-        String parkinglot_location;
-        String parkingfee;
-        String graceperiod;
-        String paymentinfo;
-        String confirmationinfo;
+        public String reservation_time;
+        public String parkinglot_id;
+        public String parkinglot_location;
+        public String parkingfee;
+        public String graceperiod;
+        public String paymentinfo;
+        public String confirmationinfo;
 
         public String getResult() {
             return result;
@@ -235,16 +235,16 @@ public class DriverModel implements BaseModel {
             String sgraceperiod = MessageParser.getString(jsonObject, GRACEPERIOD);
             String spaymentinfo = MessageParser.getString(jsonObject, PAYMENT_INFO);
             String sconfirmationinfo = MessageParser.getString(jsonObject, CONFIRMATION_INFO);
-            this.messagetype = messagetype;
-            this.result = result;
-            this.reservation_id = reservation_id;
-            this.reservation_time = reservation_time;
-            this.parkinglot_id = parkinglot_id;
-            this.parkinglot_location = parkinglot_location;
-            this.parkingfee = parkingfee;
-            this.graceperiod = graceperiod;
-            this.paymentinfo = paymentinfo;
-            this.confirmationinfo = confirmationinfo;
+            this.messagetype = smessagetype;
+            this.result = sresult;
+            this.reservation_id = sreservation_id;
+            this.reservation_time = sreservation_time;
+            this.parkinglot_id = sparkinglot_id;
+            this.parkinglot_location = sparkinglot_location;
+            this.parkingfee = sparkingfee;
+            this.graceperiod = sgraceperiod;
+            this.paymentinfo = spaymentinfo;
+            this.confirmationinfo = sconfirmationinfo;
         }
 
         public Reservation_Information(String messagetype, String result, String reservation_id,
@@ -287,7 +287,7 @@ public class DriverModel implements BaseModel {
     public class Response implements BaseInterface {
         String messagetype;
         public String result;
-        String type;
+        public String type;
 
         public Response(JSONObject jsonObject) {
             String smessagetype = MessageParser.getString(jsonObject, MESSAGETYPE);

@@ -19,12 +19,11 @@
     <string name="park_id">Choose park where you want you :</string>
     <string name="choose_park_id">Choose park ID</string>
     <string name="reservation_time">Choose time :</string>
-    <string name="confirmation_info">Insert card number :</string>
-    <string name="park_position">Canrnegie Mellon University</string>
+    <string name="card_info">Insert card number :</string>
     <string name="park_fee">Park fee : </string>
     <string name="park_grace_period">Grace period : </string>
     <string name="park_description">Oh TEAM Sure park system is good!</string>
-    <string name="park_confirmation_info">"123456789"</string>
+    <string name="park_confirmation_info">"park_confirmation_info"</string>
     <string name="choose_period">Choose duration</string>
     <string name="duration">Duration</string>
     <string name="create_id">Input new ID and Password</string>
@@ -37,4 +36,7 @@
     <string name="current_value">Current value :</string>
     <string name="new_reservation">New reservation</string>
     <string name="qr_dialog_title">QR code</string>
+    <string name="payment_info">Payment_info : </string>
+    <string name="parking_address">Parkinglot address : </string>
+    <string name="reserved_time">Reserved time information :</string>
 </resources>

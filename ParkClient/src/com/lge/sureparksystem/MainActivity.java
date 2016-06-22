@@ -224,6 +224,8 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             DriverModel parkinglot_list = (DriverModel)mDriverFactory.mBaseModel;
             parkinglot_list.mParkinglot_List = parkinglot_list.new Parkinglot_List(jsonObject);
             mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
+            mDriverFactory.mBaseFragment.onPause();
+            mDriverFactory.mBaseFragment.onResume();
             break;
         case RESERVATION_INFORMATION_RESPONSE:
             DriverModel information_response = (DriverModel)mDriverFactory.mBaseModel;
@@ -231,21 +233,36 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             goneLoadingView();
             if ("ok".equals(information_response.mReservation_Information.getResult())) {
                 // Instance update in Driver view
+                mDriverFactory.mBaseFragment.updateFlag(true);
                 mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
             } else {
                 // reserved flag update in Driver view
+                mDriverFactory.mBaseFragment.updateFlag(false);
                 requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
             }
             // Driver fragment update
+            mDriverFactory.mBaseFragment.onPause();
+            mDriverFactory.mBaseFragment.onResume();
             break;
         case CANCEL_RESPONSE:
             DriverModel cancel_response = (DriverModel)mDriverFactory.mBaseModel;
             cancel_response.mResponse = cancel_response.new Response(jsonObject);
             mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
-            if ("ok".equals(cancel_response.mResponse.result)) {
-                Utils.showToast(this, "Reservation canceled");
+            if ("cancel_reservation".equals(cancel_response.mResponse.type)) {
+                if ("ok".equals(cancel_response.mResponse.result)) {
+                    mDriverFactory.mBaseFragment.updateFlag(false);
+                    Utils.showToast(this, "Reservation canceled");
+                } else {
+                    Utils.showToast(this, "Error check information");
+                }
+                mDriverFactory.mBaseFragment.onPause();
+                mDriverFactory.mBaseFragment.onResume();
             } else {
-                Utils.showToast(this, "Error check information");
+                if ("ok".equals(cancel_response.mResponse.result)) {
+                    Utils.showToast(this, "Create success");
+                } else {
+                    Utils.showToast(this, "Create fail");
+                }
             }
             break;
         // Attendant
