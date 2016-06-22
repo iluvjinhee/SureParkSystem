@@ -12,6 +12,7 @@ import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class ReservationManager extends ManagerTask {
@@ -101,8 +102,7 @@ public class ReservationManager extends ManagerTask {
 	private void processVerification(JSONObject jsonObject) {
 		String confirmationInfo = MessageParser.getString(jsonObject, DataMessage.CONFIRMATION_INFO);
 		
-//		if(isValid(confirmationInfo)) {
-		if(true) {
+		if(isValid(confirmationInfo)) {
 			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			dataMessage.setResult("ok");
 			dataMessage.setSlotNumber(getAvailableSlot());
@@ -115,5 +115,12 @@ public class ReservationManager extends ManagerTask {
 			
 			getEventBus().post(new CommunicationManagerTopic(dataMessage));
 		}
+	}
+	
+	private void callAttendant(String string) {
+		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
+		message.setType(string);
+		
+		getEventBus().post(new ParkHereNetworkManagerTopic(message));		
 	}
 }
