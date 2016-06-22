@@ -39,4 +39,13 @@
     <string name="payment_info">Payment_info : </string>
     <string name="parking_address">Parkinglot address : </string>
     <string name="reserved_time">Reserved time information :</string>
+    <string name="reservation_cancel">Reservation cancel</string>
+    <string name="slot_count">Slot counnt :</string>
+    <string name="parking_slot">Slot</string>
+    <string name="parking_slot_statue">Status</string>
+    <string name="parking_slot_driverid">Driver</string>
+    <string name="parking_driver_often">Slot</string>
+    <string name="parking_slot_time">Time</string>
+    <string name="park_status">Park_status</string>
+    <string name="notification">Notification</string>
 </resources>

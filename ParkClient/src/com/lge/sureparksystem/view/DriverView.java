@@ -98,7 +98,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
             }
         } else {
             if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
-                parkId = mDriverModel.mParkinglot_List.parkinglot_id;
+                parkId = mDriverModel.mParkinglot_List.parkinglot_id_list;
             }
         }
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity().getApplicationContext(),
@@ -187,7 +187,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
         if (mIsReservedUser) {
             mReservedTime.setVisibility(View.VISIBLE);
             mArrivedTimelayout.setVisibility(View.GONE);
-            mButton.setText(R.string.cancel);
+            mButton.setText(R.string.reservation_cancel);
             mQRImage.setVisibility(View.VISIBLE);
             mPayment_info.setVisibility(View.VISIBLE);
         } else {
@@ -212,15 +212,16 @@ public class DriverView extends BaseFragment implements OnClickListener {
                         + mDriverModel.mReservation_Information.parkinglot_location);
                 mReservedTime.setText(getString(R.string.reserved_time)
                         + mDriverModel.mReservation_Information.reservation_time);
+                mPayment_info.setText(getString(R.string.payment_info) + mDriverModel.mReservation_Information.paymentinfo);
             }
         } else {
             if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
                 mPark_fee.setText(getString(R.string.park_fee)
-                        + mDriverModel.mParkinglot_List.parkingfee[mSelectedParkId]);
+                        + mDriverModel.mParkinglot_List.parkingfee_list[mSelectedParkId]);
                 mPark_grace_period.setText(getString(R.string.park_grace_period)
-                        + mDriverModel.mParkinglot_List.graceperiod[mSelectedParkId]);
+                        + mDriverModel.mParkinglot_List.graceperiod_list[mSelectedParkId]);
                 mPark_loacation.setText(getString(R.string.parking_address)
-                        + mDriverModel.mParkinglot_List.parkinglot_location[mSelectedParkId]);
+                        + mDriverModel.mParkinglot_List.parkinglot_location_list[mSelectedParkId]);
             }
         }
     }
@@ -282,13 +283,12 @@ public class DriverView extends BaseFragment implements OnClickListener {
                     Utils.showToast(getActivity(), "mSelectedConfirmationNum null");
                     return;
                 }
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.HOUR_OF_DAY, (mSelectedTime + 1));
                 String dTime = formatter.format(cal.getTime());
-                bundle.putString("parkinglot_id", mDriverModel.mParkinglot_List.parkinglot_id[mSelectedParkId]);
-                // bundle.putString("reservation_time", dTime);
-                bundle.putString("reservation_time", String.valueOf(System.currentTimeMillis()));
+                bundle.putString("parkinglot_id", mDriverModel.mParkinglot_List.parkinglot_id_list[mSelectedParkId]);
+                 bundle.putString("reservation_time", dTime);
                 bundle.putString("paymentinfo", mSelectedConfirmationNum);
                 mCallback.requsetServer(RequestData.RESERVATION_REQUEST, bundle);
             }

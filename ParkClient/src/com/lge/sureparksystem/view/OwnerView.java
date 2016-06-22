@@ -1,6 +1,7 @@
 package com.lge.sureparksystem.view;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.lge.sureparksystem.parkclient.R;
 import com.lge.sureparksystem.util.Utils;
@@ -22,12 +24,12 @@ public class OwnerView extends BaseFragment implements OnClickListener {
     private Spinner mParkIDSppiner;
     private Spinner mStatisticalDuration;
     private Button mConfigurationBtn;
-    private AlertDialog.Builder mSecondDialog;
     private LayoutInflater mLayoutInflater;
     private static final int CHANGE_PARKING_FEE = 0;
     private static final int CHANGE_GRACE_PERIOD = 1;
     private static final int ADD_PARKING_LOT = 2;
     private static final int DELETE_PARKING_LOT = 3;
+    private Dialog mFirstDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,7 +44,6 @@ public class OwnerView extends BaseFragment implements OnClickListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        mSecondDialog = new AlertDialog.Builder(getActivity());
         mLayoutInflater = getActivity().getLayoutInflater();
 
         CharSequence[] parkId = { "Pittsburgh", "Chicago" };
@@ -136,6 +137,8 @@ public class OwnerView extends BaseFragment implements OnClickListener {
         case R.id.btn_configuration:
             AlertDialog.Builder createDialog = new AlertDialog.Builder(getActivity());
             createDialog.setTitle(R.string.configuration_settings);
+            final AlertDialog.Builder mSecondDialog = new AlertDialog.Builder(getActivity());
+            final View dialogView = mLayoutInflater.inflate(R.layout.dialog_configuration_change, null);
             createDialog.setSingleChoiceItems(R.array.owner_configuration_settings, -1, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -143,21 +146,25 @@ public class OwnerView extends BaseFragment implements OnClickListener {
                     switch (which) {
                     case CHANGE_PARKING_FEE :
                         bValued = true;
+                        mFirstDialog.dismiss();
                         mSecondDialog.setTitle(R.string.change_parking_fee);
-                        mSecondDialog.setView(mLayoutInflater.inflate(R.layout.dialog_configuration_change, null));
+                        mSecondDialog.setView(dialogView);
                         break;
                     case CHANGE_GRACE_PERIOD :
                         bValued = true;
+                        mFirstDialog.dismiss();
                         mSecondDialog.setTitle(R.string.change_grace_period);
-                        mSecondDialog.setView(mLayoutInflater.inflate(R.layout.dialog_configuration_change, null));
+                        mSecondDialog.setView(dialogView);
                         break;
                     case ADD_PARKING_LOT :
                         bValued = true;
+                        mFirstDialog.dismiss();
                         mSecondDialog.setTitle(R.string.add_parking_lot);
-                        mSecondDialog.setView(mLayoutInflater.inflate(R.layout.dialog_configuration_change, null));
+                        mSecondDialog.setView(dialogView);
                         break;
                     case DELETE_PARKING_LOT :
                         bValued = true;
+                        mFirstDialog.dismiss();
                         CharSequence[] cs = {"Parking 1", "Parking 2", "Parking 3"};
                         mSecondDialog.setTitle(R.string.delete_parking_lot);
                         mSecondDialog.setSingleChoiceItems(cs, -1, new DialogInterface.OnClickListener() {
@@ -191,13 +198,14 @@ public class OwnerView extends BaseFragment implements OnClickListener {
                             
                             @Override
                             public void onDismiss(DialogInterface dialog) {
-
                             }
                         });
                         mSecondDialog.create().show();
                     }
                 }
-            }).create().show();
+            });
+            mFirstDialog = createDialog.create();
+            mFirstDialog.show();
             break;
 
         default:
