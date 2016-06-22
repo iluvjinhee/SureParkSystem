@@ -3,12 +3,11 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
-import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.AuthenticationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.util.Logger;
+import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {
@@ -29,14 +28,14 @@ public class ParkHereNetworkManager extends NetworkManager {
 		super(serverPort);
 	}
 	
-	public void sendMessage(JSONObject jsonObject) {
+	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			socketForServer.send(jsonObject);
 		}
 	}
 	
 	@Override
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
@@ -50,6 +49,18 @@ public class ParkHereNetworkManager extends NetworkManager {
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
 		
 		switch (messageType) {
+		case CREATE_DRIVER:
+			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
+			break;
+		case PARKING_LOT_INFO_REQUEST:
+			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			break;
+		case RESPONSE:
+			send(jsonObject);
+			break;
+		case PARKING_LOT_LIST:
+			send(jsonObject);
+			break;
 		default:
 			break;
 		}

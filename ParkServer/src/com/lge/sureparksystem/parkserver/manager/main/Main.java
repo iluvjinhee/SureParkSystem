@@ -6,9 +6,6 @@ import java.net.UnknownHostException;
 import com.lge.sureparksystem.parkserver.manager.ManagerService;
 import com.lge.sureparksystem.parkserver.manager.authenticationmanager.AuthenticationManager;
 import com.lge.sureparksystem.parkserver.manager.communicationmanager.CommunicationManager;
-import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseTest;
-import com.lge.sureparksystem.parkserver.manager.securitymanager.SecurityManager;
-import com.lge.sureparksystem.parkserver.manager.statisticsmanager.StatisticsManager;
 import com.lge.sureparksystem.parkserver.manager.keyinmanager.KeyboardInManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.NetworkManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkHereNetworkManager;
@@ -16,6 +13,9 @@ import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkViewNetworkM
 import com.lge.sureparksystem.parkserver.manager.networkmanager.ParkingLotNetworkManager;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.SocketInfo;
 import com.lge.sureparksystem.parkserver.manager.reservationmanager.ReservationManager;
+import com.lge.sureparksystem.parkserver.manager.securitymanager.SecurityManager;
+import com.lge.sureparksystem.parkserver.manager.statisticsmanager.StatisticsManager;
+import com.lge.sureparksystem.parkserver.manager.watchdog.WatchDog;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class Main {
@@ -30,6 +30,7 @@ public class Main {
 	static ManagerService AuthenticationManagerService = null;
 	static ManagerService SecurityManagerService = null;
 	static ManagerService StatisticsManagerService = null;
+	static ManagerService WatchDogService = null;
 
 	public static void main(String[] args) throws Exception {
         try {
@@ -49,10 +50,19 @@ public class Main {
 		startAuthenticationManager();
 		startSecurityManager();
         startStatisticsManager();
+        startWatchDog();
 
 //        DatabaseTest mDBtest = new DatabaseTest();
 //        mDBtest.testRun(mDBtest);
     }
+
+	private static void startWatchDog() {
+		WatchDog watchdog = new WatchDog();
+		watchdog.init();
+		WatchDogService = new ManagerService(watchdog, "WatchDog");
+		
+		WatchDogService.doWork();
+	}
 
 	private static void startSecurityManager() {
 		SecurityManager securityManager = new SecurityManager();

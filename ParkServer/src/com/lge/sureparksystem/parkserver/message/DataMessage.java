@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class DataMessage extends Message {
 	public static final String PORT = "port";
+	public static final String AUTHORITY = "authority";
+	public static final String ID = "id";
+	public static final String PASSWORD = "pwd";
 	
 	// Parking Lot
 	public static final String ENTRY_GATE_LED_STATUS = "entrygateled";
@@ -12,10 +15,8 @@ public class DataMessage extends Message {
 	public static final String EXIT_GATE_LED_STATUS = "exitgateled";
 	public static final String EXIT_GATE_ARRIVE = "exitgate_arrive";
 	public static final String EXIT_GATE_STATUS = "exitgate";
-	public static final String ID = "id";
 	public static final String LED_NUMBER = "led_number";
 	public static final String LED_STATUS = "led_status";
-	public static final String PASSWORD = "pwd";
 	public static final String SENSOR_NUMBER = "sensor_number";
 	public static final String SLOT_COUNT = "slot_count";
 	public static final String SLOT_NUMBER = "slot_number";
@@ -53,6 +54,7 @@ public class DataMessage extends Message {
 	public static final String RESULT = "result";
 	
 	int port;
+	int authority;
 	
 	// ParkView
 	String confirmationInfo;
@@ -417,23 +419,31 @@ public class DataMessage extends Message {
 	public void setPort(int port) {
 		this.port = port;
 	}
+	
+	public int getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(int authority) {
+		this.authority = authority;
+	}
 
 	@Override
 	public String toString() {
-		return "DataMessage [port=" + port + ", confirmationInfo=" + confirmationInfo + ", ledStatusList="
-				+ ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command + ", entryGateArrive="
-				+ entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus="
-				+ entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
-				+ ", exitGateStatus=" + exitGateStatus + ", id=" + id + ", password=" + password + ", result=" + result
-				+ ", status=" + status + ", ledNumber=" + ledNumber + ", sensorNumber=" + sensorNumber + ", slotNumber="
-				+ slotNumber + ", driverOftenList=" + driverOftenList + ", gracePeriodList=" + gracePeriodList
-				+ ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList=" + parkingLotIDList
-				+ ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList=" + slotDriverIDList
-				+ ", slotTimeList=" + slotTimeList + ", address=" + address + ", cancelRate=" + cancelRate
-				+ ", driverID=" + driverID + ", name=" + name + ", occupancyRate=" + occupancyRate + ", paymentInfo="
-				+ paymentInfo + ", period=" + period + ", reservationID=" + reservationID + ", reservationTime="
-				+ reservationTime + ", revenue=" + revenue + ", type=" + type + ", value=" + value
-				+ ", parkingLotCount=" + parkingLotCount + ", slotCount=" + slotCount + ", messageType=" + messageType
-				+ ", timestamp=" + timestamp + "]";
+		return "DataMessage [port=" + port + ", authority=" + authority + ", confirmationInfo=" + confirmationInfo
+				+ ", ledStatusList=" + ledStatusList + ", slotStatusList=" + slotStatusList + ", command=" + command
+				+ ", entryGateArrive=" + entryGateArrive + ", entryGateLEDStatus=" + entryGateLEDStatus
+				+ ", entryGateStatus=" + entryGateStatus + ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus="
+				+ exitGateLEDStatus + ", exitGateStatus=" + exitGateStatus + ", id=" + id + ", password=" + password
+				+ ", result=" + result + ", status=" + status + ", ledNumber=" + ledNumber + ", sensorNumber="
+				+ sensorNumber + ", slotNumber=" + slotNumber + ", driverOftenList=" + driverOftenList
+				+ ", gracePeriodList=" + gracePeriodList + ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList="
+				+ parkingLotIDList + ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList="
+				+ slotDriverIDList + ", slotTimeList=" + slotTimeList + ", address=" + address + ", cancelRate="
+				+ cancelRate + ", driverID=" + driverID + ", name=" + name + ", occupancyRate=" + occupancyRate
+				+ ", paymentInfo=" + paymentInfo + ", period=" + period + ", reservationID=" + reservationID
+				+ ", reservationTime=" + reservationTime + ", revenue=" + revenue + ", type=" + type + ", value="
+				+ value + ", parkingLotCount=" + parkingLotCount + ", slotCount=" + slotCount + ", messageType="
+				+ messageType + ", timestamp=" + timestamp + "]";
 	}
 }

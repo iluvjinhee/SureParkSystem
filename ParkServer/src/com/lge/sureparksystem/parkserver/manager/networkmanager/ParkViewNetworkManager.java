@@ -34,7 +34,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 	}
 	
 	@Override
-	public void receiveMessage(JSONObject jsonObject) {
+	public void receive(JSONObject jsonObject) {
 		processMessage(jsonObject);
 	}
 	
@@ -52,7 +52,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 		case WELCOME_DISPLAY:
 		case QR_START:
 		case CONFIRMATION_RESPONSE:
-			sendMessage(jsonObject);
+			send(jsonObject);
 			break;
 		case CONFIRMATION_SEND:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));

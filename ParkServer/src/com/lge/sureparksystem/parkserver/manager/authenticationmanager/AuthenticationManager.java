@@ -1,10 +1,14 @@
 package com.lge.sureparksystem.parkserver.manager.authenticationmanager;
 
+import java.util.Calendar;
+
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.UserAccountData;
 import com.lge.sureparksystem.parkserver.manager.networkmanager.SocketInfo;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
@@ -47,11 +51,29 @@ public class AuthenticationManager extends ManagerTask {
 
 	@Override
 	protected void processMessage(JSONObject jsonObject) {
-		DataMessage recvMessage = (DataMessage) MessageParser.convertToMessage(jsonObject);
+		DataMessage message = (DataMessage) MessageParser.convertToMessage(jsonObject);
 		
-		switch(recvMessage.getMessageType()) {
+		switch(message.getMessageType()) {
 		case AUTHENTICATION_REQUEST:
-			responseAuthentication(recvMessage);
+			responseAuthentication(message);
+			break;
+		case CREATE_DRIVER:
+			UserAccountData newUser = new UserAccountData(
+					message.getName(),
+					message.getDriverID(),
+					message.getPassword(),
+					Calendar.getInstance().getTime(),
+					DatabaseInfo.Authority.ID_TYPE.DRIVER);
+			
+			boolean result = dbProvider.createUserAccount(newUser);
+			DataMessage sendMessage = new DataMessage(MessageType.RESPONSE);
+			if(result)
+				sendMessage.setResult("ok");
+			else
+				sendMessage.setResult("nok");
+			sendMessage.setType("create_driver");
+			
+			getEventBus().post(new ParkHereNetworkManagerTopic(sendMessage));	
 			break;
 		default:
 			break;
@@ -59,7 +81,7 @@ public class AuthenticationManager extends ManagerTask {
 	}
 
 	private void responseAuthentication(DataMessage message) {
-		boolean isValidUser = false;
+		int isValidUser = 0;
 		
 		int port = message.getPort();
 		if(port == SocketInfo.PORT_PARKHERE) {
@@ -71,12 +93,12 @@ public class AuthenticationManager extends ManagerTask {
 		}
 	
 		DataMessage sendMessage = null;
-		if(isValidUser)
-			sendMessage = new DataMessage(MessageType.AUTHENTICATION_OK);
+		sendMessage = new DataMessage(MessageType.AUTHENTICATION_RESPONSE);
+		sendMessage.setAuthority(isValidUser);		
+		if(isValidUser > 0)
+			sendMessage.setResult("ok");
 		else
-			sendMessage = new DataMessage(MessageType.AUTHENTICATION_FAIL);
-		
-		sendMessage.setID(message.getID());
+			sendMessage.setResult("nok");
 		
 		if(port == SocketInfo.PORT_PARKHERE)
 			getEventBus().post(new ParkHereNetworkManagerTopic(sendMessage));
