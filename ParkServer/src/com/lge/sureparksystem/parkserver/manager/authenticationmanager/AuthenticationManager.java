@@ -60,7 +60,7 @@ public class AuthenticationManager extends ManagerTask {
 		case CREATE_DRIVER:
 			UserAccountData newUser = new UserAccountData(
 					message.getName(),
-					message.getDriverID(),
+					message.getID(),
 					message.getPassword(),
 					Calendar.getInstance().getTime(),
 					DatabaseInfo.Authority.ID_TYPE.DRIVER);
@@ -85,7 +85,7 @@ public class AuthenticationManager extends ManagerTask {
 		
 		int port = message.getPort();
 		if(port == SocketInfo.PORT_PARKHERE) {
-			isValidUser = dbProvider.verifyUser(message.getDriverID(), message.getPassword());
+			isValidUser = dbProvider.verifyUser(message.getID(), message.getPassword());
 		}
 		else if(port == SocketInfo.PORT_PARKINGLOT ||
 				port == SocketInfo.PORT_PARKVIEW) {
