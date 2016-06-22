@@ -244,6 +244,10 @@ public class DatabaseProvider {
             LogHelper.log(TAG, "Error : There is no connection with sql server");
             return false;
         }
+        if (newuser.getEmail() == null) {
+            LogHelper.log(TAG, "Error : email is null.");
+            return false;
+        }
         if (isExistingUser(newuser.getEmail())) {
             LogHelper.log(TAG, "Error : email is alreday exist.");
             return false;
