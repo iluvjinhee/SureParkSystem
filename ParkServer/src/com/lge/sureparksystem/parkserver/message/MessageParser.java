@@ -51,7 +51,7 @@ public class MessageParser {
 		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
 		((DataMessage) message).setParkingFee(MessageParser.getStringList(jsonObject, DataMessage.PARKING_FEE));
 		((DataMessage) message).setParkingLotIDList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_ID));
-		((DataMessage) message).setParkingLotLocation(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_LOCATION));
+		((DataMessage) message).setParkingLotLocationList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_LOCATION));
 		((DataMessage) message).setSlotDriverID(MessageParser.getStringList(jsonObject, DataMessage.SLOT_DRIVER_ID));
 		((DataMessage) message).setSlotTime(MessageParser.getStringList(jsonObject, DataMessage.SLOT_TIME));
 		((DataMessage) message).setAddress(MessageParser.getString(jsonObject, DataMessage.ADDRESS));
@@ -322,19 +322,14 @@ public class MessageParser {
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {
 		ArrayList<String> resultList = new ArrayList<String>();
 		
-		Object object = jsonObject.get(key);
-		JSONArray childrenList = null;
-		if(object instanceof JSONArray) {
-		    childrenList = (JSONArray) jsonObject.get(key);
-			if(childrenList != null) {
-		        Iterator<String> i = childrenList.iterator();
-		
-		        while (i.hasNext()) {
-		            resultList.add(i.next());
-		        }
-			}
-		} else {
-		    resultList.add((String)jsonObject.get(key));
+		JSONArray childrenList = (JSONArray) jsonObject.get(key);
+	    childrenList = (JSONArray) jsonObject.get(key);
+		if(childrenList != null) {
+	        Iterator<String> i = childrenList.iterator();
+	
+	        while (i.hasNext()) {
+	            resultList.add(i.next());
+	        }
 		}
 		
 		return resultList;

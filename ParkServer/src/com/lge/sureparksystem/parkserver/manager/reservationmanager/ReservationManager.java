@@ -175,7 +175,7 @@ public class ReservationManager extends ManagerTask {
 		DataMessage dataMessage = new DataMessage(MessageType.PARKING_LOT_LIST);
 		dataMessage.setParkingLotCount(parkingLotCount);
 		dataMessage.setParkingLotIDList(parkingLotIDList);
-		dataMessage.setParkingLotLocation(parkingLotLocationList);
+		dataMessage.setParkingLotLocationList(parkingLotLocationList);
 		dataMessage.setParkingFee(parkingFeeList);
 		dataMessage.setGracePeriodList(gracePeriodList);
 
@@ -202,7 +202,7 @@ public class ReservationManager extends ManagerTask {
 				dataMessage.setParkingLotIDList(parkinglotIDList);
 				ArrayList<String> parkinglotLocationList = new ArrayList<String>();
 				parkinglotLocationList.add(parkinglotData.getLotAddress());
-				dataMessage.setParkingLotLocation(parkinglotLocationList);
+				dataMessage.setParkingLotLocationList(parkinglotLocationList);
 				ArrayList<String> parkingFeeList = new ArrayList<String>();
 				parkingFeeList.add(parkinglotData.getFee());
 				dataMessage.setParkingFee(parkingFeeList);
