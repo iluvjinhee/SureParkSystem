@@ -2,6 +2,9 @@ package com.lge.sureparksystem.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.lge.sureparksystem.model.BaseModel;
 import com.lge.sureparksystem.model.DriverModel;
 import com.lge.sureparksystem.parkclient.R;
@@ -39,16 +45,16 @@ public class DriverView extends BaseFragment implements OnClickListener {
     private TextView mPayment_info;
     private TextView mPark_grace_period;
     private TextView mPark_loacation;
-    
+
     private ImageView mQRImage;
     private Button mButton;
     private EditText mCard_number;
-    private boolean mIsReservedUser = false; // Check if reserved info exist
+    private boolean mIsReservedUser = false; // If reserved info exist
     private DriverModel mDriverModel;
     private int mSelectedTime = 0;
     private int mSelectedParkId = 0;
     private String mSelectedConfirmationNum;
-    private ImageView mSelectedWQImage;
+    private Bitmap mCurrentQRImage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,14 +93,14 @@ public class DriverView extends BaseFragment implements OnClickListener {
         if (mIsReservedUser) {
             if (mDriverModel != null && mDriverModel.mReservation_Information != null) {
                 String str = mDriverModel.mReservation_Information.parkinglot_id;
-                String[] str1 = {str};
+                String[] str1 = { str };
                 parkId = str1;
             }
         } else {
             if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
                 parkId = mDriverModel.mParkinglot_List.parkinglot_id;
             }
-        }  
+        }
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity().getApplicationContext(),
                 android.R.layout.simple_spinner_item, parkId);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -157,6 +163,10 @@ public class DriverView extends BaseFragment implements OnClickListener {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 LayoutInflater lf = getActivity().getLayoutInflater();
                 View layout = lf.inflate(R.layout.qr_image_dialog, null);
+                if (mCurrentQRImage != null) {
+                    ImageView iv = (ImageView)layout.findViewById(R.id.confirmation_iamge);
+                    iv.setImageBitmap(mCurrentQRImage);
+                }
                 dialog.setView(layout).setTitle(R.string.qr_dialog_title);
                 dialog.setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -167,8 +177,11 @@ public class DriverView extends BaseFragment implements OnClickListener {
                 dialog.create().show();
             }
         });
-        
-        if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
+
+        if (mIsReservedUser && mDriverModel != null && mDriverModel.mReservation_Information != null) {
+            Point point = new Point(900, 900);
+            CreateQRCodeAsyncTask ct = new CreateQRCodeAsyncTask(point);
+            ct.execute(mDriverModel.mReservation_Information.confirmationinfo);
         }
         mButton.setOnClickListener(this);
         if (mIsReservedUser) {
@@ -193,17 +206,23 @@ public class DriverView extends BaseFragment implements OnClickListener {
         if (mIsReservedUser) {
             if (mDriverModel != null && mDriverModel.mReservation_Information != null) {
                 mPark_fee.setText(getString(R.string.park_fee) + mDriverModel.mReservation_Information.parkingfee);
-                mPark_grace_period .setText(getString(R.string.park_grace_period) + mDriverModel.mReservation_Information.graceperiod);
-                mPark_loacation.setText(getString(R.string.parking_address) + mDriverModel.mReservation_Information.parkinglot_location);
-                mReservedTime.setText(getString(R.string.reserved_time) + mDriverModel.mReservation_Information.reservation_time);
+                mPark_grace_period.setText(getString(R.string.park_grace_period)
+                        + mDriverModel.mReservation_Information.graceperiod);
+                mPark_loacation.setText(getString(R.string.parking_address)
+                        + mDriverModel.mReservation_Information.parkinglot_location);
+                mReservedTime.setText(getString(R.string.reserved_time)
+                        + mDriverModel.mReservation_Information.reservation_time);
             }
         } else {
             if (mDriverModel != null && mDriverModel.mParkinglot_List != null) {
-                mPark_fee.setText(getString(R.string.park_fee) + mDriverModel.mParkinglot_List.parkingfee[mSelectedParkId]);
-                mPark_grace_period .setText(getString(R.string.park_grace_period) + mDriverModel.mParkinglot_List.graceperiod[mSelectedParkId]);
-                mPark_loacation.setText(getString(R.string.parking_address) + mDriverModel.mParkinglot_List.parkinglot_location[mSelectedParkId]);
+                mPark_fee.setText(getString(R.string.park_fee)
+                        + mDriverModel.mParkinglot_List.parkingfee[mSelectedParkId]);
+                mPark_grace_period.setText(getString(R.string.park_grace_period)
+                        + mDriverModel.mParkinglot_List.graceperiod[mSelectedParkId]);
+                mPark_loacation.setText(getString(R.string.parking_address)
+                        + mDriverModel.mParkinglot_List.parkinglot_location[mSelectedParkId]);
             }
-        }        
+        }
     }
 
     @Override
@@ -268,7 +287,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
                 cal.add(Calendar.HOUR_OF_DAY, (mSelectedTime + 1));
                 String dTime = formatter.format(cal.getTime());
                 bundle.putString("parkinglot_id", mDriverModel.mParkinglot_List.parkinglot_id[mSelectedParkId]);
-//                bundle.putString("reservation_time", dTime);
+                // bundle.putString("reservation_time", dTime);
                 bundle.putString("reservation_time", String.valueOf(System.currentTimeMillis()));
                 bundle.putString("paymentinfo", mSelectedConfirmationNum);
                 mCallback.requsetServer(RequestData.RESERVATION_REQUEST, bundle);
@@ -280,4 +299,71 @@ public class DriverView extends BaseFragment implements OnClickListener {
         }
     }
 
+    private class CreateQRCodeAsyncTask extends AsyncTask<String, Void, Bitmap> {
+        // QR code 색상
+        private static final int WHITE = 0xFFFFFFFF;
+        private static final int BLACK = 0xFF000000;
+
+        // QR code bitmap 크기 비율
+        private static final float REDUCE_RATIO = 0.8f;
+
+        // 화면 크기
+        private Point mDisplaySize;
+
+        public CreateQRCodeAsyncTask(Point displaySize) {
+            mDisplaySize = displaySize;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            // zxing library class (QR code writer)
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+
+            try {
+                // 화면 비율 대비 QR 코드 이미지 크기 조정
+                int temp = mDisplaySize.x;
+
+                if (temp > mDisplaySize.y) {
+                    temp = mDisplaySize.y;
+                }
+
+                int dWidth = (int)((float)temp * REDUCE_RATIO);
+                int dHeight = (int)((float)temp * REDUCE_RATIO);
+
+                // QR code로 인코딩해서 비트맵 array 정보를 얻어옴 zxing 자체 class임
+                BitMatrix result = qrCodeWriter.encode(params[0], BarcodeFormat.QR_CODE, dWidth, dHeight);
+                int width = result.getWidth();
+                int height = result.getHeight();
+
+                // Bitmap pixel array
+                int[] pixels = new int[width * height];
+
+                // BitMatrix 정보를 바탕으로 bitmap 픽셀 array 에 color 입력
+                // All are 0, or black, by default
+                for (int y = 0; y < height; y++) {
+                    int offset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        pixels[offset + x] = result.get(x, y) ? BLACK : WHITE;
+                    }
+                }
+
+                // pixel array 크기의 bitmap 생성
+                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+                // bitmap에 pixel 정보 입력
+                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+
+                return bitmap;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            if (result != null) {
+                mCurrentQRImage = result;
+            }
+        }
+    }
 }

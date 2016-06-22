@@ -22,7 +22,6 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.St
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.User;
 import com.lge.sureparksystem.parkserver.util.Logger;
 import com.sun.istack.internal.Nullable;
-import com.sun.javafx.collections.MappingChange.Map;
 
 public class DatabaseProvider {
 

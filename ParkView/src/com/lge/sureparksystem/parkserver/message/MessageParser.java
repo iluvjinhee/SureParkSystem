@@ -28,6 +28,7 @@ public class MessageParser {
 		message.setTimestamp(MessageParser.getInt(jsonObject, Message.TIMESTAMP));
 		
 		((DataMessage) message).setPort(MessageParser.getInt(jsonObject, DataMessage.PORT));
+		((DataMessage) message).setAuthority(MessageParser.getInt(jsonObject, DataMessage.AUTHORITY));
 		
 		// Parking Lot
 		((DataMessage) message).setEntryGateLEDStatus(MessageParser.getString(jsonObject, DataMessage.ENTRY_GATE_LED_STATUS));
@@ -47,10 +48,15 @@ public class MessageParser {
 		
 		// ParkHere
 		((DataMessage) message).setDriverOften(MessageParser.getStringList(jsonObject, DataMessage.DRIVER_OFTEN));
-		((DataMessage) message).setGracePeriod(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
-		((DataMessage) message).setParkingFee(MessageParser.getStringList(jsonObject, DataMessage.PARKING_FEE));
-		((DataMessage) message).setParkingLotIDList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_ID));
-		((DataMessage) message).setParkingLotLocation(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_LOCATION));
+		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
+		((DataMessage) message).setGracePeriod(MessageParser.getString(jsonObject, DataMessage.GRACE_PERIOD));
+		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
+		((DataMessage) message).setParkingFee(MessageParser.getString(jsonObject, DataMessage.PARKING_FEE));
+		((DataMessage) message).setParkingFeeList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_FEE_LIST));
+		((DataMessage) message).setParkingLotID(MessageParser.getString(jsonObject, DataMessage.PARKING_LOT_ID));
+		((DataMessage) message).setParkingLotIDList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_ID_LIST));
+		((DataMessage) message).setParkingLotLocation(MessageParser.getString(jsonObject, DataMessage.PARKING_LOT_LOCATION));
+		((DataMessage) message).setParkingLotLocationList(MessageParser.getStringList(jsonObject, DataMessage.PARKING_LOT_LOCATION_LIST));
 		((DataMessage) message).setSlotDriverID(MessageParser.getStringList(jsonObject, DataMessage.SLOT_DRIVER_ID));
 		((DataMessage) message).setSlotTime(MessageParser.getStringList(jsonObject, DataMessage.SLOT_TIME));
 		((DataMessage) message).setAddress(MessageParser.getString(jsonObject, DataMessage.ADDRESS));
@@ -64,6 +70,7 @@ public class MessageParser {
 		((DataMessage) message).setReservationId(MessageParser.getString(jsonObject, DataMessage.RESERVATION_ID));
 		((DataMessage) message).setReservationTime(MessageParser.getString(jsonObject, DataMessage.RESERVATION_TIME));
 		((DataMessage) message).setRevenue(MessageParser.getString(jsonObject, DataMessage.REVENUE));
+		((DataMessage) message).setResult(MessageParser.getString(jsonObject, DataMessage.RESULT));
 		((DataMessage) message).setType(MessageParser.getString(jsonObject, DataMessage.TYPE));
 		((DataMessage) message).setValue(MessageParser.getString(jsonObject, DataMessage.VALUE));
 		((DataMessage) message).setParkingLotCount(MessageParser.getInt(jsonObject, DataMessage.PARKING_LOT_COUNT));
@@ -89,10 +96,7 @@ public class MessageParser {
 			break;
 		case AUTHENTICATION_RESPONSE:
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
-			break;
-		case AUTHENTICATION_OK:
-		case AUTHENTICATION_FAIL:
-			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
+			jsonObject.put(DataMessage.AUTHORITY, ((DataMessage) message).getAuthority());
 			break;
 			
 		// ParkView
@@ -138,8 +142,10 @@ public class MessageParser {
 			putList(jsonObject, DataMessage.SLOT_DRIVER_ID, ((DataMessage) message).getSlotDriverIDList());
 			putList(jsonObject, DataMessage.DRIVER_OFTEN, ((DataMessage) message).getDriverOftenList());
 			putList(jsonObject, DataMessage.SLOT_TIME, ((DataMessage) message).getSlotTimeList());
+			break;
 		case NOTIFICATION:
 			jsonObject.put(DataMessage.TYPE, ((DataMessage) message).getType());
+			break;
 		case SLOT_LED_STATUS:
 		case SLOT_SENSOR_STATUS:
 			jsonObject.put(DataMessage.SLOT_NUMBER, ((DataMessage) message).getSlotNumber());
@@ -151,61 +157,72 @@ public class MessageParser {
 			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
 			jsonObject.put(DataMessage.RESERVATION_TIME, ((DataMessage) message).getReservationTime());
 			jsonObject.put(DataMessage.PAYMENT_INFO, ((DataMessage) message).getPaymentInfo());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
+			break;
 		case RESERVATION_INFO_REQUEST:
 			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
+			break;
 		case CANCEL_REQUEST:
 			jsonObject.put(DataMessage.DRIVER_ID, ((DataMessage) message).getDriverID());
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
+			break;
 		case PARKING_LOT_LIST:
-			jsonObject.put(DataMessage.PARKING_LOT_COUNT, ((DataMessage) message).getDriverID());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
-			putList(jsonObject, DataMessage.PARKING_LOT_LOCATION, ((DataMessage) message).getParkingLotLocationList());
-			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
-			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
+			jsonObject.put(DataMessage.PARKING_LOT_COUNT, ((DataMessage) message).getParkingLotCount());
+			putList(jsonObject, DataMessage.PARKING_LOT_ID_LIST, ((DataMessage) message).getParkingLotIDList());
+			putList(jsonObject, DataMessage.PARKING_LOT_LOCATION_LIST, ((DataMessage) message).getParkingLotLocationList());
+			putList(jsonObject, DataMessage.PARKING_FEE_LIST, ((DataMessage) message).getParkingFeeList());
+			putList(jsonObject, DataMessage.GRACE_PERIOD_LIST, ((DataMessage) message).getGracePeriodList());
+			break;
 		case RESERVATION_INFORMATION:
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
 			jsonObject.put(DataMessage.RESERVATION_TIME, ((DataMessage) message).getReservationTime());
 			jsonObject.put(DataMessage.PAYMENT_INFO, ((DataMessage) message).getPaymentInfo());
 			jsonObject.put(DataMessage.CONFIRMATION_INFO, ((DataMessage) message).getConfirmationInfo());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
-			putList(jsonObject, DataMessage.PARKING_LOT_LOCATION, ((DataMessage) message).getParkingLotLocationList());
-			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
-			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
+			jsonObject.put(DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFee());
+			jsonObject.put(DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriod());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
+			jsonObject.put(DataMessage.PARKING_LOT_LOCATION, ((DataMessage) message).getParkingLotLocation());
+			break;
 		case CANCEL_RESPONSE:
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			jsonObject.put(DataMessage.RESERVATION_ID, ((DataMessage) message).getReservationID());
+			break;
 		case PARKING_LOT_STATS_REQUEST:
 			jsonObject.put(DataMessage.PERIOD, ((DataMessage) message).getPeriod());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
 			break;
-		case CHANGE_PARKINGFEE:
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
-			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
+		case CHANGE_PARKING_FEE:
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
+			jsonObject.put(DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFee());
 			break;
-		case CHANGE_GRACEPERIOD:
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
-			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
+		case CHANGE_GRACE_PERIOD:
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
+			jsonObject.put(DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriod());
 			break;
 		case CREATE_ATTENDANT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPassword());
 			jsonObject.put(DataMessage.NAME, ((DataMessage) message).getName());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
+			jsonObject.put(DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotID());
+			break;
+		case CREATE_DRIVER:
+			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
+			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPassword());
+			jsonObject.put(DataMessage.NAME, ((DataMessage) message).getName());
 			break;
 		case REMOVE_ATTENDANT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			break;
-		case ADD_PARKINGLOT:
+		case ADD_PARKING_LOT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			jsonObject.put(DataMessage.PASSWORD, ((DataMessage) message).getPassword());
 			jsonObject.put(DataMessage.ADDRESS, ((DataMessage) message).getAddress());
-			putList(jsonObject, DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFeeList());
-			putList(jsonObject, DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriodList());
+			jsonObject.put(DataMessage.PARKING_FEE, ((DataMessage) message).getParkingFee());
+			jsonObject.put(DataMessage.GRACE_PERIOD, ((DataMessage) message).getGracePeriod());
 			break;
-		case REMOVE_PARKINGLOT:
+		case REMOVE_PARKING_LOT:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 			break;
 		case PARKING_LOT_STATISTICS:
@@ -213,15 +230,21 @@ public class MessageParser {
 			jsonObject.put(DataMessage.OCCUPANCY_RATE, ((DataMessage) message).getOccupancyRate());
 			jsonObject.put(DataMessage.REVENUE, ((DataMessage) message).getRevenue());
 			jsonObject.put(DataMessage.CANCEL_RATE, ((DataMessage) message).getCancelRate());
-			putList(jsonObject, DataMessage.PARKING_LOT_ID, ((DataMessage) message).getParkingLotIDList());
+			putList(jsonObject, DataMessage.PARKING_LOT_ID_LIST, ((DataMessage) message).getParkingLotIDList());
 			putList(jsonObject, DataMessage.SLOT_STATUS, ((DataMessage) message).getSlotStatusList());
 			putList(jsonObject, DataMessage.SLOT_DRIVER_ID, ((DataMessage) message).getSlotDriverIDList());
 			putList(jsonObject, DataMessage.DRIVER_OFTEN, ((DataMessage) message).getDriverOftenList());
 			putList(jsonObject, DataMessage.SLOT_TIME, ((DataMessage) message).getSlotTimeList());
+			break;
 		case CHANGE_RESPONSE:
 			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
 			jsonObject.put(DataMessage.TYPE, ((DataMessage) message).getType());
 			jsonObject.put(DataMessage.VALUE, ((DataMessage) message).getValue());
+			break;
+		case RESPONSE:
+			jsonObject.put(DataMessage.RESULT, ((DataMessage) message).getResult());
+			jsonObject.put(DataMessage.TYPE, ((DataMessage) message).getType());
+			break;
 		default:
 			break;
 		}
@@ -305,7 +328,7 @@ public class MessageParser {
 		ArrayList<String> resultList = new ArrayList<String>();
 		
 		JSONArray childrenList = (JSONArray) jsonObject.get(key);
-		
+	    childrenList = (JSONArray) jsonObject.get(key);
 		if(childrenList != null) {
 	        Iterator<String> i = childrenList.iterator();
 	
@@ -313,7 +336,7 @@ public class MessageParser {
 	            resultList.add(i.next());
 	        }
 		}
-        
+		
 		return resultList;
 	}
 }

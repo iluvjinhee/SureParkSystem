@@ -1,6 +1,8 @@
 package com.lge.sureparksystem.parkview.controller;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
@@ -16,6 +18,7 @@ import android.content.Intent;
 import android.util.Log;
 
 public class Controller {
+	private String name = null;
 	private FullscreenActivity fullScreen = null;	
 	private SocketForClient clientSocket = null;	
 	private TTSWrapper tts = null;
@@ -67,20 +70,35 @@ public class Controller {
 				DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_SEND);
 				dataMessage.setConfirmationInfo(qrcode);
 				
+				setName(qrcode);
+				
 				clientSocket.send(MessageParser.convertToJSONObject(dataMessage));			
 			}
 		}
 	}
 
-	public void welcome() {
-		String msg = "Welcome!\n Sure Park.";
+	private void setName(String qrcode) {
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(qrcode);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		fullScreen.setDisplay(msg, 50);				
+		name = (String) jsonObject.get("name");
+	}
+
+	public void welcome() {
+		String msg = "Welcome, Sure Park System. Good morning friend!";
+		
+		fullScreen.setDisplay("Welcome!\n Sure Park.", 50);				
 		tts.speak(msg);
 	}
 	
-	public void assignSlot(int slotNumber) {
-		String msg = "Hello, Your Park Slot is ";		
+	public void assignSlot(int slotNumber, String name) {
+		String msg = "Hello" + name + ", A wonderful morning to a wonderful friend like you! Your Parking Slot is ";		
 		
 		fullScreen.setDisplay(String.valueOf(slotNumber), 250);				
 		tts.speak(msg + slotNumber);
@@ -89,12 +107,12 @@ public class Controller {
 	public void notReserved() {
 		String msg = "Sorry. You're not reserved.";	
 	    
-		fullScreen.setDisplay("You're not reserved.", 50);	
+		fullScreen.setDisplay("NOT\nRESERVED !", 100);	
 		tts.speak(msg);
 	}
 	
 	public void scanConfirmation() {
-		String msg = "Scan your confirmation number.";	
+		String msg = "Scan your confirmation information.";	
 	    
 		tts.speak(msg);
 		intentIntegrator.initiateScan();
@@ -112,12 +130,16 @@ public class Controller {
 			break;
 		case AUTHENTICATION_RESPONSE:
 			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
-				assignSlot(((DataMessage) message).getSlotNumber());
+				assignSlot(((DataMessage) message).getSlotNumber(), getName());
 			else
 				notReserved();
 			break;
 		default:
 			break;		
 		}
+	}
+
+	private String getName() {
+		return name;
 	}
 }

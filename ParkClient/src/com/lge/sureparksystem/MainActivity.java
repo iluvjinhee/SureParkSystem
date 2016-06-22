@@ -199,8 +199,28 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
         switch (messageType) {
         // Login
         case CREATE_DRVIER_RESOPNSE:
-            LoginModel loginModel1 = (LoginModel)mLoginFactory.mBaseModel;
-            LoginModel.Response r = loginModel1.new Response(jsonObject);
+            String type = MessageParser.getString(jsonObject, "type");
+            if ("create_driver".equals(type)) {
+                LoginModel loginModel1 = (LoginModel)mLoginFactory.mBaseModel;
+                LoginModel.Response r = loginModel1.new Response(jsonObject);
+                if ("ok".equals(r.result)) {
+                    Utils.showToast(this, "Create success");
+                } else {
+                    Utils.showToast(this, "Create fail");
+                }
+            } else if ("cancel_reservation".equals(type)) {
+                DriverModel cancel_response = (DriverModel)mDriverFactory.mBaseModel;
+                cancel_response.mResponse = cancel_response.new Response(jsonObject);
+                mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
+                if ("ok".equals(cancel_response.mResponse.result)) {
+                    mDriverFactory.mBaseFragment.updateFlag(false);
+                    Utils.showToast(this, "Reservation canceled");
+                } else {
+                    Utils.showToast(this, "Error check information");
+                }
+                mDriverFactory.mBaseFragment.onPause();
+                mDriverFactory.mBaseFragment.onResume();
+            }
             break;
         case AUTHENTICATION_RESPONSE:
             LoginModel loginModel = (LoginModel)mLoginFactory.mBaseModel;
@@ -243,27 +263,6 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             // Driver fragment update
             mDriverFactory.mBaseFragment.onPause();
             mDriverFactory.mBaseFragment.onResume();
-            break;
-        case CANCEL_RESPONSE:
-            DriverModel cancel_response = (DriverModel)mDriverFactory.mBaseModel;
-            cancel_response.mResponse = cancel_response.new Response(jsonObject);
-            mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
-            if ("cancel_reservation".equals(cancel_response.mResponse.type)) {
-                if ("ok".equals(cancel_response.mResponse.result)) {
-                    mDriverFactory.mBaseFragment.updateFlag(false);
-                    Utils.showToast(this, "Reservation canceled");
-                } else {
-                    Utils.showToast(this, "Error check information");
-                }
-                mDriverFactory.mBaseFragment.onPause();
-                mDriverFactory.mBaseFragment.onResume();
-            } else {
-                if ("ok".equals(cancel_response.mResponse.result)) {
-                    Utils.showToast(this, "Create success");
-                } else {
-                    Utils.showToast(this, "Create fail");
-                }
-            }
             break;
         // Attendant
         case PARKING_LOT_STATUS:

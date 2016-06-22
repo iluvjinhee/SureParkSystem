@@ -40,6 +40,7 @@ public class ParkingLotWatchDog extends ManagerTask {
 				
 				if(alertLevel > 100) {
 					callAttendant("parkinglot error");
+					loop = false;
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

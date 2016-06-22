@@ -6,7 +6,7 @@ public class ParkingSlot {
 
     private int slotNumber;
     private int status;
-    private String driver_id;
+    private int reservationId;
 
     public ParkingSlot() {
     }
@@ -16,40 +16,43 @@ public class ParkingSlot {
         this.status = status;
     }
 
-    public ParkingSlot(int slotNumber, int status, String driver_id) {
-        this.slotNumber = slotNumber;
-        this.status = status;
-        this.driver_id = driver_id;
-    }
+	public ParkingSlot(int slotNumber, int status, int reservationId) {
+		super();
+		this.slotNumber = slotNumber;
+		this.status = status;
+		this.reservationId = reservationId;
+	}
 
-    public int getSlotNumber() {
-        return slotNumber;
-    }
+	public int getSlotNumber() {
+		return slotNumber;
+	}
 
-    public void setSlotNumber(int slotNumber) {
-        this.slotNumber = slotNumber;
-    }
+	public void setSlotNumber(int slotNumber) {
+		this.slotNumber = slotNumber;
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
-    public String getDriver_id() {
-        return driver_id;
-    }
+	public int getReservationId() {
+		return reservationId;
+	}
 
-    public void setDriver_id(String driver_id) {
-        this.driver_id = driver_id;
-    }
+	public void setReservationId(int reservationId) {
+		this.reservationId = reservationId;
+	}
 
-    @Override
-    public String toString() {
-        return "ParkingSlot [slotNumber=" + slotNumber + ", status=" + status + ", driver_id="
-                + driver_id + "]";
-    }
+	@Override
+	public String toString() {
+		return "ParkingSlot [slotNumber=" + slotNumber + ", status=" + status + ", reservationId="
+				+ reservationId + "]";
+	}
+
+    
 
 }

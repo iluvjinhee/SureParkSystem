@@ -25,15 +25,4 @@ public class Utils {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void getQRImage(String codeurl) {
-//        try {
-//            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-//            BitMatrix bitMatrix = qrCodeWriter.encode(codeurl, BarcodeFormat.QR_CODE, 200, 200);
-//            MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(0xFF2e4e96, 0xFFFFFFFF);
-//            BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix, matrixToImageConfig);
-//            ImageIO.write(bufferedImage, "png", new File("C:\\qrcode.png"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-    }
 }

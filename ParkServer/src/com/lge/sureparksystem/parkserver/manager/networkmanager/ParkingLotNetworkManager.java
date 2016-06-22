@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
@@ -43,7 +44,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		super.processMessage(jsonObject);
 		
 		MessageType messageType = MessageParser.getMessageType(jsonObject);
-		DataMessage message = null;
+		DataMessage message = (DataMessage) MessageParser.convertToMessage(jsonObject);
 
 		switch (messageType) {
 		case ENTRY_GATE_ARRIVE:
@@ -55,26 +56,28 @@ public class ParkingLotNetworkManager extends NetworkManager {
 			break;
 		case PARKING_LOT_INFORMATION:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			
+			message.setID(getID());
+			getEventBus().post(new ReservationManagerTopic(message));
 			break;
 		case ENTRY_GATE_CONTROL:
 		case EXIT_GATE_CONTROL:
 		case ENTRY_GATE_LED_CONTROL:
 		case EXIT_GATE_LED_CONTROL:
 		case SLOT_LED_CONTROL:
+		case RESET:
 			send(jsonObject);
 			break;
 		case ENTRY_GATE_STATUS:
-			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getStatus().equalsIgnoreCase("UP")) {
-				DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
-				outMessage.setCommand("green");
+			if(message.getStatus().equalsIgnoreCase(MessageValueType.UP)) {
+				DataMessage sendMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
+				sendMessage.setCommand(MessageValueType.GREEN);
 				
-				send(MessageParser.convertToJSONObject(outMessage));				
+				send(MessageParser.convertToJSONObject(sendMessage));				
 			} else {
-				if(message.getStatus().equalsIgnoreCase("DOWN")) {
+				if(message.getStatus().equalsIgnoreCase(MessageValueType.DOWN)) {
 					DataMessage outMessage = new DataMessage(MessageType.ENTRY_GATE_LED_CONTROL);
-					outMessage.setCommand("red");
+					outMessage.setCommand(MessageValueType.RED);
 					
 					send(MessageParser.convertToJSONObject(outMessage));				
 				}
@@ -82,14 +85,14 @@ public class ParkingLotNetworkManager extends NetworkManager {
 			break;
 		case EXIT_GATE_STATUS:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getStatus().equalsIgnoreCase("UP")) {
+			if(message.getStatus().equalsIgnoreCase(MessageValueType.UP)) {
 				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
-				outMessage.setCommand("green");
+				outMessage.setCommand(MessageValueType.GREEN);
 				
 				send(MessageParser.convertToJSONObject(outMessage));	
-			} else if(message.getStatus().equalsIgnoreCase("DOWN")) {
+			} else if(message.getStatus().equalsIgnoreCase(MessageValueType.DOWN)) {
 				DataMessage outMessage = new DataMessage(MessageType.EXIT_GATE_LED_CONTROL);
-				outMessage.setCommand("red");
+				outMessage.setCommand(MessageValueType.RED);
 				
 				send(MessageParser.convertToJSONObject(outMessage));	
 			}

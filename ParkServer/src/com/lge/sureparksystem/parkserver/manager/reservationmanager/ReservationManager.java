@@ -19,10 +19,9 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvide
 import com.lge.sureparksystem.parkserver.manager.databasemanager.ParkingLotData;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.ReservationData;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -31,6 +30,7 @@ import com.lge.sureparksystem.parkserver.util.Logger;
 public class ReservationManager extends ManagerTask {
 	HashMap<String, ParkingLotStatus> parkinglotSatusMap = new HashMap<String, ParkingLotStatus>(); //<parkinglotID, ParkingLotStatus>
 	DatabaseProvider dbProvider = null;
+	DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd:HH:mm");
 
 	public class ReservationManagerListener {
 		@Subscribe
@@ -133,11 +133,11 @@ public class ReservationManager extends ManagerTask {
 
 		DataMessage dataMessage = new DataMessage(MessageType.RESPONSE);
 		if (result) {
-			dataMessage.setResult("ok");
+			dataMessage.setResult(MessageValueType.OK);
 		} else {
-			dataMessage.setResult("nok");
+			dataMessage.setResult(MessageValueType.NOK);
 		}
-		dataMessage.setType("cancel_reservation");
+		dataMessage.setType(MessageValueType.CANCEL_RESERVATION);
 		
 		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
 	}
@@ -175,8 +175,8 @@ public class ReservationManager extends ManagerTask {
 		DataMessage dataMessage = new DataMessage(MessageType.PARKING_LOT_LIST);
 		dataMessage.setParkingLotCount(parkingLotCount);
 		dataMessage.setParkingLotIDList(parkingLotIDList);
-		dataMessage.setParkingLotLocation(parkingLotLocationList);
-		dataMessage.setParkingFee(parkingFeeList);
+		dataMessage.setParkingLotLocationList(parkingLotLocationList);
+		dataMessage.setParkingFeeList(parkingFeeList);
 		dataMessage.setGracePeriodList(gracePeriodList);
 
 		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
@@ -194,21 +194,11 @@ public class ReservationManager extends ManagerTask {
 				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_INFORMATION);
 				dataMessage.setResult("ok");
 				dataMessage.setReservationId(String.valueOf(reservation.getId()));
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(reservation.getReservationTime());
-				dataMessage.setReservationTime(String.valueOf(cal.getTimeInMillis()));
-				ArrayList<String> parkinglotIDList = new ArrayList<String>();
-				parkinglotIDList.add(parkinglotId);
-				dataMessage.setParkingLotIDList(parkinglotIDList);
-				ArrayList<String> parkinglotLocationList = new ArrayList<String>();
-				parkinglotLocationList.add(parkinglotData.getLotAddress());
-				dataMessage.setParkingLotLocation(parkinglotLocationList);
-				ArrayList<String> parkingFeeList = new ArrayList<String>();
-				parkingFeeList.add(parkinglotData.getFee());
-				dataMessage.setParkingFee(parkingFeeList);
-				ArrayList<String> gracePeriodList = new ArrayList<String>();
-				gracePeriodList.add(parkinglotData.getGracePeriod());
-				dataMessage.setGracePeriodList(gracePeriodList);
+				dataMessage.setReservationTime(dateFormat.format(reservation.getReservationTime()));
+				dataMessage.setParkingLotID(parkinglotId);
+				dataMessage.setParkingLotLocation(parkinglotData.getLotAddress());
+				dataMessage.setParkingFee(parkinglotData.getFee());
+				dataMessage.setGracePeriod(parkinglotData.getGracePeriod());
 				dataMessage.setPaymentInfo(reservation.getCreditInfo());
 				dataMessage.setConfirmationInfo(reservation.getConfirmInfo());
 
@@ -245,9 +235,11 @@ public class ReservationManager extends ManagerTask {
 		if (parkinglotSatusMap.get(parkinglotId).getAvailableSlotCount() > 0) {
 			newreservation = new ReservationData();
 			newreservation.setUserEmail(driverId);
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(Long.valueOf(reservationTime));
-			newreservation.setReservationTime(cal.getTime());
+			try {
+				newreservation.setReservationTime(dateFormat.parse(reservationTime));
+			} catch (java.text.ParseException e) {
+				e.printStackTrace();
+			}
 			newreservation.setParkinglotId(parkinglotId);
 			newreservation.setCreditInfo(paymentInfo);
 			newreservation.setParkingFee(parkinglotData.getFee());

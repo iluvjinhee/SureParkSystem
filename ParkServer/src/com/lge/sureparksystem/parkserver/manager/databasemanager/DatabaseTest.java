@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import com.lge.sureparksystem.parkserver.util.Logger;
-
 public class DatabaseTest {
 
     DatabaseProvider mDatabaseProvider = DatabaseProvider.getInstance();
