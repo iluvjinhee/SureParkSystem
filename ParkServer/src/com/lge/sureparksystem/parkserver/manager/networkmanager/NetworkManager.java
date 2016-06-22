@@ -163,7 +163,8 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		case AUTHENTICATION_RESPONSE:
 			if(message.getResult().equalsIgnoreCase("ok")) {
 				Logger.log("Authentication OK !!!");
-				setSocketID(message.getID());
+				
+				setID(id);
 			} else if(message.getResult().equalsIgnoreCase("nok")) {
 				Logger.log("Unauthentication !!!");
 				//disconnectServer();
@@ -178,7 +179,11 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	private void setSocketID(String id) {
+	private void setID(String id) {
 		currentSocketForServer.setID(id);
+	}
+	
+	protected String getID() {
+		return currentSocketForServer.getID();
 	}
 }

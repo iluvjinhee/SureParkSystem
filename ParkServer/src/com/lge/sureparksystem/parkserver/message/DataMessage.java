@@ -17,6 +17,7 @@ public class DataMessage extends Message {
 	public static final String EXIT_GATE_LED_STATUS = "exitgateled";
 	public static final String EXIT_GATE_STATUS = "exitgate";
 	public static final String GRACE_PERIOD = "graceperiod";
+	public static final String GRACE_PERIOD_LIST = "graceperiod_list";
 	public static final String ID = "id";
 	public static final String LED_NUMBER = "led_number";
 	public static final String LED_STATUS = "led_status";
@@ -24,10 +25,13 @@ public class DataMessage extends Message {
 	public static final String NAME = "name";
 	public static final String OCCUPANCY_RATE = "occupancy_rate";
 	public static final String PARKINGLOT_COUNT = "parkinglot_count";
-	public static final String PARKING_FEE = "parkingfee";
+	public static final String PARKING_FEE = "parking_fee";
+	public static final String PARKING_FEE_LIST = "parking_fee_list";
 	public static final String PARKING_LOT_COUNT = "parkinglot_count";
 	public static final String PARKING_LOT_ID = "parkinglot_id";
-	public static final String PARKING_LOT_LOCATION = "parkinglot_location";
+	public static final String PARKING_LOT_ID_LIST = "parkinglot_id_list";
+	public static final String PARKING_LOT_LOCATION = "parkinglot_location";	
+	public static final String PARKING_LOT_LOCATION_LIST = "parkinglot_location_list";
 	public static final String PASSWORD = "pwd";
 	public static final String PAYMENT_INFO = "paymentinfo";
 	public static final String PERIOD = "period";
@@ -258,7 +262,7 @@ public class DataMessage extends Message {
 		return parkingFeeList;
 	}
 
-	public void setParkingFee(ArrayList<String> parkingFeeList) {
+	public void setParkingFeeList(ArrayList<String> parkingFeeList) {
 		this.parkingFeeList = parkingFeeList;
 	}
 	

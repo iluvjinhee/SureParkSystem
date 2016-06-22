@@ -1,7 +1,5 @@
 package com.lge.sureparksystem.parkserver.manager.reservationmanager;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -19,10 +17,9 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvide
 import com.lge.sureparksystem.parkserver.manager.databasemanager.ParkingLotData;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.ReservationData;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
-import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
-import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
@@ -133,11 +130,11 @@ public class ReservationManager extends ManagerTask {
 
 		DataMessage dataMessage = new DataMessage(MessageType.RESPONSE);
 		if (result) {
-			dataMessage.setResult("ok");
+			dataMessage.setResult(MessageValueType.OK);
 		} else {
-			dataMessage.setResult("nok");
+			dataMessage.setResult(MessageValueType.NOK);
 		}
-		dataMessage.setType("cancel_reservation");
+		dataMessage.setType(MessageValueType.CANCEL_RESERVATION);
 		
 		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
 	}
@@ -176,7 +173,7 @@ public class ReservationManager extends ManagerTask {
 		dataMessage.setParkingLotCount(parkingLotCount);
 		dataMessage.setParkingLotIDList(parkingLotIDList);
 		dataMessage.setParkingLotLocationList(parkingLotLocationList);
-		dataMessage.setParkingFee(parkingFeeList);
+		dataMessage.setParkingFeeList(parkingFeeList);
 		dataMessage.setGracePeriodList(gracePeriodList);
 
 		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
@@ -197,18 +194,10 @@ public class ReservationManager extends ManagerTask {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(reservation.getReservationTime());
 				dataMessage.setReservationTime(String.valueOf(cal.getTimeInMillis()));
-				ArrayList<String> parkinglotIDList = new ArrayList<String>();
-				parkinglotIDList.add(parkinglotId);
-				dataMessage.setParkingLotIDList(parkinglotIDList);
-				ArrayList<String> parkinglotLocationList = new ArrayList<String>();
-				parkinglotLocationList.add(parkinglotData.getLotAddress());
-				dataMessage.setParkingLotLocationList(parkinglotLocationList);
-				ArrayList<String> parkingFeeList = new ArrayList<String>();
-				parkingFeeList.add(parkinglotData.getFee());
-				dataMessage.setParkingFee(parkingFeeList);
-				ArrayList<String> gracePeriodList = new ArrayList<String>();
-				gracePeriodList.add(parkinglotData.getGracePeriod());
-				dataMessage.setGracePeriodList(gracePeriodList);
+				dataMessage.setParkingLotID(parkinglotId);
+				dataMessage.setParkingLotLocation(parkinglotData.getLotAddress());
+				dataMessage.setParkingFee(parkinglotData.getFee());
+				dataMessage.setGracePeriod(parkinglotData.getGracePeriod());
 				dataMessage.setPaymentInfo(reservation.getCreditInfo());
 				dataMessage.setConfirmationInfo(reservation.getConfirmInfo());
 

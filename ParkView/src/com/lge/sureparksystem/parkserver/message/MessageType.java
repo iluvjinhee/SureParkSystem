@@ -1,10 +1,6 @@
 package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
-	// Inner Message
-	AUTHENTICATION_OK("AUTHENTICATION OK"),
-	AUTHENTICATION_FAIL("AUTHENTICATION FAIL"),
-	
 	// Common
 	ACKNOWLEDGE("ACK"),	
 	AUTHENTICATION_REQUEST("Authentication_Request"),
@@ -34,15 +30,17 @@ public enum MessageType {
     SLOT_LED_CONTROL("Parkingslot_LED_Control"),
     SLOT_LED_STATUS("Parkingslot_LED"),
     SLOT_SENSOR_STATUS("Parkingslot_Sensor"),
+    RESET("Reset"),
     
     // ParkHere
-	ADD_PARKINGLOT("Add_Parkinglot"),
+	ADD_PARKING_LOT("Add_Parkinglot"),
 	CANCEL_REQUEST("Cancel_Request"),
 	CANCEL_RESPONSE("Cancel_Response"),
-	CHANGE_GRACEPERIOD("Change_graceperiod"),
-	CHANGE_PARKINGFEE("Change_parkingfee"),
+	CHANGE_GRACE_PERIOD("Change_graceperiod"),
+	CHANGE_PARKING_FEE("Change_parkingfee"),
 	CHANGE_RESPONSE("Change_Response"),
 	CREATE_ATTENDANT("Create_Attendant"),
+	CREATE_DRIVER("Create_Driver"),
 	NOTIFICATION("Notification"),
 	PARKING_LOT_STATISTICS("Parkinglot_Statistics"),
 	PARKING_LOT_STATS_REQUEST("Parkinglot_stats_Request"),
@@ -51,10 +49,11 @@ public enum MessageType {
 	PARKING_LOT_STATUS("ParkinglotStatus"),
 	PARKING_LOT_STATUS_REQUEST("ParkinglotStatus_Request"),
 	REMOVE_ATTENDANT("Remove_Attendant"),
-	REMOVE_PARKINGLOT("Remove_Parkinglot"),
+	REMOVE_PARKING_LOT("Remove_Parkinglot"),
 	RESERVATION_INFORMATION("Reservation_Information"),
 	RESERVATION_INFO_REQUEST("ReservationInfo_Request"),
 	RESERVATION_REQUEST("Reservation_Request"),
+	RESPONSE("Response"),
     
     NONE("NONE");
 	
