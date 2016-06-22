@@ -85,7 +85,7 @@ public class Main {
 		reservationManager.init();
 		ReservationManagerService = new ManagerService(reservationManager, "ReservationManager");
 		
-		//ReservationManagerService.doWork();
+		ReservationManagerService.doWork();
 	}
 
 	private static void startKeyboardInManager() {

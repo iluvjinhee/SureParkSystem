@@ -7,15 +7,13 @@ import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkViewNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 
 public class CommunicationManager extends ManagerTask {
-	private class ParkingLotInformation {
-		
-	}
-	
 	public class CommunicationManagerListener {
 		@Subscribe
 		public void onSubscribe(CommunicationManagerTopic topic) {
@@ -48,14 +46,14 @@ public class CommunicationManager extends ManagerTask {
 		
 		switch (MessageParser.getMessageType(jsonObject)) {
 		case ENTRY_GATE_ARRIVE:
-//			message = new DataMessage(MessageType.QR_START);
-//			getEventBus().post(new ParkViewNetworkManagerTopic(message));
+			message = new DataMessage(MessageType.QR_START);
+			getEventBus().post(new ParkViewNetworkManagerTopic(message));
 			
-			// For Test
+			/*// For Test
 			message = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			message.setResult("ok");
 			message.setSlotNumber(3);
-			getEventBus().post(new CommunicationManagerTopic(message));
+			getEventBus().post(new CommunicationManagerTopic(message));*/
 			break;
 		case ENTRY_GATE_PASSBY:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
@@ -72,17 +70,17 @@ public class CommunicationManager extends ManagerTask {
 			break;
 		case CONFIRMATION_RESPONSE:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getResult().equalsIgnoreCase("OK")) {
-				controlEntryGate("up");
-				turnSlotLED(message.getSlotNumber(), "on");
+			if(message.getResult().equalsIgnoreCase(MessageValueType.OK)) {
+				controlEntryGate(MessageValueType.UP);
+				turnSlotLED(message.getSlotNumber(), MessageValueType.ON);
 			}
 			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
 			break;
 		case CONFIRMATION_SEND:
 		case SLOT_SENSOR_STATUS:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getStatus().equalsIgnoreCase("occupied")) {
-				turnSlotLED(0, "off");
+			if(message.getStatus().equalsIgnoreCase(MessageValueType.OCCUPIED)) {
+				turnSlotLED(0, MessageValueType.OFF);
 			}
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;

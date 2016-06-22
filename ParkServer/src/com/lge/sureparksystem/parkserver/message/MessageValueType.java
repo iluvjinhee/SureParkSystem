@@ -9,4 +9,7 @@ public class MessageValueType {
 	public static final String CANCEL_RESERVATION = "cancel_reservation";
 	public static final String OK = "ok";
 	public static final String NOK = "nok";
+	public static final String OCCUPIED = "occupied";
+	public static final String ON = "on";
+	public static final String OFF = "off";
 }
