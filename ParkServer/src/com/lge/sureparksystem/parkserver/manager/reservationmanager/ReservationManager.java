@@ -1,5 +1,7 @@
 package com.lge.sureparksystem.parkserver.manager.reservationmanager;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import com.lge.sureparksystem.parkserver.util.Logger;
 public class ReservationManager extends ManagerTask {
 	HashMap<String, ParkingLotStatus> parkinglotSatusMap = new HashMap<String, ParkingLotStatus>(); //<parkinglotID, ParkingLotStatus>
 	DatabaseProvider dbProvider = null;
+	DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd:HH:mm");
 
 	public class ReservationManagerListener {
 		@Subscribe
@@ -191,9 +194,7 @@ public class ReservationManager extends ManagerTask {
 				DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_INFORMATION);
 				dataMessage.setResult("ok");
 				dataMessage.setReservationId(String.valueOf(reservation.getId()));
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(reservation.getReservationTime());
-				dataMessage.setReservationTime(String.valueOf(cal.getTimeInMillis()));
+				dataMessage.setReservationTime(dateFormat.format(reservation.getReservationTime()));
 				dataMessage.setParkingLotID(parkinglotId);
 				dataMessage.setParkingLotLocation(parkinglotData.getLotAddress());
 				dataMessage.setParkingFee(parkinglotData.getFee());
@@ -234,9 +235,11 @@ public class ReservationManager extends ManagerTask {
 		if (parkinglotSatusMap.get(parkinglotId).getAvailableSlotCount() > 0) {
 			newreservation = new ReservationData();
 			newreservation.setUserEmail(driverId);
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(Long.valueOf(reservationTime));
-			newreservation.setReservationTime(cal.getTime());
+			try {
+				newreservation.setReservationTime(dateFormat.parse(reservationTime));
+			} catch (java.text.ParseException e) {
+				e.printStackTrace();
+			}
 			newreservation.setParkinglotId(parkinglotId);
 			newreservation.setCreditInfo(paymentInfo);
 			newreservation.setParkingFee(parkinglotData.getFee());
