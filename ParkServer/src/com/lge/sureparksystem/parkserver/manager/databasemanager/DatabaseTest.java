@@ -23,10 +23,10 @@ public class DatabaseTest {
         //        getRemoveUserAccount_Test();
         //        getUserAuthority_Test();
 
-                createReservation_Test();
+//                createReservation_Test();
         //        getReservationInfo_Test();
         //        updateReservationState_Test();
-    	getReservationCreditInfo_Test();
+//    	getReservationCreditInfo_Test();
         //
         //        updateParkingLot_Test();
         //        updateParkingLotFee_Test();
@@ -43,7 +43,7 @@ public class DatabaseTest {
 
         //        ucreateOccupancyRatePerHour_Test();
 
-        //        createStatisticsData();
+//                createStatisticsData();
         //        updateDailyStatisticsInfo_Test();
 //        getStatisticsInfo_Test();
     }

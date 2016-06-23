@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
@@ -19,19 +20,19 @@ public class CommunicationManager extends ManagerTask {
 		@Subscribe
 		public void onSubscribe(CommunicationManagerTopic topic) {
 			System.out.println("CommunicationManagerListener: " + topic);
-			
+
 			processMessage(topic.getJsonObject());
 		}
 	}
-	
+
 	@Override
 	public void init() {
 		getEventBus().register(new CommunicationManagerListener());
 	}
-	
+
 	@Override
 	public void run() {
-		while(loop) {
+		while (loop) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -40,16 +41,24 @@ public class CommunicationManager extends ManagerTask {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void processMessage(JSONObject jsonObject) {
 		DataMessage message = null;
-		
+
 		switch (MessageParser.getMessageType(jsonObject)) {
 		case ENTRY_GATE_ARRIVE:
-			message = new DataMessage(MessageType.QR_START);
-			getEventBus().post(new ParkViewNetworkManagerTopic(message));
-			
+			int count = DatabaseProvider.getInstance().getReservationCountAll();
+			if (count > 0) {
+				message = new DataMessage(MessageType.QR_START);
+				getEventBus().post(new ParkViewNetworkManagerTopic(message));
+			} else {
+				message = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
+				message.setResult("nok");
+				getEventBus().post(new ParkViewNetworkManagerTopic(message));
+				
+				callAttendant(MessageValueType.NO_RESERVATION);
+			}
 			/*// For Test
 			message = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			message.setResult("ok");
@@ -58,35 +67,34 @@ public class CommunicationManager extends ManagerTask {
 			break;
 		case ENTRY_GATE_PASSBY:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
-			
+
 			controlEntryGate(MessageValueType.DOWN);
 			controlParkView(MessageType.WELCOME_DISPLAY);
-			break;	
+			break;
 		case EXIT_GATE_ARRIVE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
-			
-//			controlExitGate("up");
-			break;		
+
+			//			controlExitGate("up");
+			break;
 		case EXIT_GATE_PASSBY:
 			controlExitGate("down");
 			break;
 		case CONFIRMATION_RESPONSE:
-			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getResult().equalsIgnoreCase(MessageValueType.OK)) {
+			message = (DataMessage)MessageParser.convertToMessage(jsonObject);
+			if (message.getResult().equalsIgnoreCase(MessageValueType.OK)) {
 				controlEntryGate(MessageValueType.UP);
 				turnSlotLED(message.getSlotNumber(), MessageValueType.ON);
-			}
-			else {
+			} else {
 				callAttendant(MessageValueType.CONFIRMATION_INFORMATION_ERROR);
 			}
-			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));			
+			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
 			break;
 		case CONFIRMATION_SEND:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			break;
 		case SLOT_SENSOR_STATUS:
-			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
-			if(message.getStatus().equalsIgnoreCase(MessageValueType.OCCUPIED)) {
+			message = (DataMessage)MessageParser.convertToMessage(jsonObject);
+			if (message.getStatus().equalsIgnoreCase(MessageValueType.OCCUPIED)) {
 				turnSlotLED(0, MessageValueType.OFF);
 			}
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
@@ -98,15 +106,15 @@ public class CommunicationManager extends ManagerTask {
 
 	private void controlParkView(MessageType messageType) {
 		DataMessage message = new DataMessage(messageType);
-		
+
 		getEventBus().post(new ParkViewNetworkManagerTopic(message));
 	}
 
 	private void callAttendant(String string) {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
-		
-		getEventBus().post(new ParkHereNetworkManagerTopic(message));		
+
+		getEventBus().post(new ParkHereNetworkManagerTopic(message));
 	}
 
 	private void controlEntryGate(String command) {
@@ -114,7 +122,7 @@ public class CommunicationManager extends ManagerTask {
 		sendMessage.setCommand(command);
 		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 	}
-	
+
 	private void controlExitGate(String command) {
 		DataMessage sendMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 		sendMessage.setCommand(command);
@@ -125,7 +133,7 @@ public class CommunicationManager extends ManagerTask {
 		DataMessage sendMessage = new DataMessage(MessageType.SLOT_LED_CONTROL);
 		sendMessage.setSlotNumber(slotNumber);
 		sendMessage.setCommand(command);
-		
+
 		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
-	}	
+	}
 }
