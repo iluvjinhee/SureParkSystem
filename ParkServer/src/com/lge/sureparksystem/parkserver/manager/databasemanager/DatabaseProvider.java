@@ -55,6 +55,13 @@ public class DatabaseProvider {
 		return builder.toString();
 	}
 
+	private String getSqlStringForDecryption(String columnName) {
+		StringBuilder builder = new StringBuilder("AES_DECRYPT");
+		builder.append("(" + columnName + ", ");
+		builder.append("UNHEX(SHA2('" + encryptionKey + "'," + HASH_LENGTH + ")))");
+		return builder.toString();
+	}
+
 	private int doExecUpdateSQL(String tableName, String setvalue, String whereclause) {
 		PreparedStatement pstmt = null;
 		int count = -1;
@@ -508,7 +515,7 @@ public class DatabaseProvider {
 					e.printStackTrace();
 				}
 				reservation.setParkinglotId(rs.getString(Reservation.Columns.LOT_ID));
-//				reservation.setCreditInfo(rs.getString(Reservation.Columns.CREDIT_INFO));	//block for security
+				//				reservation.setCreditInfo(rs.getString(Reservation.Columns.CREDIT_INFO));	//block for security
 				reservation.setConfirmInfo(rs.getString(Reservation.Columns.CONFIRM_INFO));
 				reservation.setParkingFee(rs.getString(Reservation.Columns.PARKING_FEE));
 				reservation.setGracePeriod(rs.getString(Reservation.Columns.GRACE_PERIOD));
@@ -570,7 +577,7 @@ public class DatabaseProvider {
 					e.printStackTrace();
 				}
 				reservation.setParkinglotId(rs.getString(Reservation.Columns.LOT_ID));
-//				reservation.setCreditInfo(rs.getString(Reservation.Columns.CREDIT_INFO)); //block for security
+				//				reservation.setCreditInfo(rs.getString(Reservation.Columns.CREDIT_INFO)); //block for security
 				reservation.setConfirmInfo(rs.getString(Reservation.Columns.CONFIRM_INFO));
 				reservation.setParkingFee(rs.getString(Reservation.Columns.PARKING_FEE));
 				reservation.setGracePeriod(rs.getString(Reservation.Columns.GRACE_PERIOD));
@@ -601,7 +608,59 @@ public class DatabaseProvider {
 		}
 		return reservation;
 	}
-	
+
+	@Nullable
+	public String getReservationCreditInfo(int reservationId) {
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return null;
+		}
+		String cardInfo = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			StringBuilder where = new StringBuilder(" where ");
+			where.append(Reservation.Columns.ID + "=" + reservationId);
+
+			String sql = "select " + getSqlStringForDecryption(Reservation.Columns.CREDIT_INFO)
+					+ " from " + Reservation.RESERVATION_TABLE + where.toString();
+			LogHelper.log(TAG, "sql = " + sql);
+
+			pstmt = mDBConn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				LogHelper.log(TAG, rs.toString());
+				cardInfo = rs.getString(1);
+				if (rs.next()) {
+					LogHelper.log(TAG, "Warning :: there are many cardInfo.");
+				}
+			} else {
+				LogHelper.log(TAG, "matched cardInfo is not exist.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (cardInfo != null) {
+			LogHelper.log(TAG, "cardInfo  = " + cardInfo.toString());
+		} else {
+			LogHelper.log(TAG, "cardInfo is NULL.");
+		}
+		return cardInfo;
+	}
+
 	public int getReservationId(String confirmationInfo) {
 		if (mDBConn == null) {
 			LogHelper.log(TAG, "Error : There is no connection with sql server");

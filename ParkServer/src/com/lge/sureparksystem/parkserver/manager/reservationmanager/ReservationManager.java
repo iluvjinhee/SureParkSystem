@@ -30,9 +30,10 @@ import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
+import com.lge.sureparksystem.parkserver.util.cardvalidation.PaymentRemoteProxy;
 
 public class ReservationManager extends ManagerTask {
-	HashMap<String, ParkingLotStatus> parkinglotSatusMap = new HashMap<String, ParkingLotStatus>(); //<parkinglotID, ParkingLotStatus>
+	HashMap<String, ParkingLotInfo> parkinglotInfoMap = new HashMap<String, ParkingLotInfo>(); //<parkinglotID, ParkingLotStatus>
 	DatabaseProvider dbProvider = null;
 	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 	String curParkinglotId = null;
@@ -78,29 +79,27 @@ public class ReservationManager extends ManagerTask {
 		if (parkinglotId == null) {
 			Logger.log("parkinglotId is null");
 			result = false;
-		} else if (parkinglotSatusMap.get(parkinglotId) == null) {
-			Logger.log("parkinglotSatusMap.get(parkinglotId) is null");
+		} else if (parkinglotInfoMap.get(parkinglotId) == null) {
+			Logger.log("parkinglotInfoMap.get(parkinglotId) is null");
 			result = false;
 		}
 		return result;
 	}
 	
-//	private ParkingLotStatus getParkingLotSatus(String parkinglotId) {
-//		boolean result = true;
-//		ParkingLotStatus parkingLotStatus = null;
-//		if (parkinglotId == null) {
-//			Logger.log("parkinglotId is null");
-//			if (parkinglotSatusMap.size() == 1) {
-//				Iterator<String> parkinglot = parkinglotSatusMap.keySet().iterator();
-//				parkinglot.next
-//			}
-//			result = false;
-//		} else if (parkinglotSatusMap.get(parkinglotId) == null) {
-//			Logger.log("parkinglotSatusMap.get(parkinglotId) is null");
-//			result = false;
-//		}
-//		return parkingLotStatus;
-//	}
+	private ParkingLotInfo getParkingLotInfo(String parkinglotId) {
+		ParkingLotInfo parkingLotInfo = null;
+		if (parkinglotId == null) {
+			Logger.log("parkinglotId is null");
+			if (parkinglotInfoMap.size() == 1) {
+				Iterator<String> iterator = parkinglotInfoMap.keySet().iterator();
+				String parkinglot = iterator.next();
+				parkingLotInfo = parkinglotInfoMap.get(parkinglot);
+			}
+		} else if (parkinglotInfoMap.get(parkinglotId) == null) {
+			Logger.log("parkinglotInfoMap.get(parkinglotId) is null");
+		}
+		return parkingLotInfo;
+	}
 
 	private boolean isValidConfirmationInfo(String confirmationInfo) {
 		boolean result = false;
@@ -146,7 +145,7 @@ public class ReservationManager extends ManagerTask {
 			Logger.log("calculateTotalParkingFee() endTimeMs = " + endTimeMs);
 			if (endTimeMs > startTimeMs) {
 				long durationMin = TimeUnit.MILLISECONDS.toMinutes(endTimeMs - startTimeMs);
-				payment = durationMin * fee / 30;
+				payment = fee + durationMin * fee / 30;
 			}
 		}
 		Logger.log("calculateTotalParkingFee() reservationId = " + reservationId + ", payment = "
@@ -226,13 +225,13 @@ public class ReservationManager extends ManagerTask {
 		//			for (int i = 0; i < slotNum; i++) {
 		//				slotStaus.add(String.valueOf(i % 2));
 		//			}
-		//			parkinglotSatusMap.put(lotList,
-		//					new ParkingLotStatus(lotList, slotNum, slotStaus));
+		//			parkinglotInfoMap.put(lotList,
+		//					new ParkingLotInfo(lotList, slotNum, slotStaus));
 		//		}
 		//[End] temporary for test
 
-		Iterator<String> iterator = parkinglotSatusMap.keySet().iterator();
-		int parkingLotCount = parkinglotSatusMap.size();
+		Iterator<String> iterator = parkinglotInfoMap.keySet().iterator();
+		int parkingLotCount = parkinglotInfoMap.size();
 		Logger.log("parkingLotCount = " + parkingLotCount);
 		ArrayList<String> parkingLotIDList = new ArrayList<String>();
 		ArrayList<String> parkingLotLocationList = new ArrayList<String>();
@@ -273,7 +272,8 @@ public class ReservationManager extends ManagerTask {
 				dataMessage.setParkingLotLocation(parkinglotData.getLotAddress());
 				dataMessage.setParkingFee(parkinglotData.getFee());
 				dataMessage.setGracePeriod(parkinglotData.getGracePeriod());
-				dataMessage.setPaymentInfo(reservation.getCreditInfo());
+				String paymentInfo = dbProvider.getReservationCreditInfo(reservation.getId());	//For descryption
+				dataMessage.setPaymentInfo(paymentInfo);
 				dataMessage.setConfirmationInfo(reservation.getConfirmInfo());
 
 				jsonObject = MessageParser.convertToJSONObject(dataMessage);
@@ -282,12 +282,16 @@ public class ReservationManager extends ManagerTask {
 			}
 		}
 		if (result == false) {
-			DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_INFORMATION);
-			dataMessage.setResult("nok");
-
-			jsonObject = MessageParser.convertToJSONObject(dataMessage);
-			getEventBus().post(new ParkHereNetworkManagerTopic(jsonObject));
+			sendNOKResponseToParkHere();
 		}
+	}
+	
+	private void sendNOKResponseToParkHere() {
+		DataMessage dataMessage = new DataMessage(MessageType.RESERVATION_INFORMATION);
+		dataMessage.setResult("nok");
+
+		JSONObject jsonObject = MessageParser.convertToJSONObject(dataMessage);
+		getEventBus().post(new ParkHereNetworkManagerTopic(jsonObject));
 	}
 
 	private void processReservationInfoRequest(JSONObject jsonObject) {
@@ -303,12 +307,16 @@ public class ReservationManager extends ManagerTask {
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.PARKING_LOT_ID);
 		String reservationTime = MessageParser.getString(jsonObject, DataMessage.RESERVATION_TIME);
 		String paymentInfo = MessageParser.getString(jsonObject, DataMessage.PAYMENT_INFO);
-
+		
+		if (PaymentRemoteProxy.isVaildCreditCard(paymentInfo) == false) {
+			Logger.log("Invalid paymentInfo" + paymentInfo);
+			sendNOKResponseToParkHere();
+		}
 		ReservationData newreservation = null;
 		ParkingLotData parkinglotData = dbProvider.getParkingLotInfo(parkinglotId);
 		UserAccountData userAccount = dbProvider.getUserInfo(driverId);
 		if (userAccount != null
-				&& parkinglotSatusMap.get(parkinglotId).getAvailableSlotCount() > 0) {
+				&& parkinglotInfoMap.get(parkinglotId).getAvailableSlotCount() > 0) {
 			newreservation = new ReservationData();
 			newreservation.setUserEmail(driverId);
 			try {
@@ -324,8 +332,10 @@ public class ReservationManager extends ManagerTask {
 			newreservation.setGracePeriod(parkinglotData.getGracePeriod());
 			newreservation.setReservationState(DatabaseInfo.Reservation.STATE_TYPE.RESERVED);
 			dbProvider.createReservation(newreservation);
+			sendReservationInformation(driverId);
+		} else {
+			sendNOKResponseToParkHere();
 		}
-		sendReservationInformation(driverId);
 	}
 
 	private void storeParkingLotInformation(JSONObject jsonObject) {
@@ -341,16 +351,16 @@ public class ReservationManager extends ManagerTask {
 			return;
 		}
 
-		if (parkinglotSatusMap.containsKey(parkinglotId)) {
-			boolean validation = parkinglotSatusMap.get(parkinglotId).checkValidation(slotCount,
+		if (parkinglotInfoMap.containsKey(parkinglotId)) {
+			boolean validation = parkinglotInfoMap.get(parkinglotId).checkValidation(slotCount,
 					slotStaus);
 			if (validation == false) {
 				Logger.log("Slot satus is weird");
 				callAttendant("parkinglot error");
 			}
 		} else {
-			parkinglotSatusMap.put(parkinglotId,
-					new ParkingLotStatus(parkinglotId, slotCount, slotStaus));
+			parkinglotInfoMap.put(parkinglotId,
+					new ParkingLotInfo(parkinglotId, slotCount, slotStaus));
 		}
 
 	}
@@ -361,7 +371,7 @@ public class ReservationManager extends ManagerTask {
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
 		}
-		parkinglotSatusMap.get(parkinglotId).changeToMovingState();
+		parkinglotInfoMap.get(parkinglotId).changeToMovingState();
 	}
 
 	private void processChangedSlotStatus(JSONObject jsonObject) {
@@ -372,28 +382,28 @@ public class ReservationManager extends ManagerTask {
 		}
 		int changedSlot = MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER);
 		String status = MessageParser.getString(jsonObject, DataMessage.STATUS);
-		int reservationId = 0;//parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
+		int reservationId = 0;//parkinglotInfoMap.get(parkinglotId).getMovingReservationId();
 		Date changedtime = Calendar.getInstance().getTime();
 		Logger.log("processChangedSlotStatus() status= " + status + ", changedSlot = " + changedSlot); 
 		if ("occupied".equalsIgnoreCase(status)) {
-			reservationId = parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
+			reservationId = parkinglotInfoMap.get(parkinglotId).getMovingReservationId();
 			String strAssingedslot = dbProvider.getParkingInfo(reservationId).getAssigned_slot();
 			int assingedslot = Integer.valueOf(strAssingedslot);
 			dbProvider.updateParkingParkedSlot(reservationId, String.valueOf(changedSlot),
 					changedtime);
 			dbProvider.updateReservationState(reservationId,
 					DatabaseInfo.Reservation.STATE_TYPE.PARKED);
-			parkinglotSatusMap.get(parkinglotId).completeParking(changedSlot);
+			parkinglotInfoMap.get(parkinglotId).completeParking(changedSlot);
 			if (changedSlot != assingedslot) {
 				Logger.log("Slot was reallocated..from " + assingedslot + " to " + changedSlot);
 				callAttendant("reallocation");
 			}
 		} else {
-			reservationId = parkinglotSatusMap.get(parkinglotId).getRservationIdOfParkingSlot(changedSlot);
+			reservationId = parkinglotInfoMap.get(parkinglotId).getRservationIdOfParkingSlot(changedSlot);
 			dbProvider.updateParkingUnparkedTime(reservationId, changedtime);
 			dbProvider.updateReservationState(reservationId,
 					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED);
-			parkinglotSatusMap.get(parkinglotId).startUnparking(changedSlot);
+			parkinglotInfoMap.get(parkinglotId).startUnparking(changedSlot);
 		}
 	}
 
@@ -403,16 +413,22 @@ public class ReservationManager extends ManagerTask {
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
 		}
-		int reservationId = parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
-		float payment = calculateTotalParkingFee(reservationId);
-		if (payment >= 0) {
+		int reservationId = parkinglotInfoMap.get(parkinglotId).getMovingReservationId();
+		String cardNumber = dbProvider.getReservationCreditInfo(reservationId);
+		Float amount = calculateTotalParkingFee(reservationId);
+		boolean result = false;
+		if (amount > 0) {
+			result = PaymentRemoteProxy.pay(cardNumber, Integer.valueOf(amount.toString()));
+		}
+		
+		if (result == true) {
 			dbProvider.updateReservationPayment(reservationId,
-					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED, payment);
+					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED, Integer.valueOf(amount.toString()));
 		} else {
 			Logger.log("There is a problem in payment");
 			callAttendant("payment error");
 		}
-		parkinglotSatusMap.get(parkinglotId).changeToSlientState();
+		parkinglotInfoMap.get(parkinglotId).changeToSlientState();
 	}
 
 	private void processVerificationConfirmationInfo(JSONObject jsonObject) {
@@ -421,9 +437,9 @@ public class ReservationManager extends ManagerTask {
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
 		//		String parkinglotId = curParkinglotId; //temporary
 		Logger.log("parkinglotId = " + parkinglotId);
-		Logger.log("parkingLot = " +  parkinglotSatusMap.get(parkinglotId).toString());
+		Logger.log("parkingLot = " +  parkinglotInfoMap.get(parkinglotId).toString());
 
-		ParkingLotStatus parkingLot = parkinglotSatusMap.get(parkinglotId);
+		ParkingLotInfo parkingLot = parkinglotInfoMap.get(parkinglotId);
 		int availSlot = parkingLot.getAvailalbeSlotNumber();
 
 		if (availSlot > 0 && isValidConfirmationInfo(confirmationInfo)) {

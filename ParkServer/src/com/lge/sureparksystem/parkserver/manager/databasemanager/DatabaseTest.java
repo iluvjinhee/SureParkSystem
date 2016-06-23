@@ -23,9 +23,10 @@ public class DatabaseTest {
         //        getRemoveUserAccount_Test();
         //        getUserAuthority_Test();
 
-        //        createReservation_Test();
+                createReservation_Test();
         //        getReservationInfo_Test();
         //        updateReservationState_Test();
+    	getReservationCreditInfo_Test();
         //
         //        updateParkingLot_Test();
         //        updateParkingLotFee_Test();
@@ -44,7 +45,7 @@ public class DatabaseTest {
 
         //        createStatisticsData();
         //        updateDailyStatisticsInfo_Test();
-        getStatisticsInfo_Test();
+//        getStatisticsInfo_Test();
     }
 
     /*************************************************************************************/
@@ -91,9 +92,9 @@ public class DatabaseTest {
                 cal.getTime(), DatabaseInfo.Authority.ID_TYPE.DRIVER);
 
         ReservationData reservation = new ReservationData();
-        reservation.setUserEmail("tester2@lge.com");
+        reservation.setUserEmail("jaedo.jin@lge.com");
         reservation.setReservationTime(cal.getTime());
-        reservation.setParkinglotId("13");
+        reservation.setParkinglotId("SP001");
         reservation.setCreditInfo("credit info");
         reservation.setConfirmInfo("QR code");
         reservation.setParkingFee("5");
@@ -112,6 +113,12 @@ public class DatabaseTest {
     public void updateReservationState_Test() {
         mDatabaseProvider.updateReservationState(26, 2);
     }
+    
+    public void getReservationCreditInfo_Test() {
+        mDatabaseProvider.getReservationCreditInfo(17305);
+    }
+    
+    
 
     /*************************************************************************************/
     // For Parking lot
