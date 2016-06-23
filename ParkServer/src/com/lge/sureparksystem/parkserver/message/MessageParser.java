@@ -86,9 +86,10 @@ public class MessageParser {
 		jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 		if (message.getTimestamp() != -1)
 			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+		if (((DataMessage) message).getID() != null)
+			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 
 		switch (message.getMessageType()) {
-		
 		// Common
 		case AUTHENTICATION_REQUEST:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
