@@ -93,9 +93,11 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	}
 	
 	private void initClient(int port) {
-		if(port == SocketInfo.PORT_PARKINGLOT) {
+		/*
+		 if(port == SocketInfo.PORT_PARKINGLOT) {
 			getEventBus().post(new ParkingLotNetworkManagerTopic(new Message(MessageType.RESET)));
 		}
+		*/
 	}
 
 	private void showConnectionInfo(int i) {

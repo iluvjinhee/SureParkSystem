@@ -48,7 +48,7 @@ public class MessageParser {
 		
 		// ParkHere
 		((DataMessage) message).setDriverOften(MessageParser.getStringList(jsonObject, DataMessage.DRIVER_OFTEN));
-		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD));
+		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setGracePeriod(MessageParser.getString(jsonObject, DataMessage.GRACE_PERIOD));
 		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setParkingFee(MessageParser.getString(jsonObject, DataMessage.PARKING_FEE));
