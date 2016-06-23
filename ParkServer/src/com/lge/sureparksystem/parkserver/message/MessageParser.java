@@ -252,19 +252,13 @@ public class MessageParser {
 		return jsonObject;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void putList(JSONObject jsonObject, String key, ArrayList<String> list) {
 		if(list == null)
 			return;
 		
-		if(list.size() == 1) {
-			jsonObject.put(key, list.get(0));
-		}
-		else {
-			JSONArray array = new JSONArray();
-			array.addAll(list);
-			jsonObject.put(key, array);
-		}
+		JSONArray array = new JSONArray();
+		array.addAll(list);
+		jsonObject.put(key, array);
 	}
 
 	public static MessageType getMessageType(JSONObject jsonObject) {

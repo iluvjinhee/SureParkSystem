@@ -152,6 +152,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	}
 
 	public void receive(JSONObject jsonObject) {
+		if(getID() != null)
+			jsonObject.put(DataMessage.ID, getID());
+		
 		processMessage(jsonObject);
 	}
 	

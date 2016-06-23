@@ -11,7 +11,10 @@ public class TestMessage {
 	static {
 		rand = new Random();
 		
-		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+//		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaa@aaa.com\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaa@aaa.com\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaa@aaa.com\", \"pwd\" : \"12341234\"}");
 		strArray.add("{\"messagetype\" : \"Cancel_Request\", \"driver_id\" : \"louder81@gmail.com\", \"reservation_id\" : \"000111000111\"}");
 		strArray.add("{\"messagetype\" : \"Change_graceperiod\", \"parkinglot_id\" : \"aabb\", \"graceperiod\" : \"120\"}");
 		strArray.add("{\"messagetype\" : \"Change_parkingfee\", \"parkinglot_id\" : \"aabb\", \"parking_fee\" : \"10\"}");

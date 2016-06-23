@@ -35,10 +35,10 @@ public class ParkViewNetworkManager extends NetworkManager {
 		super.run();
 	}
 	
-	@Override
-	public void receive(JSONObject jsonObject) {
-		processMessage(jsonObject);
-	}
+//	@Override
+//	public void receive(JSONObject jsonObject) {
+//		processMessage(jsonObject);
+//	}
 	
 	@Override
 	public void onSocketAccepted(Socket socket) {

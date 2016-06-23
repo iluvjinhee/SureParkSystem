@@ -35,10 +35,10 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		super.run();
 	}
 	
-	@Override
-	public void receive(JSONObject jsonObject) {
-		processMessage(jsonObject);
-	}
+//	@Override
+//	public void receive(JSONObject jsonObject) {
+//		processMessage(jsonObject);
+//	}
 	
 	protected void processMessage(JSONObject jsonObject) {
 		super.processMessage(jsonObject);
@@ -57,7 +57,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case PARKING_LOT_INFORMATION:
 			getEventBus().post(new CommunicationManagerTopic(jsonObject));
 			
-			message.setID(getID());
+//			message.setID(getID());
 			getEventBus().post(new ReservationManagerTopic(message));
 			break;
 		case ENTRY_GATE_CONTROL:

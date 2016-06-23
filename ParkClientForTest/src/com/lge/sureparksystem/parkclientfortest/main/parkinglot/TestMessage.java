@@ -11,9 +11,9 @@ public class TestMessage {
 	static {
 		rand = new Random();
 		
-		/*strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"SP001\", \"pwd\" : \"SP001\"}");
-		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
-		strArray.add("{\"messagetype\" : \"EntryGate_Arrive\", \"timestamp\" : 100\"}");
+		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"SP001\", \"pwd\" : \"SP001\"}");
+//		strArray.add("{\"messagetype\" : \"Authentication_Request\", \"id\" : \"aaabbbccc\", \"pwd\" : \"12341234\"}");
+		strArray.add("{\"messagetype\" : \"EntryGate_Arrive\", \"timestamp\" : 100}");
 		strArray.add("{\"messagetype\" : \"EntryGate_LED\", \"status\" : \"red\", \"timestamp\" : 50}");
 		strArray.add("{\"messagetype\" : \"EntryGate_PassBy\", \"timestamp\" : 110}");
 		strArray.add("{\"messagetype\" : \"EntryGate_Servo\", \"status\" : \"down\", \"timestamp\" : 30}");
@@ -24,9 +24,9 @@ public class TestMessage {
 		strArray.add("{\"messagetype\" : \"HeartBeat\", \"timestamp\" : 300}");
 		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 4, \"slot_status\" : [\"1\", \"1\", \"0\", \"1\"], \"led_status\" : [\"0\", \"0\", \"0\", \"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
 		strArray.add("{\"messagetype\" : \"Parkingslot_LED\", \"slot_number\" : 2, \"status\" : \"off\", \"timestamp\" : 15}");
-		strArray.add("{\"messagetype\" : \"Parkingslot_Sensor\", \"slot_number\" : 2, \"status\" : \"empty\", \"timestamp\" : 10}");*/
-		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 1, \"slot_status\" : [\"1\"], \"led_status\" : [\"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
-		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 2, \"slot_status\" : [\"1\", \"1\"], \"led_status\" : [\"0\", \"1\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
+		strArray.add("{\"messagetype\" : \"Parkingslot_Sensor\", \"slot_number\" : 2, \"status\" : \"empty\", \"timestamp\" : 10}");
+//		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 1, \"slot_status\" : [\"1\"], \"led_status\" : [\"0\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
+//		strArray.add("{\"messagetype\" : \"Parkinglot_Information\", \"slot_count\" : 2, \"slot_status\" : [\"1\", \"1\"], \"led_status\" : [\"0\", \"1\"], \"entrygate\" : \"0\", \"exitgate\" : \"0\", \"entrygateled\" : \"0\", \"exitgateled\" : \"1\", \"entrygate_arrive\" : \"0\", \"exitgate_arrive\" : \"0\", \"timestamp\" : 5}");
 	}
 	
 	static public String getTestMessage() {
