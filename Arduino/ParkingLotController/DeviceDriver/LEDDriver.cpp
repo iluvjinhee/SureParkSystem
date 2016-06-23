@@ -140,52 +140,6 @@ int GetParkingStallLED(int iIndex)
 {
 	return aiParkingStallLEDStatus[iIndex];
 }
-
-
-	
-#if 0
-  Serial.println( "Turn on entry red LED" );
-  digitalWrite(EntryGateRedLED, LOW);
-  delay( delayvalue );
-  digitalWrite(EntryGateRedLED, HIGH);
-
-  Serial.println( "Turn on entry green LED" );
-  digitalWrite(EntryGateGreenLED, LOW);
-  delay( delayvalue );
-  digitalWrite(EntryGateGreenLED, HIGH);
-  
-  Serial.println( "Turn on stall 1 LED" );
-  digitalWrite(ParkingStall1LED, HIGH);
-  delay( delayvalue );
-  digitalWrite(ParkingStall1LED, LOW);
-
-  Serial.println( "Turn on stall 2 LED" );
-  digitalWrite(ParkingStall2LED, HIGH);
-  delay( delayvalue );
-  digitalWrite(ParkingStall2LED, LOW);
-  
-  Serial.println( "Turn on stall 3 LED" );
-  digitalWrite(ParkingStall3LED, HIGH);
-  delay( delayvalue );
-  digitalWrite(ParkingStall3LED, LOW);
-  
-  Serial.println( "Turn on stall 4 LED" );
-  digitalWrite(ParkingStall4LED, HIGH);
-  delay( delayvalue );
-  digitalWrite(ParkingStall4LED, LOW);
-  
-  Serial.println( "Turn on exit red LED" );
-  digitalWrite(ExitGateRedLED, LOW);
-  delay( delayvalue );
-  digitalWrite(ExitGateRedLED, HIGH);
-
-  Serial.println( "Turn on exit green LED" );
-  digitalWrite(ExitGateGreenLED, LOW);
-  delay( delayvalue );
-  digitalWrite(ExitGateGreenLED, HIGH);
-#endif  
-
-
     
 /*********************************************************************
 * void InitEntryExitLEDs()

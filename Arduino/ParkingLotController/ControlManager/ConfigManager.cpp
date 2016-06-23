@@ -52,6 +52,8 @@ static int iExitGateServo=0;
 
 String cmdMsg[] = {
 	"help",
+	"connect",
+	"disconnect",	
 	"print on",
 	"print off",	
 	"all off",
@@ -70,6 +72,8 @@ String cmdMsg[] = {
 
 enum cmdMsgList{
 	S_CMD_HELP = 0,
+	S_CMD_CONNECT_SERVER,
+	S_CMD_DISCONNECT_SERVER,
 	S_CMD_PRINT_STATUS_ON,
 	S_CMD_PRINT_STATUS_OFF,
 	S_CMD_ALL_OFF,
@@ -117,6 +121,16 @@ void SeiralCommand(String sCmd)
 			Serial.println("-. set pwd:password");
 			Serial.println("----------------------------------------------------------");
 			break;
+
+		case S_CMD_CONNECT_SERVER :
+			AttempToConnectServer();
+			SetServerConnectAuto(true);
+			break;
+			
+		case S_CMD_DISCONNECT_SERVER :
+			AttempToDisconnectServer();
+			SetServerConnectAuto(false);
+			break;
 			
 		case S_CMD_PRINT_STATUS_ON :
 			SetRunningMode(GetRunningMode() | 1<<RUN_PRINT_MODE );
@@ -145,6 +159,7 @@ void SeiralCommand(String sCmd)
 			break;
 			
 		case S_CMD_RESET :
+			ClrTimeStamp();
 			ParkingLotReset();
 			break;
 			
@@ -184,13 +199,36 @@ void SeiralCommand(String sCmd)
 
 			char deli[]={":"};
 			char *nk;
+			int iSlot;
 			String cmdtok = String(strtok_r(s_cmd, deli, &nk));
 			String partok = String(strtok_r(NULL, deli, &nk));
-
+			iSlot = atoi((const char*)partok.c_str());
+			
 			if( cmdtok.equalsIgnoreCase("set id") ) Set_ID(partok);
 			if( cmdtok.equalsIgnoreCase("set pwd") ) Set_PWD(partok);
-			if( cmdtok.equalsIgnoreCase("turn on led") ) SetParkingStallLED(atoi((const char*)partok.c_str()), ON);
-			if( cmdtok.equalsIgnoreCase("turn off led") )SetParkingStallLED(atoi((const char*)partok.c_str()), OFF);
+			if( cmdtok.equalsIgnoreCase("turn on led") )
+			{
+				if( iSlot == 0 )
+				{
+					for( int i=0 ; i<STALL_LED_MAX ; i++ ) SetParkingStallLED(i, ON);
+				}
+				else if( iSlot > 0 && iSlot < STALL_LED_MAX )
+				{
+					SetParkingStallLED(iSlot, ON);
+				}
+			}
+
+			if( cmdtok.equalsIgnoreCase("turn off led") )
+			{
+				if( iSlot == 0 )
+				{
+					for( int i=0 ; i<STALL_LED_MAX ; i++ ) SetParkingStallLED(i, OFF);
+				}
+				else if( iSlot > 0 && iSlot < STALL_LED_MAX )
+				{
+					SetParkingStallLED(iSlot, OFF);
+				}
+			}
 			break;
 	}
 
@@ -204,15 +242,10 @@ void SeiralCommand(String sCmd)
 
 void ParkingLotReset(void)
 {
-	ClrTimeStamp();
 	EntryGateClose();
-	//EntryGateOpen();
 	ExitGateClose();
-	//ExitGateOpen();
 	SetEntryGateLED_Red();
-	//SetEntryGateLED_Green();
 	SetExitGateLED_Red();
-	//SetExitGateLED_Green();
 	for( int i=0 ; i<STALL_LED_MAX ; i++ ) SetParkingStallLED(i, OFF);
 }
 

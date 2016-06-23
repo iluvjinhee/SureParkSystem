@@ -248,7 +248,7 @@ int PrintParkingLostStatus(void)
 	Serial.print(", ");
 	Serial.print(aucStallSensorSensitivity[3]);
 	Serial.println();
-	Serial.print("-- Occufied       : ");
+	Serial.print("-- Occupied       : ");
 	Serial.print(aiStallSensorStatus[0]);
 	Serial.print(", ");
 	Serial.print(aiStallSensorStatus[1]);

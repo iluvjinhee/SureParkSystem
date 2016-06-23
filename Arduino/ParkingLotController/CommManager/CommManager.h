@@ -30,7 +30,7 @@
 
 
 #define __STR_MESSAGETYPE		"messagetype"
-#define __STR_ID				"id"
+#define __STR_ID						"id"
 #define __STR_PASSWORD			"pwd"
 #define __STR_COMMAND			"command"
 #define __STR_STATUS			"status"
@@ -109,7 +109,10 @@ int GetSendToServer(void);
 int GetTimeStamp(void);
 void ClrTimeStamp(void);
 
-int GetServerConnected(void);
+int GetServerConnectAuto(void);
+void SetServerConnectAuto(int iStatus);
+void AttempToConnectServer(void);
+void AttempToDisconnectServer(void);
 
 void CommManagerSetup();
 void CommManagerLoop();

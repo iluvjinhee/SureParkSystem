@@ -50,7 +50,7 @@
 JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx);
 bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat);
 
-static void printConnectionStatus();
+static void printConnectionStatus(void);
 static void ConnectToWiFi(void);
 static void HeartBeatComm(void)
 {
@@ -66,7 +66,8 @@ static void HeartBeatComm(void)
 #ifdef TEST_LOCAL
 #define PORTID  9897               // IP socket port ID
 
-static IPAddress server(192,168,1,6);  // The server's IP address
+//static IPAddress server(192,168,1,6);  // The server's IP address
+static IPAddress server(192,168,43,152);  // The server's IP address
 
 #else
 #define PORTID  9897               // IP socket port ID
@@ -74,8 +75,12 @@ static IPAddress server(192,168,1,184);  // The server's IP address
 
 #endif
 
-static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
-static char pass[] = "16swarchitect";
+static char ssid[] = "G Flex2_5009";              // The network SSID for CMU unsecure network
+static char pass[] = "12345678";
+
+//static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
+//static char pass[] = "16swarchitect";
+
 static char c;                           // Character read from server
 static int status = WL_IDLE_STATUS;      // Network connection status
 static WiFiClient client;                // The client (our) socket
@@ -123,7 +128,7 @@ String serverMsg[] = {
 	"EntryGate_LED_Control",
 	"ExitGate_LED_Control",
 	"Parkingslot_LED_Control",
-	"Parkingslot_Reset",
+	"Reset",
 	"Ack"
 };										//
 
@@ -332,7 +337,7 @@ JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx)
 	}
 
 	root[__STR_TIMESTAMP] = iTimeStamp++;	// 0 ~ 4294967295(4Bytes)
-	
+
 	Serial.println();
 	Serial.print("CS-");
 	root.printTo(Serial);
@@ -376,6 +381,7 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				SetMsgNumber(CS_Parkinglot_Information);
 				SetMsgNumber(CS_Parkinglot_Information);
+				ParkingLotReset();
 				SetSendToServer(true);
 			}
 			else if(str.equalsIgnoreCase(__STR_NOK) )
@@ -477,11 +483,11 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			{
 				if( str.equalsIgnoreCase(__STR_ON) )
 				{
-					SetParkingStallLED(iSlotNumber, true);
+					SetParkingStallLED(iSlotNumber-1, true);
 				}
 				else if( str.equalsIgnoreCase(__STR_OFF) )
 				{
-					SetParkingStallLED(iSlotNumber, false);
+					SetParkingStallLED(iSlotNumber-1, false);
 				}
 				// reply directly
 				SetRequestedLed(iSlotNumber);
@@ -495,10 +501,6 @@ bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat)
 			break;
 			
 		case SC_Ack :
-			Serial.println();
-			Serial.print(sKey);
-			Serial.println("-Received.");
-			//SetSendToServer(false);
 			break;
 					
 		default :
@@ -550,6 +552,13 @@ static void ConnectToWiFi(void)
 		Serial.println( "\n----------------------------------------\n" );
 	}
 
+	AttempToConnectServer();
+	SetServerConnectAuto(true);
+
+}
+
+void AttempToConnectServer(void)
+{
 	// Attempt to connect to server
 	while( !client.connect(server, PORTID) )
 	{
@@ -565,27 +574,34 @@ static void ConnectToWiFi(void)
     Serial.println();
 }
 
+
+void AttempToDisconnectServer(void)
+{
+	ClrTimeStamp();
+	iServerConnected = false;
+    Serial.println();
+    Serial.println("disconnecting.");
+    client.stop();
+}
+
+
 void CommManagerLoop() 
 {
 	StaticJsonBuffer<300> JsonBuffer;  
 	int strBuffIndex = 0;
 
-	// wait for sensor init
-	if( GetStallSensorReady() == false ) return;
-
 	// heartbeat timer update
 	t_HeartBeatTimer.update();
+
+	// wait for sensor init
+	if( GetStallSensorReady() == false || GetServerConnectAuto() == false ) return;
 
 	//------------------------------------	
 	// Check socket
 	//------------------------------------
 	if (!client.connected())
 	{
-		ClrTimeStamp();
-		iServerConnected = false;
-	    Serial.println();
-	    Serial.println("disconnecting.");
-	    client.stop();
+		AttempToDisconnectServer();
 	    ConnectToWiFi();
 		return;
 	}
@@ -666,9 +682,14 @@ int GetSendToServer(void)
 	return iSendToServer;
 }
 
-int GetServerConnected(void)
+int GetServerConnectAuto(void)
 {
 	return iServerConnected;
+}
+
+void SetServerConnectAuto(int iStatus)
+{
+	iServerConnected = iStatus;
 }
 
 
