@@ -1,10 +1,10 @@
 package com.lge.sureparksystem.parkview.controller;
 
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkview.FullscreenActivity;
-import com.lge.sureparksystem.parkview.message.DataMessage;
-import com.lge.sureparksystem.parkview.message.Message;
-import com.lge.sureparksystem.parkview.message.MessageParser;
-import com.lge.sureparksystem.parkview.message.MessageType;
 import com.lge.sureparksystem.parkview.networkmanager.ConnectionInfo;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;

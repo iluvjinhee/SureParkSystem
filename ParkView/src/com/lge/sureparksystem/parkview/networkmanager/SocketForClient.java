@@ -6,10 +6,10 @@ import java.net.Socket;
 
 import org.json.simple.JSONObject;
 
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkview.controller.Controller;
-import com.lge.sureparksystem.parkview.message.DataMessage;
-import com.lge.sureparksystem.parkview.message.MessageParser;
-import com.lge.sureparksystem.parkview.message.MessageType;
 
 import android.util.Log;
 

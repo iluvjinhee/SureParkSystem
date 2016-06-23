@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.message;
+package com.lge.sureparksystem.parkserver.message;
 
 public class MessageValueType {
 	public static final String UP = "up";
