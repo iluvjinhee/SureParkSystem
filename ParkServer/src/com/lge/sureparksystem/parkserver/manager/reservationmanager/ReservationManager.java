@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONObject;
@@ -23,14 +22,15 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.ParkingLotData;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.ReservationData;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.UserAccountData;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
-import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.topic.CommunicationManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
-import com.lge.sureparksystem.parkserver.util.cardvalidation.PaymentRemoteProxy;
+import com.lge.sureparksystem.parkserver.util.paymentremoteproxy.PaymentRemoteProxy;
 
 public class ReservationManager extends ManagerTask {
 	HashMap<String, ParkingLotInfo> parkinglotInfoMap = new HashMap<String, ParkingLotInfo>(); //<parkinglotID, ParkingLotStatus>
@@ -424,11 +424,20 @@ public class ReservationManager extends ManagerTask {
 		if (result == true) {
 			dbProvider.updateReservationPayment(reservationId,
 					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED, Integer.valueOf(amount.toString()));
+			
+			controlExitGate(MessageValueType.UP);
 		} else {
 			Logger.log("There is a problem in payment");
-			callAttendant("payment error");
+			
+			callAttendant(MessageValueType.PAYMENT_ERROR);
 		}
 		parkinglotInfoMap.get(parkinglotId).changeToSlientState();
+	}
+
+	private void controlExitGate(String command) {
+		DataMessage sendMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
+		sendMessage.setCommand(command);
+		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
 	}
 
 	private void processVerificationConfirmationInfo(JSONObject jsonObject) {

@@ -18,7 +18,7 @@ public class SoundTest {
 
 	@Test
 	public void Sound1Test() throws LineUnavailableException, InterruptedException {
-		SoundUtil.tone(5000, 100);
+		SoundUtil.tone(5000, 300);
 	}
 	
 	@Test
@@ -29,11 +29,11 @@ public class SoundTest {
 //		Thread.sleep(1000);
 //		SoundUtil.tone(5000, 100);
 //		Thread.sleep(1000);
-		SoundUtil.tone(261, 500);
+		SoundUtil.tone(261, 200);
 		Thread.sleep(10);
-		SoundUtil.tone(392, 500);
+		SoundUtil.tone(392, 200);
 		Thread.sleep(10);
-		SoundUtil.tone(523, 500);
+		SoundUtil.tone(523, 200);
 //		Thread.sleep(1000);
 //		SoundUtil.tone(400, 500, 0.2);
 	}	

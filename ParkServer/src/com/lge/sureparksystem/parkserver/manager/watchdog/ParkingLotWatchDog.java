@@ -17,7 +17,7 @@ public class ParkingLotWatchDog extends ManagerTask {
 	public class WatchDogListener {
 		@Subscribe
 		public void onSubscribe(ParkingLotWatchDogTopic topic) {
-			System.out.println("WatchDogListener: " + topic);
+//			System.out.println("WatchDogListener: " + topic);
 			
 			processMessage(topic.getJsonObject());
 		}

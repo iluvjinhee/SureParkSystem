@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.util.cardvalidation;
+package com.lge.sureparksystem.parkserver.util.paymentremoteproxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +60,12 @@ public class PaymentRemoteProxy {
 		}
 		
 		if(answer.equalsIgnoreCase("OK")) {
+			PaymentSound.soundOk();
+			
 			return true;
+		}
+		else {
+			PaymentSound.soundFail();
 		}
 		
 		return false;

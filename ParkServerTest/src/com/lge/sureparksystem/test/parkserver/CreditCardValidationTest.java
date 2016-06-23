@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.lge.sureparksystem.creditcardpaymentsystem.regex.CreditCardNumberRegEx;
-import com.lge.sureparksystem.parkserver.util.cardvalidation.PaymentRemoteProxy;
+import com.lge.sureparksystem.parkserver.util.paymentremoteproxy.PaymentRemoteProxy;
 
 public class CreditCardValidationTest {
 	@Before
