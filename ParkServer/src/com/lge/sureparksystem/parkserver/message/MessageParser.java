@@ -314,10 +314,9 @@ public class MessageParser {
 		int value = -1;
 
 		if (jsonObject.get(key) != null) {
-//			value = (Long)jsonObject.get(key);
+//			value = ((Long) jsonObject.get(key)).intValue();
 //			value = (Integer) jsonObject.get(key);
 			value = Integer.valueOf(jsonObject.get(key).toString());
-
 		}
 
 		return (int)value;
