@@ -546,6 +546,23 @@ public class DatabaseProvider {
 		}
 		return reservation;
 	}
+	
+	public int getReservationCount(String email) {
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return -1;
+		}
+		int count = 0;
+		StringBuilder where = new StringBuilder(" where ");
+		where.append(Reservation.Columns.USER_EMAIL + "='" + email + "' AND ");
+		where.append(
+				Reservation.Columns.RESERVATION_STATE + "!=" + Reservation.STATE_TYPE.CANCELED);
+
+		count = doExecGetCountSQL(Reservation.RESERVATION_TABLE, where.toString());
+		
+		LogHelper.log(TAG, "count = " + count);
+		return count;
+	}
 
 	//if not exist, return null
 	@Nullable
@@ -989,7 +1006,53 @@ public class DatabaseProvider {
 		}
 		return parkinglot;
 	}
+	
+	//if not exist, return null
+		@Nullable
+		public String getParkingLotId(String userEmail) {
+			if (mDBConn == null) {
+				LogHelper.log(TAG, "Error : There is no connection with sql server");
+				return null;
+			}
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			String parkinglotId = null;
+			try {
+				StringBuilder where = new StringBuilder(" where ");
+				where.append(ParkingLot.Columns.USEREMAIL + "='" + userEmail + "'");
 
+				String sql = "select * from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
+				LogHelper.log(TAG, "sql = " + sql);
+				pstmt = mDBConn.prepareStatement(sql);
+				rs = pstmt.executeQuery();
+				if (rs.next()) {
+					parkinglotId = rs.getString(ParkingLot.Columns.LOGIN_ID);
+					if (rs.next()) {
+						LogHelper.log(TAG, "Warning :: result is not one.");
+					}
+				} else {
+					LogHelper.log(TAG, "matched reservation is not exist.");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (NullPointerException ex) {
+				ex.printStackTrace();
+			} finally {
+				try {
+					if (rs != null) {
+						rs.close();
+					}
+					if (pstmt != null) {
+						pstmt.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			LogHelper.log(TAG, "parkinglot = " + parkinglotId);
+			return parkinglotId;
+		}
+		
 	public boolean removeParkingLot(String id) {
 		if (mDBConn == null) {
 			LogHelper.log(TAG, "Error : There is no connection with sql server");

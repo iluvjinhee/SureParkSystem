@@ -42,6 +42,16 @@ public class ParkingLotInfo {
 		}
 		this.parkingState = PARKINGLOT_STATE.SLIENT;
 	}
+	
+
+	public ParkingLotInfo(String parkingLotId, int totalSlotNum, int parkingState,
+			int movingReservationId, ArrayList<ParkingSlot> slotList) {
+		this.parkingLotId = parkingLotId;
+		this.totalSlotNum = totalSlotNum;
+		this.parkingState = parkingState;
+		this.movingReservationId = movingReservationId;
+		this.slotList = slotList;
+	}
 
 	public boolean checkValidation(int slotNum, ArrayList<String> slotStatusList) {
 		boolean isValid = true;
@@ -229,6 +239,14 @@ public class ParkingLotInfo {
 	public void setMovingReservationId(int movingReservationId) {
 		Logger.log("movingReservationId = " + movingReservationId);
 		this.movingReservationId = movingReservationId;
+	}
+
+	public ArrayList<ParkingSlot> getSlotList() {
+		return slotList;
+	}
+
+	public void setSlotList(ArrayList<ParkingSlot> slotList) {
+		this.slotList = slotList;
 	}
 
 	@Override
