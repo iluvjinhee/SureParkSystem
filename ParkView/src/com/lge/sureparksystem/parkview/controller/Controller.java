@@ -1,14 +1,11 @@
 package com.lge.sureparksystem.parkview.controller;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.lge.sureparksystem.parkview.FullscreenActivity;
 import com.lge.sureparksystem.parkview.message.DataMessage;
 import com.lge.sureparksystem.parkview.message.Message;
 import com.lge.sureparksystem.parkview.message.MessageParser;
 import com.lge.sureparksystem.parkview.message.MessageType;
+import com.lge.sureparksystem.parkview.networkmanager.ConnectionInfo;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
 import com.lge.sureparksystem.parkview.qrcode.IntentResult;
@@ -47,7 +44,7 @@ public class Controller {
 		Log.d("ParkView", "connectServer");
 		
 		if(clientSocket == null) {
-			clientSocket = new SocketForClient(SocketForClient.IP_ADDRESS, SocketForClient.PORT, this);
+			clientSocket = new SocketForClient(ConnectionInfo.IP_ADDRESS, ConnectionInfo.PORT, this);
 			clientSocket.connect();
 		}
 	}
@@ -94,17 +91,18 @@ public class Controller {
 		if(jsonObject.get("name") != null) {
 			name = (String) jsonObject.get("name");
 		}*/
+		
+		name = qrcode;
 	}
 
 	public void welcome() {
 		String msg = "Sure Park";
 		
-		fullScreen.setDisplay(msg, 100);				
-//		tts.speak(msg);
+		fullScreen.setDisplay(msg, 150);				
 	}
 	
 	public void assignSlot(int slotNumber, String name) {
-		String msg = "Hello" + name + ", A wonderful morning to a wonderful friend like you! Your Parking Slot is ";		
+		String msg = "Hello" + name + ", A wonderful morning to a wonderful friend like you! Your parking slot is ";		
 		
 		fullScreen.setDisplay("" + slotNumber, 250);				
 		tts.speak(msg + slotNumber);
@@ -143,6 +141,10 @@ public class Controller {
 			else
 				notReserved();
 			break;
+		case AUTHENTICATION_RESPONSE:
+			Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText());
+			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
+				welcome();
 		default:
 			break;		
 		}

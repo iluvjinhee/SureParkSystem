@@ -59,7 +59,8 @@ public class CommunicationManager extends ManagerTask {
 		case ENTRY_GATE_PASSBY:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
 			
-			controlEntryGate("down");
+			controlEntryGate(MessageValueType.DOWN);
+			controlParkView(MessageType.WELCOME_DISPLAY);
 			break;	
 		case EXIT_GATE_ARRIVE:
 			getEventBus().post(new ReservationManagerTopic(jsonObject));
@@ -93,6 +94,12 @@ public class CommunicationManager extends ManagerTask {
 		default:
 			break;
 		}
+	}
+
+	private void controlParkView(MessageType messageType) {
+		DataMessage message = new DataMessage(messageType);
+		
+		getEventBus().post(new ParkViewNetworkManagerTopic(message));
 	}
 
 	private void callAttendant(String string) {

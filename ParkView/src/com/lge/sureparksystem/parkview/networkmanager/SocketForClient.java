@@ -7,13 +7,11 @@ import java.net.Socket;
 import org.json.simple.JSONObject;
 
 import com.lge.sureparksystem.parkview.controller.Controller;
+import com.lge.sureparksystem.parkview.message.DataMessage;
+import com.lge.sureparksystem.parkview.message.MessageParser;
+import com.lge.sureparksystem.parkview.message.MessageType;
 
 public class SocketForClient {
-	//public static final String IP_ADDRESS = "192.168.1.184";
-//	public static final String IP_ADDRESS = "192.168.43.214"; // ≥ª≤®
-	public static final String IP_ADDRESS = "192.168.43.152"; // ¡¯√•¿”
-	public static final int PORT = 9898;
-
 	String dstAddress;
 	int dstPort;
 	
@@ -44,7 +42,7 @@ public class SocketForClient {
 				        	if(socket.isConnected()) {			
 				    		    out = new PrintWriter(socket.getOutputStream(), true);
 				    		    
-				    		    controller.welcome();
+				    		    sendAuthentication(out);
 				    		}
 				    		
 				    		receiver.execute(socket);
@@ -60,6 +58,14 @@ public class SocketForClient {
 		}
 	}
 	
+	protected void sendAuthentication(PrintWriter out) {
+	    DataMessage message = new DataMessage(MessageType.AUTHENTICATION_REQUEST);
+	    message.setID(ConnectionInfo.id);
+	    message.setPassword(ConnectionInfo.password);
+	    
+	    out.println(MessageParser.convertToJSONObject(message).toJSONString());
+	}
+
 	public void disconnect() {
 		if(socket != null) {
 			try {
