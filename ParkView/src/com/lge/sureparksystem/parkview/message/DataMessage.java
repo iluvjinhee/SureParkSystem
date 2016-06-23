@@ -106,6 +106,10 @@ public class DataMessage extends Message {
 		super(messageType);
 	}
 
+	public DataMessage(MessageType messageType, int timestamp) {
+		super(messageType, timestamp);
+	}
+
 	public int getSensorNumber() {
 		return sensorNumber;
 	}
@@ -134,7 +138,7 @@ public class DataMessage extends Message {
 		return slotStatusList;
 	}
 
-	public void setSlotStatus(ArrayList<String> slotStatusList) {
+	public void setSlotStatusList(ArrayList<String> slotStatusList) {
 		this.slotStatusList = slotStatusList;
 	}
 

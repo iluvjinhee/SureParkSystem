@@ -138,7 +138,7 @@ public class DataMessage extends Message {
 		return slotStatusList;
 	}
 
-	public void setSlotStatusStatus(ArrayList<String> slotStatusList) {
+	public void setSlotStatusList(ArrayList<String> slotStatusList) {
 		this.slotStatusList = slotStatusList;
 	}
 
