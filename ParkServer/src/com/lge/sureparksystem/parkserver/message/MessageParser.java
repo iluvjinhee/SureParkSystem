@@ -325,14 +325,23 @@ public class MessageParser {
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {
 		ArrayList<String> resultList = new ArrayList<String>();
 		
-		JSONArray childrenList = (JSONArray) jsonObject.get(key);
-	    childrenList = (JSONArray) jsonObject.get(key);
-		if(childrenList != null) {
-	        Iterator<String> i = childrenList.iterator();
-	
-	        while (i.hasNext()) {
-	            resultList.add(i.next());
-	        }
+		Object object = jsonObject.get(key);
+		
+		if(object instanceof JSONArray) {
+			JSONArray childrenList = (JSONArray) jsonObject.get(key);
+		    childrenList = (JSONArray) jsonObject.get(key);
+			if(childrenList != null) {
+		        Iterator<String> i = childrenList.iterator();
+		
+		        while (i.hasNext()) {
+		            resultList.add(i.next());
+		        }
+			}
+		}
+		else if(object instanceof String) {
+			String child = (String) jsonObject.get(key);
+
+			resultList.add(child);
 		}
 		
 		return resultList;
