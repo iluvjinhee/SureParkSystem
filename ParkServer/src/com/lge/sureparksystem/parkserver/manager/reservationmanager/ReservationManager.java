@@ -68,10 +68,39 @@ public class ReservationManager extends ManagerTask {
 
 	private String generateQRCode(String username) {
 		String strQRCode = null;
-//		String key = "Name";
+		//		String key = "Name";
 		strQRCode = "confirmationInfo : " + username;
 		return strQRCode;
 	}
+	
+	private boolean isExistValidParkingLot(String parkinglotId) {
+		boolean result = true;
+		if (parkinglotId == null) {
+			Logger.log("parkinglotId is null");
+			result = false;
+		} else if (parkinglotSatusMap.get(parkinglotId) == null) {
+			Logger.log("parkinglotSatusMap.get(parkinglotId) is null");
+			result = false;
+		}
+		return result;
+	}
+	
+//	private ParkingLotStatus getParkingLotSatus(String parkinglotId) {
+//		boolean result = true;
+//		ParkingLotStatus parkingLotStatus = null;
+//		if (parkinglotId == null) {
+//			Logger.log("parkinglotId is null");
+//			if (parkinglotSatusMap.size() == 1) {
+//				Iterator<String> parkinglot = parkinglotSatusMap.keySet().iterator();
+//				parkinglot.next
+//			}
+//			result = false;
+//		} else if (parkinglotSatusMap.get(parkinglotId) == null) {
+//			Logger.log("parkinglotSatusMap.get(parkinglotId) is null");
+//			result = false;
+//		}
+//		return parkingLotStatus;
+//	}
 
 	private boolean isValidConfirmationInfo(String confirmationInfo) {
 		boolean result = false;
@@ -103,7 +132,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private float calculateTotalParkingFee(int reservationId) {
-		float payment = 0.0f;
+		float payment = -1.0f;
 		ReservationData reservation = dbProvider.getReservationInfo(reservationId);
 		ParkingData parkingData = dbProvider.getParkingInfo(reservationId);
 		if (reservation != null && parkingData != null) {
@@ -289,7 +318,7 @@ public class ReservationManager extends ManagerTask {
 			}
 			newreservation.setParkinglotId(parkinglotId);
 			newreservation.setCreditInfo(paymentInfo);
-//			String confirmInfo = generateQRCode(userAccount.getUsername());
+			//			String confirmInfo = generateQRCode(userAccount.getUsername());
 			newreservation.setConfirmInfo(userAccount.getUsername());
 			newreservation.setParkingFee(parkinglotData.getFee());
 			newreservation.setGracePeriod(parkinglotData.getGracePeriod());
@@ -327,21 +356,28 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processEntryGatePassBy(JSONObject jsonObject) {
-		//		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
-		String parkinglotId = curParkinglotId;
+		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		//		String parkinglotId = curParkinglotId;
+		if (isExistValidParkingLot(parkinglotId) == false) {
+			return;
+		}
 		parkinglotSatusMap.get(parkinglotId).changeToMovingState();
 	}
 
 	private void processChangedSlotStatus(JSONObject jsonObject) {
-		//		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
-		String parkinglotId = curParkinglotId;
+		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		//		String parkinglotId = curParkinglotId;
+		if (isExistValidParkingLot(parkinglotId) == false) {
+			return;
+		}
 		int changedSlot = MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER);
-		String status = MessageParser.getString(jsonObject, DataMessage.SLOT_STATUS);
-		int reservationId = parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
-		String strAssingedslot = dbProvider.getParkingInfo(reservationId).getAssigned_slot();
+		String status = MessageParser.getString(jsonObject, DataMessage.STATUS);
+		int reservationId = 0;//parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
 		Date changedtime = Calendar.getInstance().getTime();
-
+		Logger.log("processChangedSlotStatus() status= " + status + ", changedSlot = " + changedSlot); 
 		if ("occupied".equalsIgnoreCase(status)) {
+			reservationId = parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
+			String strAssingedslot = dbProvider.getParkingInfo(reservationId).getAssigned_slot();
 			int assingedslot = Integer.valueOf(strAssingedslot);
 			dbProvider.updateParkingParkedSlot(reservationId, String.valueOf(changedSlot),
 					changedtime);
@@ -353,6 +389,7 @@ public class ReservationManager extends ManagerTask {
 				callAttendant("reallocation");
 			}
 		} else {
+			reservationId = parkinglotSatusMap.get(parkinglotId).getRservationIdOfParkingSlot(changedSlot);
 			dbProvider.updateParkingUnparkedTime(reservationId, changedtime);
 			dbProvider.updateReservationState(reservationId,
 					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED);
@@ -361,11 +398,14 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processExitGateArrive(JSONObject jsonObject) {
-		//		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
-		String parkinglotId = curParkinglotId;
+		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		//		String parkinglotId = curParkinglotId;
+		if (isExistValidParkingLot(parkinglotId) == false) {
+			return;
+		}
 		int reservationId = parkinglotSatusMap.get(parkinglotId).getMovingReservationId();
 		float payment = calculateTotalParkingFee(reservationId);
-		if (payment > 0) {
+		if (payment >= 0) {
 			dbProvider.updateReservationPayment(reservationId,
 					DatabaseInfo.Reservation.STATE_TYPE.UNPARKED, payment);
 		} else {
@@ -380,6 +420,8 @@ public class ReservationManager extends ManagerTask {
 				DataMessage.CONFIRMATION_INFO);
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
 		//		String parkinglotId = curParkinglotId; //temporary
+		Logger.log("parkinglotId = " + parkinglotId);
+		Logger.log("parkingLot = " +  parkinglotSatusMap.get(parkinglotId).toString());
 
 		ParkingLotStatus parkingLot = parkinglotSatusMap.get(parkinglotId);
 		int availSlot = parkingLot.getAvailalbeSlotNumber();
