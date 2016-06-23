@@ -106,6 +106,10 @@ public class DataMessage extends Message {
 		super(messageType);
 	}
 
+	public DataMessage(MessageType messageType, int timestamp) {
+		super(messageType, timestamp);
+	}
+
 	public int getSensorNumber() {
 		return sensorNumber;
 	}

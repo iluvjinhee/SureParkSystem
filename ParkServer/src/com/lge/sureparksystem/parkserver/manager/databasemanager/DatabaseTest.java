@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import com.lge.sureparksystem.parkserver.util.Logger;
+
 public class DatabaseTest {
 
     DatabaseProvider mDatabaseProvider = DatabaseProvider.getInstance();
@@ -108,7 +110,7 @@ public class DatabaseTest {
     }
 
     public void updateReservationState_Test() {
-        mDatabaseProvider.updateReservationState(26,"tester2@lge.com", 2);
+        mDatabaseProvider.updateReservationState(26, 2);
     }
 
     /*************************************************************************************/
@@ -152,7 +154,8 @@ public class DatabaseTest {
     }
 
     public void updateParkingParkedSlot_Test() {
-        mDatabaseProvider.updateParkingParkedSlot(26, "4");
+    	Calendar cal = Calendar.getInstance();
+        mDatabaseProvider.updateParkingParkedSlot(26, "4", cal.getTime());
     }
 
     public void updateParkingUnparkedTime_Test() {

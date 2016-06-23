@@ -48,7 +48,6 @@ public class MessageParser {
 		
 		// ParkHere
 		((DataMessage) message).setDriverOften(MessageParser.getStringList(jsonObject, DataMessage.DRIVER_OFTEN));
-		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setGracePeriod(MessageParser.getString(jsonObject, DataMessage.GRACE_PERIOD));
 		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setParkingFee(MessageParser.getString(jsonObject, DataMessage.PARKING_FEE));
@@ -314,11 +313,13 @@ public class MessageParser {
 		int value = -1;
 
 		if (jsonObject.get(key) != null) {
-//			value = ((Long) jsonObject.get(key)).intValue();
-			value = (Integer) jsonObject.get(key);
+//			value = (Long)jsonObject.get(key);
+//			value = (Integer) jsonObject.get(key);
+			value = Integer.valueOf(jsonObject.get(key).toString());
+
 		}
 
-		return value;
+		return (int)value;
 	}
 	
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {
