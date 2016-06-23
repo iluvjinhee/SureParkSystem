@@ -15,6 +15,7 @@ import com.lge.sureparksystem.control.NetworkToActivity;
 import com.lge.sureparksystem.model.AttendantModel;
 import com.lge.sureparksystem.model.DriverModel;
 import com.lge.sureparksystem.model.LoginModel;
+import com.lge.sureparksystem.model.OwnerModel;
 import com.lge.sureparksystem.parkclient.R;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
@@ -230,7 +231,8 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 mCurrentAutority = ar.geAuthority();
                 if (Utils.DRIVERVIEW_FRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.RESERVATION_INFO_REQUEST, null);
-                } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
+                } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority
+                        || Utils.OWNERVIEWFRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.PARKING_LOT_STATUS_REQUEST, null);
                 } else {
                 }
@@ -243,10 +245,19 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             break;
         // Driver
         case PARKINGLOT_LIST_RESPONSE:
-            DriverModel parkinglot_list = (DriverModel)mDriverFactory.mBaseModel;
-            parkinglot_list.mParkinglot_List = parkinglot_list.new Parkinglot_List(jsonObject);
-            mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
-            refreshFragemnt(mDriverFactory);
+            if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
+                Log.d(TAG, "PARKINGLOT_LIST_RESPONSE ATTENDANTVIEW_FRAGMENT");
+                DriverModel parkinglot_list = (DriverModel)mDriverFactory.mBaseModel;
+                parkinglot_list.mParkinglot_List = parkinglot_list.new Parkinglot_List(jsonObject);
+                mDriverFactory.mBaseFragment.setBaseModel(mDriverFactory.mBaseModel);
+                refreshFragemnt(mDriverFactory);
+            } else if (Utils.OWNERVIEWFRAGMENT == mCurrentAutority) {
+                Log.d(TAG, "PARKINGLOT_LIST_RESPONSE OWNERVIEWFRAGMENT");
+                OwnerModel ownerModel = (OwnerModel)mOwnerFactory.mBaseModel;
+                ownerModel.mParkinglot_List = ownerModel.new Parkinglot_List(jsonObject);
+                mOwnerFactory.mBaseFragment.setBaseModel(mOwnerFactory.mBaseModel);
+                refreshFragemnt(mDriverFactory);
+            }
             break;
         case RESERVATION_INFORMATION_RESPONSE:
             DriverModel information_response = (DriverModel)mDriverFactory.mBaseModel;
@@ -277,6 +288,27 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
             mAttendantFactory.mBaseFragment.updateFlag(true);
             refreshFragemnt(mAttendantFactory);
+            break;
+
+        // Owner
+        case PARKINGLOT_STATISTICS:
+            OwnerModel ownerMode2 = (OwnerModel)mOwnerFactory.mBaseModel;
+            ownerMode2.mParkinglot_Statistics = ownerMode2.new Parkinglot_Statistics(jsonObject);
+            mOwnerFactory.mBaseFragment.setBaseModel(mOwnerFactory.mBaseModel);
+            refreshFragemnt(mOwnerFactory);
+            break;
+        case CHANGE_RESPONSE:
+            OwnerModel ownerModel3 = (OwnerModel)mOwnerFactory.mBaseModel;
+            ownerModel3.mChange_Response = ownerModel3.new Change_Response(jsonObject);
+            mOwnerFactory.mBaseFragment.setBaseModel(mOwnerFactory.mBaseModel);
+            refreshFragemnt(mOwnerFactory);
+            if ("ok".equals(ownerModel3.mChange_Response.result)) {
+                requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
+                Utils.showToast(getApplication(), ownerModel3.mChange_Response.type + " changed to "
+                        + ownerModel3.mChange_Response.value);
+            } else {
+                Utils.showToast(getApplication(), "Error");
+            }
             break;
         default:
             break;
@@ -355,6 +387,64 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             messagetype = MessageType.PARKINGLOTINFO_REQUEST.getText();
             AttendantModel.ParkinglotStatus_Request pr = attendantModel.new ParkinglotStatus_Request(messagetype);
             pr.putJSONObject(jsonObject);
+            break;
+        // Owner
+        case CHANGE_PARKINGFEE:
+            OwnerModel ownerModel = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.CHANGE_PARKINGFEE.getText();
+            String parkinglotid = bundle.getString("parkinglot_id");
+            String parking_fee = bundle.getString("parking_fee");
+            OwnerModel.Change_parkingfee cp = ownerModel.new Change_parkingfee(messagetype, parkinglotid, parking_fee);
+            cp.putJSONObject(jsonObject);
+            break;
+        case CHANGE_GRACEPERIOD:
+            OwnerModel ownerModel1 = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.CHANGE_PARKINGFEE.getText();
+            String parkinglot_id1 = bundle.getString("parkinglot_id");
+            String graceperiod = bundle.getString("graceperiod");
+            OwnerModel.Change_graceperiod cg = ownerModel1.new Change_graceperiod(messagetype, parkinglot_id1,
+                    graceperiod);
+            cg.putJSONObject(jsonObject);
+            break;
+        case REMOVE_PARKINGLOT:
+            OwnerModel ownerModel2 = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.CHANGE_PARKINGFEE.getText();
+            String parkinglot_id2 = bundle.getString("parkinglot_id");
+            OwnerModel.Remove_Parkinglot rp = ownerModel2.new Remove_Parkinglot(messagetype, parkinglot_id2);
+            rp.putJSONObject(jsonObject);
+            break;
+        case CREATE_ATTENDANT:
+            OwnerModel ownerModel3 = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.CREATE_ATTENDANT.getText();
+            String id3 = bundle.getString("id");
+            String pwd3 = bundle.getString("pwd");
+            String name3 = bundle.getString("name");
+            String parkinglot_id3 = bundle.getString("parkinglot_id");
+            OwnerModel.Create_Attendant ca = ownerModel3.new Create_Attendant(messagetype, id3, pwd3, name3,
+                    parkinglot_id3);
+            ca.putJSONObject(jsonObject);
+            break;
+        case ADD_PARKINGLOT:
+            OwnerModel ownerModel4 = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.CREATE_ATTENDANT.getText();
+            String id4 = bundle.getString("id");
+            String pwd4 = bundle.getString("pwd");
+            String address = bundle.getString("address");
+            String parkingfee = bundle.getString("parkingfee");
+            String graceperiod4 = bundle.getString("graceperiod");
+            OwnerModel.Add_Parkinglot ap = ownerModel4.new Add_Parkinglot(messagetype, id4, pwd4, address, parkingfee,
+                    graceperiod4);
+            ap.putJSONObject(jsonObject);
+            break;
+        case PARKINGLOT_STATS_REQUEST:
+            OwnerModel ownerModel5 = (OwnerModel)mOwnerFactory.mBaseModel;
+            messagetype = MessageType.PARKINGLOT_STATS_REQUEST.getText();
+            String parkinglot_id5 = bundle.getString("parkinglot_id");
+            String period5 = bundle.getString("period");
+            OwnerModel.Parkinglot_stats_Request psr = ownerModel5.new Parkinglot_stats_Request(messagetype,
+                    parkinglot_id5, period5);
+            psr.putJSONObject(jsonObject);
+            break;
         default:
             break;
         }

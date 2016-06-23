@@ -48,4 +48,10 @@
     <string name="parking_slot_time">Time</string>
     <string name="park_status">Park_status</string>
     <string name="notification">Notification</string>
+    <string name="parkingLot_ID">ParkingLot ID</string>
+    <string name="create_attendant">Create attendant</string>
+    <string name="remove_attendant">Remove attendant</string>
+    <string name="create_attendant_title">Add attendant ID, Password and Parking ID</string>
+    <string name="address">Address</string>
+    <string name="graceperiod">Graceperiod</string>
 </resources>
