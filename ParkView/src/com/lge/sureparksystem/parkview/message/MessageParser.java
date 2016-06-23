@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.message;
+package com.lge.sureparksystem.parkview.message;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -314,6 +314,7 @@ public class MessageParser {
 		int value = -1;
 
 		if (jsonObject.get(key) != null) {
+//			value = (Integer) jsonObject.get(key);
 			value = ((Long) jsonObject.get(key)).intValue();
 		}
 

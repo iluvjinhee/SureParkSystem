@@ -314,7 +314,8 @@ public class MessageParser {
 		int value = -1;
 
 		if (jsonObject.get(key) != null) {
-			value = ((Long) jsonObject.get(key)).intValue();
+//			value = ((Long) jsonObject.get(key)).intValue();
+			value = (Integer) jsonObject.get(key);
 		}
 
 		return value;

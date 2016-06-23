@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.message;
+package com.lge.sureparksystem.parkview.message;
 
 public enum MessageType {
 	// Common

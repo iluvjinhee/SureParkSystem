@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.message;
+package com.lge.sureparksystem.parkview.message;
 
 public class Message {
 	public static String MESSAGE_TYPE = "messagetype";
