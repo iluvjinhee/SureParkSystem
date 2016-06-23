@@ -11,7 +11,11 @@ import com.lge.sureparksystem.parkview.message.DataMessage;
 import com.lge.sureparksystem.parkview.message.MessageParser;
 import com.lge.sureparksystem.parkview.message.MessageType;
 
+import android.util.Log;
+
 public class SocketForClient {
+	private final String TAG = "ParkView";
+	
 	String dstAddress;
 	int dstPort;
 	
@@ -39,7 +43,9 @@ public class SocketForClient {
 				        	socket = new Socket(dstAddress, dstPort);
 				    		receiver = new ReceiverAsync(controller);
 				    		
-				        	if(socket.isConnected()) {			
+				        	if(socket.isConnected()) {
+				        		Log.d(TAG, "Connected to server");
+				        		
 				    		    out = new PrintWriter(socket.getOutputStream(), true);
 				    		    
 				    		    sendAuthentication(out);
@@ -59,6 +65,8 @@ public class SocketForClient {
 	}
 	
 	protected void sendAuthentication(PrintWriter out) {
+		Log.d(TAG, "sendAuthentication");
+		
 	    DataMessage message = new DataMessage(MessageType.AUTHENTICATION_REQUEST);
 	    message.setID(ConnectionInfo.id);
 	    message.setPassword(ConnectionInfo.password);
@@ -70,6 +78,8 @@ public class SocketForClient {
 		if(socket != null) {
 			try {
 				socket.close();
+				
+				Log.d(TAG, "Socket is closed");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -87,6 +97,8 @@ public class SocketForClient {
 	}
 	
 	public void send(JSONObject jsonObject) {
+		Log.d(TAG, "send: " + jsonObject.toJSONString());
+		
 		out.println(jsonObject.toJSONString());
 	}
 }

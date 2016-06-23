@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.util.cardvalidation;
+package com.lge.sureparksystem.parkserver.util.paymentremoteproxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;

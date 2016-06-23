@@ -41,7 +41,7 @@ public class Controller {
 	}
 	
 	public void connectServer() {
-		Log.d("ParkView", "connectServer");
+		Log.d(TAG, "connectServer");
 		
 		if(clientSocket == null) {
 			clientSocket = new SocketForClient(ConnectionInfo.IP_ADDRESS, ConnectionInfo.PORT, this);
