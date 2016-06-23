@@ -2,6 +2,8 @@ package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
 import java.util.Date;
 
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo.Reservation;
+
 public class ReservationData {
     private int id;
     private String userEmail;

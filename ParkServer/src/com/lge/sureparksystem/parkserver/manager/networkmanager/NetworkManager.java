@@ -161,7 +161,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 
 		switch(messageType) {
 		case HEARTBEAT:
-			DataMessage sendMessage = (DataMessage) new Message(MessageType.ACKNOWLEDGE, message.getTimestamp());
+			DataMessage sendMessage = new DataMessage(MessageType.ACKNOWLEDGE, message.getTimestamp());
 			send(sendMessage);
 			
 			getEventBus().post(new ParkingLotWatchDogTopic(jsonObject));

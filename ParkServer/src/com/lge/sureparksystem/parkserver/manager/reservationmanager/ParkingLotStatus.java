@@ -43,6 +43,25 @@ public class ParkingLotStatus {
 		}
 	}
 
+	public boolean checkValidation(int slotNum, ArrayList<String> slotStatusList) {
+		boolean isValid = true;
+		if (totalSlotNum != slotNum) {
+			Logger.log("totalSlotNum = " + totalSlotNum + "slotNum = " + slotNum);
+			isValid = false;
+		} else {
+			for (int slot=0; slot < totalSlotNum; slot++) {
+				if (slotList.get(slot).getStatus() != Integer.valueOf(slotStatusList.get(slot))) {
+					Logger.log("slotList = " + slotList.toString());
+					Logger.log("slotStatusList = " + slotStatusList.toString());
+					isValid = false;
+					break;
+				}
+			}
+		}
+		Logger.log("parkingLotId = " + parkingLotId + ", isValid = " + isValid);		
+		return isValid;
+	}
+
 	public int getOccupiedSlotCount() {
 		int occupiedSlotCnt = 0;
 		for (ParkingSlot slot : slotList) {
@@ -66,33 +85,31 @@ public class ParkingLotStatus {
 		return availableSlotNum;
 	}
 
-	public boolean changeToArrivalState() {
+	public boolean changeToArrivalState(int reservationId) {
 		if (parkingState != PARKINGLOT_STATE.SLIENT) {
 			Logger.log("Please wait.. Parkinglot is busy.");
 			return false;
 		} else {
 			parkingState = PARKINGLOT_STATE.ARRIVAL;
-			Logger.log("parkingState changed to ARRIVAL.");
+			movingReservationId = reservationId;
+			Logger.log("parkingState changed to ARRIVAL.reservationId = " + reservationId);
 			return true;
 		}
 	}
 
-	public boolean changeToMovingState(int reservationId) {
+	public void changeToMovingState() {
 		parkingState = PARKINGLOT_STATE.MOVING;
-		movingReservationId = reservationId;
-		Logger.log("parkingState changed to MOVING. reservationId = " + reservationId);
-		return true;
+		Logger.log("parkingState changed to MOVING.");
 	}
 
-	public boolean changeToSlientState() {
+	public void changeToSlientState() {
 		parkingState = PARKINGLOT_STATE.SLIENT;
 		movingReservationId = 0;
 		Logger.log("parkingState changed to SLIENT.");
-		return true;
 	}
 
 	//return assigned slot number, return -1 if fail
-	public int getAssignedSlotNumber() {
+	public int getAvailalbeSlotNumber() {
 		int slotNumber = -1;
 		int slotIdx = 0;
 		boolean bSuccess = false;
@@ -117,7 +134,7 @@ public class ParkingLotStatus {
 	public boolean completeParking(int parkedSlotNumber) {
 		if (parkingState != PARKINGLOT_STATE.MOVING) {
 			Logger.log("State is not normal. parkingState = " + parkingState);
-			return false;
+			//			return false;
 		}
 		boolean result = false;
 		try {
@@ -128,6 +145,27 @@ public class ParkingLotStatus {
 			result = true;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			Logger.log("parkedSlotNumber exceed limit. parkedSlotNumber = " + parkedSlotNumber);
+			e.printStackTrace();
+		}
+		Logger.log("parkingLotId = " + parkingLotId + ", result  = " + result);
+		return result;
+	}
+
+	public boolean startUnparking(int unparkedSlotNumber) {
+		if (parkingState != PARKINGLOT_STATE.SLIENT) {
+			Logger.log("State is not normal. parkingState = " + parkingState);
+			//			return false;
+		}
+		boolean result = false;
+		try {
+			ParkingSlot parkedSlot = slotList.get(unparkedSlotNumber - 1);
+			movingReservationId = parkedSlot.getReservationId();
+			parkedSlot.setStatus(ParkingSlot.EMPTY);
+			parkedSlot.setReservationId(0);
+			changeToMovingState();
+			result = true;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			Logger.log("parkedSlotNumber exceed limit. parkedSlotNumber = " + unparkedSlotNumber);
 			e.printStackTrace();
 		}
 		Logger.log("parkingLotId = " + parkingLotId + ", result  = " + result);
