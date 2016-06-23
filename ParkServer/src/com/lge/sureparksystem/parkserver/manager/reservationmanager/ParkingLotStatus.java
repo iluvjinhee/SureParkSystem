@@ -30,6 +30,7 @@ public class ParkingLotStatus {
 			slotIndex++;
 		}
 		this.totalSlotNum = slotList.size();
+		this.parkingState = PARKINGLOT_STATE.SLIENT;
 	}
 
 	public ParkingLotStatus(String parkingLotId, int totalSlotNum,
@@ -41,6 +42,7 @@ public class ParkingLotStatus {
 			slotList.add(new ParkingSlot(slotIndex, Integer.valueOf(slotSatus)));
 			slotIndex++;
 		}
+		this.parkingState = PARKINGLOT_STATE.SLIENT;
 	}
 
 	public boolean checkValidation(int slotNum, ArrayList<String> slotStatusList) {
@@ -49,7 +51,7 @@ public class ParkingLotStatus {
 			Logger.log("totalSlotNum = " + totalSlotNum + "slotNum = " + slotNum);
 			isValid = false;
 		} else {
-			for (int slot=0; slot < totalSlotNum; slot++) {
+			for (int slot = 0; slot < totalSlotNum; slot++) {
 				if (slotList.get(slot).getStatus() != Integer.valueOf(slotStatusList.get(slot))) {
 					Logger.log("slotList = " + slotList.toString());
 					Logger.log("slotStatusList = " + slotStatusList.toString());
@@ -58,7 +60,7 @@ public class ParkingLotStatus {
 				}
 			}
 		}
-		Logger.log("parkingLotId = " + parkingLotId + ", isValid = " + isValid);		
+		Logger.log("parkingLotId = " + parkingLotId + ", isValid = " + isValid);
 		return isValid;
 	}
 
@@ -88,17 +90,16 @@ public class ParkingLotStatus {
 	public boolean changeToArrivalState(int reservationId) {
 		if (parkingState != PARKINGLOT_STATE.SLIENT) {
 			Logger.log("Please wait.. Parkinglot is busy.");
-			return false;
-		} else {
-			parkingState = PARKINGLOT_STATE.ARRIVAL;
-			movingReservationId = reservationId;
-			Logger.log("parkingState changed to ARRIVAL.reservationId = " + reservationId);
-			return true;
 		}
+		parkingState = PARKINGLOT_STATE.ARRIVAL;
+		movingReservationId = reservationId;
+		Logger.log("parkingState changed to ARRIVAL.reservationId = " + reservationId);
+		return true;
 	}
 
 	public void changeToMovingState() {
 		parkingState = PARKINGLOT_STATE.MOVING;
+		Logger.log("changeToMovingState() movingReservationId = " + movingReservationId);
 		Logger.log("parkingState changed to MOVING.");
 	}
 
@@ -138,6 +139,7 @@ public class ParkingLotStatus {
 		}
 		boolean result = false;
 		try {
+			Logger.log("completeParking() movingReservationId = " + movingReservationId);
 			ParkingSlot parkedSlot = slotList.get(parkedSlotNumber - 1);
 			parkedSlot.setStatus(ParkingSlot.OCCUPIED);
 			parkedSlot.setReservationId(movingReservationId);
@@ -160,6 +162,7 @@ public class ParkingLotStatus {
 		try {
 			ParkingSlot parkedSlot = slotList.get(unparkedSlotNumber - 1);
 			movingReservationId = parkedSlot.getReservationId();
+			Logger.log("startUnparking() movingReservationId = " + movingReservationId);
 			parkedSlot.setStatus(ParkingSlot.EMPTY);
 			parkedSlot.setReservationId(0);
 			changeToMovingState();
@@ -221,10 +224,12 @@ public class ParkingLotStatus {
 	}
 
 	public int getMovingReservationId() {
+		Logger.log("getMovingReservationId() movingReservationId = " + movingReservationId);
 		return movingReservationId;
 	}
 
 	public void setMovingReservationId(int movingReservationId) {
+		Logger.log("movingReservationId = " + movingReservationId);
 		this.movingReservationId = movingReservationId;
 	}
 
