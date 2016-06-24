@@ -24,6 +24,7 @@ import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.util.Utils;
 import com.lge.sureparksystem.view.BaseView;
 import com.lge.sureparksystem.view.RequestData;
+import com.lge.sureparksystem.view.TTSWrapper;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -45,6 +46,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
     private String mCurrentId;
     private int mCurrentAutority;
     final static int ATTENDANT_WATCH_HANDLER = 1;
+    private TTSWrapper mTTSWrapper;
 
     public void viewLoadingView() {
         mLoadingView.setVisibility(View.VISIBLE);
@@ -60,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
         setContentView(R.layout.main_activity);
         mLoadingView = findViewById(R.id.loading);
         mLoadingView.setVisibility(View.VISIBLE);
+        mTTSWrapper = new TTSWrapper(this);
         InetAddress serverAddr;
         try {
             serverAddr = InetAddress.getByName(Utils.IP_ADDRESS);
@@ -118,13 +121,14 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
     @Override
     protected void onDestroy() {
         mNetworkManager.disconnect();
+        mTTSWrapper.dismiss();
         mLoadingView.setVisibility(View.GONE);
         super.onDestroy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -298,6 +302,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             notification_response.mNotification = notification_response.new Notification(jsonObject);
             mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
             mAttendantFactory.mBaseFragment.updateFlag(true);
+            mTTSWrapper.speak(notification_response.mNotification.type);
             refreshFragemnt(mAttendantFactory);
             break;
 
@@ -333,12 +338,13 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             switch (msg.what) {
             case ATTENDANT_WATCH_HANDLER:
                 Log.e(TAG, "mServerWatchHandler working. Check server");
-                AttendantModel notification_response = (AttendantModel)mAttendantFactory.mBaseModel;
-                notification_response.mNotification = notification_response.new Notification(
-                        MessageType.NOTIFICATION.getText(), "Server has problem. Check Please");
-                mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
-                mAttendantFactory.mBaseFragment.updateFlag(true);
-                refreshFragemnt(mAttendantFactory);
+//                AttendantModel notification_response = (AttendantModel)mAttendantFactory.mBaseModel;
+//                notification_response.mNotification = notification_response.new Notification(
+//                        MessageType.NOTIFICATION.getText(), "Server has problem. Check Please");
+//                mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
+//                mAttendantFactory.mBaseFragment.updateFlag(true);
+//                mTTSWrapper.speak(notification_response.mNotification.type);
+//                refreshFragemnt(mAttendantFactory);
                 break;
 
             default:

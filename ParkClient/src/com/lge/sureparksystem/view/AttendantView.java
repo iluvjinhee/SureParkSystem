@@ -38,6 +38,7 @@ public class AttendantView extends BaseFragment implements BaseView {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         mLayoutInflater = getActivity().getLayoutInflater();
+        
         super.onActivityCreated(savedInstanceState);
     }
 
