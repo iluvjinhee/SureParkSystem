@@ -38,7 +38,7 @@
 #define AUTO_CALI_ENSITIVITY_MIN		3	//
 
 #define STALLSENSOR_INITCNT_MAX			10
-#define STALLSENSOR_UNOCCUFIED_MIN		19
+#define STALLSENSOR_UNOCCUFIED_MIN		10
 
 /* ABS */
 #define ABS(a) ((a) >= 0 ? (a) : -(a))
