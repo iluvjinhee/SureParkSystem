@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.ParkingLotData;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
@@ -151,15 +152,19 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	}
 	
 	public void sendToAttendant(JSONObject jsonObject) {
-		for(SocketForServer socketForServer : socketList) {
-			if(socketForServer.getSocket().isConnected()) {
-				String attendantID = DatabaseProvider.getInstance().getParkingLotInfo(getSessionID()).getUserEmail();
-				if(attendantID != null &&
-				   socketForServer.getSocketID() != null &&
-				   socketForServer.getSocketID().equals(attendantID)) {
-					System.out.println(socketForServer.getSocketID() + ": " + jsonObject);
-					
-					socketForServer.send(jsonObject);
+		for (SocketForServer socketForServer : socketList) {
+			if (socketForServer.getSocket().isConnected()) {
+				ParkingLotData parkingData = DatabaseProvider.getInstance()
+						.getParkingLotInfo(getSessionID());
+				if (parkingData != null) {
+					String attendantID = parkingData.getUserEmail();
+					if (attendantID != null &&
+							socketForServer.getSocketID() != null &&
+							socketForServer.getSocketID().equals(attendantID)) {
+						System.out.println(socketForServer.getSocketID() + ": " + jsonObject);
+
+						socketForServer.send(jsonObject);
+					}
 				}
 			}
 		}

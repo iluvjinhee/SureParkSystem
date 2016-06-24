@@ -31,6 +31,10 @@ public class TTSWrapper {
 		);
 	}
 	
+	public void destory() {
+		tts.shutdown();
+	}
+	
 	public void speak(String str) {
 		if(initStatus != TextToSpeech.SUCCESS) {
 			Log.d(TAG, "TTS is not ready!!");

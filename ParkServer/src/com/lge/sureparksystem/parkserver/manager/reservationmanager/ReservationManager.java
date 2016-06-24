@@ -43,6 +43,7 @@ public class ReservationManager extends ManagerTask {
 	DatabaseProvider dbProvider = null;
 	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 	String curParkinglotId = null;
+	boolean isTimerStarted = false;
 
 	public class ReservationManagerListener {
 		@Subscribe
@@ -402,10 +403,83 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processParkingLotStatusRequst(JSONObject jsonObject) {
-		String attendantId = MessageParser.getString(jsonObject, DataMessage.ID);
+
+		String attendantId = getSessionID();//MessageParser.getString(jsonObject, DataMessage.ID);
 		if (attendantId == null) {
 			Logger.log("attendantId is null");
-			attendantId = getSessionID();
+			Logger.log("attendantId = " + attendantId);
+		}
+		String parkinglotId = null;
+		if (attendantId == null) {
+			if (parkinglotInfoMap.size() > 0) {
+				Iterator<String> iterator = parkinglotInfoMap.keySet().iterator();
+				parkinglotId = iterator.next();
+			}
+		} else {
+			
+			parkinglotId = dbProvider.getParkingLotId(attendantId);
+		}
+
+		int slotCount = 0;
+		ArrayList<String> slotStatusList = new ArrayList<String>();
+		ArrayList<String> slotDriverIDList = new ArrayList<String>();
+		ArrayList<String> driverOftenList = new ArrayList<String>();
+		ArrayList<String> slotTimeList = new ArrayList<String>();
+
+		if (isExistValidParkingLot(parkinglotId)) {
+			ParkingLotInfo parkinglot = parkinglotInfoMap.get(parkinglotId);
+			slotCount = parkinglot.getTotalSlotNum();
+			ArrayList<ParkingSlot> slotList = parkinglot.getSlotList();
+			for (ParkingSlot slot : slotList) {
+				boolean result = false;
+				if (slot.getStatus() == ParkingSlot.OCCUPIED) {
+					slotStatusList.add(MessageValueType.OCCUPIED);
+					int reservationId = slot.getReservationId();
+					if (reservationId > 0) {
+						String driverId = dbProvider.getReservationInfo(reservationId)
+								.getUserEmail();
+						int driveropen = dbProvider.getReservationCount(driverId);
+						slotDriverIDList.add(driverId);
+						if (driveropen > 0) {
+							driverOftenList.add(String.valueOf(driveropen));
+						} else {
+							driverOftenList.add("");
+						}
+						Date parkingtime = dbProvider.getParkingInfo(reservationId)
+								.getParkingTime();
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(parkingtime);
+						long slotTime = cal.getTimeInMillis();
+						slotTimeList.add(String.valueOf(slotTime));
+						result = true;
+					}
+				} else {
+					slotStatusList.add("empty");
+				}
+				if (result == false) {
+					slotDriverIDList.add("");
+					driverOftenList.add("");
+					slotTimeList.add("0");
+				}
+			}
+		}
+
+		DataMessage dataMessage = new DataMessage(MessageType.PARKING_LOT_STATUS);
+		dataMessage.setSlotCount(slotCount);
+		dataMessage.setSlotStatusList(slotStatusList);
+		dataMessage.setSlotDriverID(slotDriverIDList);
+		dataMessage.setDriverOften(driverOftenList);
+		dataMessage.setSlotTime(slotTimeList);
+
+		post(new ParkHereNetworkManagerTopic(dataMessage), this);
+	}
+
+	private void sendParkingLotStatusRequst() {
+		String attendantId = getSessionID();//MessageParser.getString(jsonObject, DataMessage.ID);
+		if (attendantId == null) {
+			Logger.log("attendantId is null");
+			//			attendantId = MessageParser.getString(jsonObject, DataMessage.ID);
+			Logger.log("attendantId = " + attendantId);
 		}
 		String parkinglotId = dbProvider.getParkingLotId(attendantId);
 
@@ -578,18 +652,6 @@ public class ReservationManager extends ManagerTask {
 			dbProvider.createReservation(newreservation);
 			sendReservationInformation(driverId);
 
-			ReservationData reservation = dbProvider.getReservationInfo(driverId);
-			if (reservation.getId() > 0) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(reservation.getReservationTime());
-				cal.add(Calendar.MINUTE, Integer.valueOf(graceperiod));
-				Date noShowTime = cal.getTime();
-				Logger.log("noShowTime = " + noShowTime);
-				ScheduledJob job = new ScheduledJob(reservation.getId());
-				Timer jobScheduler = new Timer();
-				jobScheduler.schedule(job, noShowTime);
-			}
-
 		} else {
 			sendReservationNOKResponse();
 		}
@@ -600,8 +662,8 @@ public class ReservationManager extends ManagerTask {
 		ArrayList<String> slotStaus = MessageParser.getStringList(jsonObject,
 				DataMessage.SLOT_STATUS);
 
-		String parkinglotId = getSessionID(); 
-//				MessageParser.getString(jsonObject, DataMessage.ID);
+		String parkinglotId = getSessionID();
+		//				MessageParser.getString(jsonObject, DataMessage.ID);
 		Logger.log("parkinglotId = " + parkinglotId);
 
 		if (parkinglotId == null) {
@@ -623,10 +685,19 @@ public class ReservationManager extends ManagerTask {
 					new ParkingLotInfo(parkinglotId, slotCount, slotStaus));
 		}
 
+//		if (isTimerStarted == false) {
+//			isTimerStarted = true;
+//			long periodtime = javax.management.timer.Timer.ONE_SECOND * 5;
+//			ScheduledJob job = new ScheduledJob();
+//			Timer jobScheduler = new Timer();
+//			jobScheduler.schedule(job, javax.management.timer.Timer.ONE_SECOND, periodtime);
+//			
+//		}
 	}
 
 	private void processEntryGatePassBy(JSONObject jsonObject) {
 		String parkinglotId = getSessionID();
+		//		MessageParser.getString(jsonObject, DataMessage.ID);
 
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
@@ -636,7 +707,7 @@ public class ReservationManager extends ManagerTask {
 
 	private void processChangedSlotStatus(JSONObject jsonObject) {
 		String parkinglotId = getSessionID();
-
+		//		MessageParser.getString(jsonObject, DataMessage.ID);
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
 		}
@@ -688,7 +759,7 @@ public class ReservationManager extends ManagerTask {
 
 	private void processExitGateArrive(JSONObject jsonObject) {
 		String parkinglotId = getSessionID();
-
+		//		MessageParser.getString(jsonObject, DataMessage.ID);
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
 		}
@@ -770,26 +841,19 @@ public class ReservationManager extends ManagerTask {
 	private void callAttendant(String string) {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
-		
+
 		post(new ParkHereNetworkManagerTopic(message), this);
+		Logger.log("time = " + Calendar.getInstance().getTime());
 	}
 
 	class ScheduledJob extends TimerTask {
-		int reservationId = 0;
-
-		public ScheduledJob(int reservedId) {
-			super();
-			reservationId = reservedId;
-		}
 
 		public void run() {
-			ReservationData reservation = dbProvider.getReservationInfo(reservationId);
-			if (reservation != null && reservation
-					.getReservationState() == DatabaseInfo.Reservation.STATE_TYPE.RESERVED) {
-				dbProvider.updateReservationState(reservationId,
-						DatabaseInfo.Reservation.STATE_TYPE.CANCELED);
-				Logger.log("Cancelled by Grace Timeout..reservationId = " + reservationId);
-				reservationId = 0;
+			try {
+				Logger.log("time = " + Calendar.getInstance().getTime());
+				sendParkingLotStatusRequst();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
