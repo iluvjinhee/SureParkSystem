@@ -44,7 +44,8 @@
     <string name="parking_slot">Slot</string>
     <string name="parking_slot_statue">Status</string>
     <string name="parking_slot_driverid">Driver</string>
-    <string name="parking_driver_often">Slot</string>
+    <string name="graceperiod">Graceperiod</string>
+    <string name="parking_driver_often">Count</string>
     <string name="parking_slot_time">Time</string>
     <string name="park_status">Park_status</string>
     <string name="notification">Notification</string>
@@ -53,5 +54,8 @@
     <string name="remove_attendant">Remove attendant</string>
     <string name="create_attendant_title">Add attendant ID, Password and Parking ID</string>
     <string name="address">Address</string>
-    <string name="graceperiod">Graceperiod</string>
+    <string name="occupancy_rate">Occupancy rate :</string>
+    <string name="revenue">Revenue :</string>
+    <string name="cancel_rate">Cancel rate :</string>
+
 </resources>

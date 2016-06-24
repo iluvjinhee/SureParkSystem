@@ -2,34 +2,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/architecture_bg" >
+    android:background="@drawable/main_bg" >
+
+    <ImageView
+        android:id="@+id/main_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        android:src="@drawable/main_image" />
+
+    <TextView
+        android:id="@+id/sureparkSystem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_image"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:text="@string/loginText"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:theme="@style/description_text" />
 
     <RelativeLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_below="@id/sureparkSystem"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="#99777777" >
-
-        <TextView
-            android:id="@+id/sureparkSystem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:text="@string/loginText"
-            android:theme="@style/login_text" />
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:background="#66777777" >
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/sureparkSystem"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:text="@string/id"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:theme="@style/login_text" />
 
         <EditText
@@ -40,7 +54,8 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/textView"
             android:ems="10"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/textView2"
@@ -48,7 +63,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/edit_id"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:text="@string/password"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:theme="@style/login_text" />
 
         <EditText
@@ -59,7 +76,8 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/textView2"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/btn_create"

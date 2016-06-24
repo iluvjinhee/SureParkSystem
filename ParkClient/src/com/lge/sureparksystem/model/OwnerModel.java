@@ -373,15 +373,15 @@ public class OwnerModel implements BaseModel {
 
     public class Parkinglot_Statistics implements BaseInterface {
         String messagetype;
-        String parkinglot_id;
-        int slot_count;
-        String[] slot_status;
-        String[] slot_driverid;
-        String[] driver_often;
-        String[] slot_time;
-        String occupancy_rate;
-        String revenue;
-        String cancel_rate;
+        public String parkinglot_id;
+        public int slot_count;
+        public String[] slot_status;
+        public String[] slot_driverid;
+        public String[] driver_often;
+        public String[] slot_time;
+        public String occupancy_rate;
+        public String revenue;
+        public String cancel_rate;
 
         public Parkinglot_Statistics(JSONObject jsonObject) {
             String smessagetype = MessageParser.getString(jsonObject, MESSAGETYPE);
