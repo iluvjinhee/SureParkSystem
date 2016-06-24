@@ -17,6 +17,7 @@ import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class SocketForServer implements Runnable {
+	private final int MAX_COUNT = 10; 
 	private NetworkManager manager = null;
 	private Socket socket = null;
 	
@@ -72,9 +73,17 @@ public class SocketForServer implements Runnable {
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream(), true);
 			
+			int count = 0;
+			
 			while (true) {
 				String input = in.readLine();
 				//System.out.println(input);
+				
+				if(input == null) {
+					count ++;
+				}
+				if(count > MAX_COUNT)
+					break;
 				
 				if(input != null && !input.equals("")) {
 					receive(input);

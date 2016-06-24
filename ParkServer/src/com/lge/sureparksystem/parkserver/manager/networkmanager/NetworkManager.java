@@ -134,6 +134,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	public void removeSocket(SocketForServer socketForServer) {
 		socketForServer.destroy();
 		socketList.remove(socketForServer);
+		socketForServer = null;
 	}
 	
 	public void send(JSONObject jsonObject) {
