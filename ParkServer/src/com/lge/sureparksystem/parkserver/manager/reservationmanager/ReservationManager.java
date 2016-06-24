@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONObject;
@@ -361,17 +363,17 @@ public class ReservationManager extends ManagerTask {
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.PARKING_LOT_ID);
 		String parkingfee = MessageParser.getString(jsonObject, DataMessage.PARKING_FEE);
 
-		Logger.log("parkinglotId = " + parkinglotId + ", changing graceperiod = " + parkingfee);
+		Logger.log("parkinglotId = " + parkinglotId + ", changing fee = " + parkingfee);
 		boolean result = dbProvider.updateParkingLotFee(parkinglotId, parkingfee);
 
 		DataMessage dataMessage = new DataMessage(MessageType.CHANGE_RESPONSE);
 		if (result) {
 			dataMessage.setResult(MessageValueType.OK);
-			dataMessage.setType("graceperiod");
+			dataMessage.setType("parking_fee");
 			dataMessage.setValue(parkingfee);
 		} else {
 			dataMessage.setResult(MessageValueType.NOK);
-			dataMessage.setType("graceperiod");
+			dataMessage.setType("parking_fee");
 			String curparkingfee = dbProvider.getParkingLotInfo(parkinglotId).getFee();
 			dataMessage.setValue(curparkingfee);
 		}
@@ -565,10 +567,16 @@ public class ReservationManager extends ManagerTask {
 			//			String confirmInfo = generateQRCode(userAccount.getUsername());
 			newreservation.setConfirmInfo(userAccount.getUsername());
 			newreservation.setParkingFee(parkinglotData.getFee());
-			newreservation.setGracePeriod(parkinglotData.getGracePeriod());
+			String graceperiod = parkinglotData.getGracePeriod();
+			newreservation.setGracePeriod(graceperiod);
 			newreservation.setReservationState(DatabaseInfo.Reservation.STATE_TYPE.RESERVED);
 			dbProvider.createReservation(newreservation);
 			sendReservationInformation(driverId);
+			
+//	        ScheduledJob job = new ScheduledJob();
+//	        Timer jobScheduler = new Timer();
+//	        jobScheduler.schedule(job, getFirstScheduleTime(), javax.management.timer.Timer.ONE_DAY);
+			
 		} else {
 			sendReservationNOKResponse();
 		}
@@ -747,4 +755,11 @@ public class ReservationManager extends ManagerTask {
 
 		getEventBus().post(new ParkHereNetworkManagerTopic(message));
 	}
+	
+    class ScheduledJob extends TimerTask {
+
+        public void run() {
+//            updateStatisticsInfo();
+        }
+    }
 }

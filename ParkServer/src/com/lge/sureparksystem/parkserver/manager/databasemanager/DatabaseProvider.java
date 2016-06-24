@@ -1079,7 +1079,7 @@ public class DatabaseProvider {
 		int count = 0;
 		try {
 			StringBuilder where = new StringBuilder(" where ");
-			where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+			where.append(ParkingLot.Columns.LOGIN_ID + "='" + id +"'");
 			String sql = "delete from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
 			LogHelper.log(TAG, "sql = " + sql);
 
@@ -1118,7 +1118,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id +"'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1144,7 +1144,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1159,7 +1159,7 @@ public class DatabaseProvider {
 		return result;
 	}
 
-	public boolean updateParkingLotUserEmail(int id, String email) {
+	public boolean updateParkingLotUserEmail(String id, String email) {
 		if (mDBConn == null) {
 			LogHelper.log(TAG, "Error : There is no connection with sql server");
 			return false;
@@ -1171,7 +1171,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 
@@ -1192,7 +1192,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.ADDRESS + "='" + address + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 
@@ -1214,7 +1214,7 @@ public class DatabaseProvider {
 		set.append(", " + ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1245,7 +1245,7 @@ public class DatabaseProvider {
 		set.append(", " + ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
