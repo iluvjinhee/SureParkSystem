@@ -16,19 +16,24 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.lge.sureparksystem.model.BaseModel;
-import com.lge.sureparksystem.model.DriverModel;
 import com.lge.sureparksystem.model.OwnerModel;
 import com.lge.sureparksystem.parkclient.R;
 import com.lge.sureparksystem.util.Utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class OwnerView extends BaseFragment implements OnClickListener {
     private static final String TAG = "OwnerView";
     private Spinner mParkIDSppiner;
     private Spinner mStatisticalDuration;
     private Button mConfigurationBtn;
+    private Button mOkBtn;
     private LayoutInflater mLayoutInflater;
     private static final int CHANGE_PARKING_FEE = 0;
     private static final int CHANGE_GRACE_PERIOD = 1;
@@ -50,6 +55,8 @@ public class OwnerView extends BaseFragment implements OnClickListener {
     private String maddress_editEditText;
     private String mparkingfee_editEditText;
     private String mgraceperiod_editEditText;
+    private LinearLayout mTableLayout;
+    private LinearLayout mStaticLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +65,9 @@ public class OwnerView extends BaseFragment implements OnClickListener {
         mParkIDSppiner = (Spinner)result.findViewById(R.id.park_id);
         mStatisticalDuration = (Spinner)result.findViewById(R.id.period_time);
         mConfigurationBtn = (Button)result.findViewById(R.id.btn_configuration);
+        mOkBtn = (Button)result.findViewById(R.id.btn_ok);
+        mTableLayout = (LinearLayout)result.findViewById(R.id.table_layout);
+        mStaticLayout = (LinearLayout)result.findViewById(R.id.static_layout);
         return result;
     }
 
@@ -106,35 +116,6 @@ public class OwnerView extends BaseFragment implements OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mCurrentDurationTime = position;
-                String duration = null;
-                switch (position) {
-                case 0:
-                    duration = "day";
-                    break;
-                case 1:
-                    duration = "week";
-                    break;
-                case 2:
-                    duration = "month";
-                    break;
-                case 3:
-                    duration = "year";
-                    break;
-                default:
-                    break;
-                }
-                if (duration == null) {
-                    Utils.showToast(getActivity(), "Check duration");
-                    return;
-                }
-                if (mOwnerModel != null && mOwnerModel.mParkinglot_List != null) {
-                    Bundle subBundle = new Bundle();
-                    subBundle.putString("parkinglot_id", mParkingID);
-                    subBundle.putString("period", duration);
-                    mCallback.requsetServer(RequestData.PARKINGLOT_STATS_REQUEST, subBundle);
-                } else {
-                    Utils.showToast(getActivity(), "Choose park first what you want");
-                }
             }
 
             @Override
@@ -142,8 +123,69 @@ public class OwnerView extends BaseFragment implements OnClickListener {
                 Utils.showToast(getActivity(), "unselected");
             }
         });
+        // if (true) {
+        if (mOwnerModel != null && mOwnerModel.mParkinglot_Statistics != null) {
+            mTableLayout.removeAllViews();
+            View tableView = mLayoutInflater.inflate(R.layout.pakinglot_status_table_layout, null);
+            mTableLayout.addView(tableView);
+            int count = mOwnerModel.mParkinglot_Statistics.slot_count;
+            String[] staute = mOwnerModel.mParkinglot_Statistics.slot_status;
+            String[] driver = mOwnerModel.mParkinglot_Statistics.slot_driverid;
+            String[] often = mOwnerModel.mParkinglot_Statistics.driver_often;
+            String[] time = mOwnerModel.mParkinglot_Statistics.slot_time;
+            // int count = 5;
+            // String[] staute = { "q", "w", "e", "r", "t" };
+            // String[] driver = { "d1", "s2", "d3", "d4", "d5" };
+            // String[] often = { "1", "2", "3", "4", "5" };
+            // String[] time = { "1000000", "2000000", "6000000", "7200000",
+            // "9600000" };
+            for (int i = 0; i < count; i++) {
+                tableView = mLayoutInflater.inflate(R.layout.pakinglot_status_table_layout, null);
+                TextView tv1 = (TextView)tableView.findViewById(R.id.first_column);
+                tv1.setText(String.valueOf(i + 1));
+                TextView tv2 = (TextView)tableView.findViewById(R.id.second_column);
+                tv2.setText(staute[i]);
+                TextView tv3 = (TextView)tableView.findViewById(R.id.third_column);
+                tv3.setText(driver[i]);
+                TextView tv4 = (TextView)tableView.findViewById(R.id.fourth_column);
+                tv4.setText(often[i]);
+                TextView tv5 = (TextView)tableView.findViewById(R.id.fifth_column);
+                String str = time[i];
+                if (str == null || str.equals("0")) {
+                    tv5.setText("");
+                } else {
+                    Date date = new Date(Long.valueOf(str));
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM.dd HH:mm");
+                    str = sdf.format(date);
+                    tv5.setText(str);
+                }
+                mTableLayout.addView(tableView);
+            }
 
+            if (mOwnerModel != null && mOwnerModel.mParkinglot_Statistics != null) {
+                TextView tv = null;
+                String value = null;
+                tv = (TextView)mStaticLayout.findViewById(R.id.occupancy_rate);
+                value = getString(R.string.occupancy_rate) + mOwnerModel.mParkinglot_Statistics.occupancy_rate;
+                tv.setText(value);
+
+                tv = (TextView)mStaticLayout.findViewById(R.id.revenue);
+                value = getString(R.string.revenue) + mOwnerModel.mParkinglot_Statistics.revenue;
+                tv.setText(value);
+
+                tv = (TextView)mStaticLayout.findViewById(R.id.cancel_rate);
+                value = getString(R.string.cancel_rate) + mOwnerModel.mParkinglot_Statistics.cancel_rate;
+                tv.setText(value);
+            }
+
+            mTableLayout.setVisibility(View.VISIBLE);
+            mStaticLayout.setVisibility(View.VISIBLE);
+        } else {
+            mTableLayout.setVisibility(View.GONE);
+            mStaticLayout.setVisibility(View.GONE);
+        }
         mConfigurationBtn.setOnClickListener(this);
+        mOkBtn.setOnClickListener(this);
         super.onResume();
     }
 
@@ -217,7 +259,7 @@ public class OwnerView extends BaseFragment implements OnClickListener {
                                             Bundle bundle = new Bundle();
                                             bundle.putString("parkinglot_id",
                                                     mOwnerModel.mParkinglot_List.parkinglot_id_list[mCurrentParkingId]);
-                                            bundle.putString("parking_fee", mChangedValue);
+                                            bundle.putString("fee", mChangedValue);
                                             mCallback.requsetServer(RequestData.CHANGE_PARKINGFEE, bundle);
                                         } else {
                                             Utils.showToast(getActivity(), "Check mOwnerModel");
@@ -406,7 +448,8 @@ public class OwnerView extends BaseFragment implements OnClickListener {
                             case ADD_PARKING_LOT:
                                 mFirstDialog.dismiss();
                                 mSecondDialog.setTitle(R.string.add_parking_lot);
-                                View dialogLayout1 = mLayoutInflater.inflate(R.layout.alert_dialog_add_parkinglot, null);
+                                View dialogLayout1 = mLayoutInflater
+                                        .inflate(R.layout.alert_dialog_add_parkinglot, null);
                                 mSecondDialog.setView(dialogLayout1);
                                 EditText id_viewEditText = (EditText)dialogLayout1.findViewById(R.id.id_edit);
                                 id_viewEditText.addTextChangedListener(new TextWatcher() {
@@ -547,7 +590,40 @@ public class OwnerView extends BaseFragment implements OnClickListener {
             mFirstDialog = createDialog.create();
             mFirstDialog.show();
             break;
-
+        case R.id.btn_ok:
+            String duration = null;
+            switch (mCurrentDurationTime) {
+            case 0:
+                duration = "day";
+                break;
+            case 1:
+                duration = "week";
+                break;
+            case 2:
+                duration = "month";
+                break;
+            case 3:
+                duration = "year";
+                break;
+            default:
+                break;
+            }
+            if (duration == null) {
+                Utils.showToast(getActivity(), "Check duration");
+                return;
+            }
+            if (mOwnerModel != null && mOwnerModel.mParkinglot_List != null) {
+                if (mParkingID == null) {
+                    mParkingID = mOwnerModel.mParkinglot_List.parkinglot_id_list[0];
+                }
+                Bundle subBundle = new Bundle();
+                subBundle.putString("parkinglot_id", mParkingID);
+                subBundle.putString("period", duration);
+                mCallback.requsetServer(RequestData.PARKINGLOT_STATS_REQUEST, subBundle);
+            } else {
+                Utils.showToast(getActivity(), "Choose park first what you want");
+            }
+            break;
         default:
             break;
         }

@@ -231,10 +231,10 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 mCurrentAutority = ar.geAuthority();
                 if (Utils.DRIVERVIEW_FRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.RESERVATION_INFO_REQUEST, null);
-                } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority
-                        || Utils.OWNERVIEWFRAGMENT == mCurrentAutority) {
+                } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.PARKING_LOT_STATUS_REQUEST, null);
-                } else {
+                } else if (Utils.OWNERVIEWFRAGMENT == mCurrentAutority) {
+                    requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
                 }
                 decideFragment(ar.geAuthority(), null);
             } else {
@@ -245,7 +245,8 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             break;
         // Driver
         case PARKINGLOT_LIST_RESPONSE:
-            if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
+            Log.d(TAG, "mCurrentAutority : " + mCurrentAutority);
+            if (Utils.DRIVERVIEW_FRAGMENT == mCurrentAutority) {
                 Log.d(TAG, "PARKINGLOT_LIST_RESPONSE ATTENDANTVIEW_FRAGMENT");
                 DriverModel parkinglot_list = (DriverModel)mDriverFactory.mBaseModel;
                 parkinglot_list.mParkinglot_List = parkinglot_list.new Parkinglot_List(jsonObject);
@@ -256,7 +257,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 OwnerModel ownerModel = (OwnerModel)mOwnerFactory.mBaseModel;
                 ownerModel.mParkinglot_List = ownerModel.new Parkinglot_List(jsonObject);
                 mOwnerFactory.mBaseFragment.setBaseModel(mOwnerFactory.mBaseModel);
-                refreshFragemnt(mDriverFactory);
+                refreshFragemnt(mOwnerFactory);
             }
             break;
         case RESERVATION_INFORMATION_RESPONSE:
@@ -271,6 +272,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 // reserved flag update in Driver view
                 mDriverFactory.mBaseFragment.updateFlag(false);
                 requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
+                Utils.showToast(getApplication(), "Reservation fail. Check your information");
             }
             // Driver fragment update
             refreshFragemnt(mDriverFactory);
@@ -303,7 +305,6 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             mOwnerFactory.mBaseFragment.setBaseModel(mOwnerFactory.mBaseModel);
             refreshFragemnt(mOwnerFactory);
             if ("ok".equals(ownerModel3.mChange_Response.result)) {
-                requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
                 Utils.showToast(getApplication(), ownerModel3.mChange_Response.type + " changed to "
                         + ownerModel3.mChange_Response.value);
             } else {
@@ -384,7 +385,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
 
         case PARKING_LOT_STATUS_REQUEST:
             AttendantModel attendantModel = (AttendantModel)mAttendantFactory.mBaseModel;
-            messagetype = MessageType.PARKINGLOTINFO_REQUEST.getText();
+            messagetype = MessageType.PARKING_LOT_STATUS_REQUEST.getText();
             AttendantModel.ParkinglotStatus_Request pr = attendantModel.new ParkinglotStatus_Request(messagetype);
             pr.putJSONObject(jsonObject);
             break;
@@ -393,7 +394,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             OwnerModel ownerModel = (OwnerModel)mOwnerFactory.mBaseModel;
             messagetype = MessageType.CHANGE_PARKINGFEE.getText();
             String parkinglotid = bundle.getString("parkinglot_id");
-            String parking_fee = bundle.getString("parking_fee");
+            String parking_fee = bundle.getString("fee");
             OwnerModel.Change_parkingfee cp = ownerModel.new Change_parkingfee(messagetype, parkinglotid, parking_fee);
             cp.putJSONObject(jsonObject);
             break;
@@ -408,7 +409,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             break;
         case REMOVE_PARKINGLOT:
             OwnerModel ownerModel2 = (OwnerModel)mOwnerFactory.mBaseModel;
-            messagetype = MessageType.CHANGE_PARKINGFEE.getText();
+            messagetype = MessageType.REMOVE_PARKINGLOT.getText();
             String parkinglot_id2 = bundle.getString("parkinglot_id");
             OwnerModel.Remove_Parkinglot rp = ownerModel2.new Remove_Parkinglot(messagetype, parkinglot_id2);
             rp.putJSONObject(jsonObject);
@@ -426,7 +427,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             break;
         case ADD_PARKINGLOT:
             OwnerModel ownerModel4 = (OwnerModel)mOwnerFactory.mBaseModel;
-            messagetype = MessageType.CREATE_ATTENDANT.getText();
+            messagetype = MessageType.ADD_PARKINGLOT.getText();
             String id4 = bundle.getString("id");
             String pwd4 = bundle.getString("pwd");
             String address = bundle.getString("address");
@@ -448,6 +449,9 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
         default:
             break;
         }
-        mNetworkManager.sendMessage(jsonObject);
+        boolean success = mNetworkManager.sendMessage(jsonObject);
+        if (!success) {
+            Utils.showToast(this, "Server was not connected");
+        }
     }
 }

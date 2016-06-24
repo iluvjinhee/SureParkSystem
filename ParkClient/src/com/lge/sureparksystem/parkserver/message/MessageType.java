@@ -36,7 +36,9 @@ public enum MessageType {
     PARKINGLOT_STATISTICS("Parkinglot_Statistics"),
     CHANGE_RESPONSE("Change_Response"),
     CHANGE_PARKINGFEE("Change_parkingfee"),
+    REMOVE_PARKINGLOT("Remove_Parkinglot"),
     CHANGE_GRACEPERIOD("Change_graceperiod"),
+    ADD_PARKINGLOT("Add_Parkinglot"),
     CREATE_ATTENDANT("Create_Attendant"),
     
     NONE("NONE");
