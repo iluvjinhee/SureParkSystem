@@ -26,7 +26,7 @@ public class Logger {
 		StackTraceElement[] ste = (new Throwable()).getStackTrace();
 		String text = "[" + ste[1].getFileName() + ":" + ste[1].getLineNumber() + ":"
 				+ ste[1].getMethodName() + "()"
-				+ "] oooooo ";
+				+ "] ----- ";
 		System.out.println(text + message);
 	}
 
