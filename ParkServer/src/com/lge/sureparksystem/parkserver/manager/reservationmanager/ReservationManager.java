@@ -369,11 +369,11 @@ public class ReservationManager extends ManagerTask {
 		DataMessage dataMessage = new DataMessage(MessageType.CHANGE_RESPONSE);
 		if (result) {
 			dataMessage.setResult(MessageValueType.OK);
-			dataMessage.setType("parking_fee");
+			dataMessage.setType("fee");
 			dataMessage.setValue(parkingfee);
 		} else {
 			dataMessage.setResult(MessageValueType.NOK);
-			dataMessage.setType("parking_fee");
+			dataMessage.setType("fee");
 			String curparkingfee = dbProvider.getParkingLotInfo(parkinglotId).getFee();
 			dataMessage.setValue(curparkingfee);
 		}
@@ -572,11 +572,19 @@ public class ReservationManager extends ManagerTask {
 			newreservation.setReservationState(DatabaseInfo.Reservation.STATE_TYPE.RESERVED);
 			dbProvider.createReservation(newreservation);
 			sendReservationInformation(driverId);
-			
-//	        ScheduledJob job = new ScheduledJob();
-//	        Timer jobScheduler = new Timer();
-//	        jobScheduler.schedule(job, getFirstScheduleTime(), javax.management.timer.Timer.ONE_DAY);
-			
+
+			ReservationData reservation = dbProvider.getReservationInfo(driverId);
+			if (reservation.getId() > 0) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(reservation.getReservationTime());
+				cal.add(Calendar.MINUTE, Integer.valueOf(graceperiod));
+				Date noShowTime = cal.getTime();
+				Logger.log("noShowTime = " + noShowTime);
+				ScheduledJob job = new ScheduledJob(reservation.getId());
+				Timer jobScheduler = new Timer();
+				jobScheduler.schedule(job, noShowTime);
+			}
+
 		} else {
 			sendReservationNOKResponse();
 		}
@@ -589,15 +597,15 @@ public class ReservationManager extends ManagerTask {
 
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
 		Logger.log("parkinglotId = " + parkinglotId);
-		
+
 		if (parkinglotId == null) {
 			Logger.log("parkinglotId is null");
 			return;
 		}
 
 		if (parkinglotInfoMap.containsKey(parkinglotId)) {
-//			boolean validation = parkinglotInfoMap.get(parkinglotId).checkValidation(slotCount,
-//					slotStaus);
+			//			boolean validation = parkinglotInfoMap.get(parkinglotId).checkValidation(slotCount,
+			//					slotStaus);
 			boolean validation = parkinglotInfoMap.get(parkinglotId).updateSlotStatus(slotCount,
 					slotStaus);
 			if (validation == false) {
@@ -755,11 +763,24 @@ public class ReservationManager extends ManagerTask {
 
 		getEventBus().post(new ParkHereNetworkManagerTopic(message));
 	}
-	
-    class ScheduledJob extends TimerTask {
 
-        public void run() {
-//            updateStatisticsInfo();
-        }
-    }
+	class ScheduledJob extends TimerTask {
+		int reservationId = 0;
+
+		public ScheduledJob(int reservedId) {
+			super();
+			reservationId = reservedId;
+		}
+
+		public void run() {
+			ReservationData reservation = dbProvider.getReservationInfo(reservationId);
+			if (reservation != null && reservation
+					.getReservationState() == DatabaseInfo.Reservation.STATE_TYPE.RESERVED) {
+				dbProvider.updateReservationState(reservationId,
+						DatabaseInfo.Reservation.STATE_TYPE.CANCELED);
+				Logger.log("Cancelled by Grace Timeout..reservationId = " + reservationId);
+				reservationId = 0;
+			}
+		}
+	}
 }
