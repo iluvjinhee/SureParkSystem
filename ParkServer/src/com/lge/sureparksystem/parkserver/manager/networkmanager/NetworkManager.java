@@ -136,7 +136,9 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {
-				if(socketForServer.getSocketID().equals(getSessionID())) {
+				if(getSessionID() != null &&
+				   socketForServer.getSocketID() != null &&
+				   socketForServer.getSocketID().equals(getSessionID())) {
 					System.out.println(socketForServer.getSocketID() + ": " + jsonObject);
 					
 					socketForServer.send(jsonObject);
