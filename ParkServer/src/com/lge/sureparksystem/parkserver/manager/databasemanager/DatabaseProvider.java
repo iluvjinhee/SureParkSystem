@@ -1002,7 +1002,7 @@ public class DatabaseProvider {
 				}
 				LogHelper.log(TAG, "parkinglot = " + parkinglot.toString());
 			} else {
-				LogHelper.log(TAG, "matched reservation is not exist.");
+				LogHelper.log(TAG, "matched parkinglot is not exist.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1047,7 +1047,7 @@ public class DatabaseProvider {
 					LogHelper.log(TAG, "Warning :: result is not one.");
 				}
 			} else {
-				LogHelper.log(TAG, "matched reservation is not exist.");
+				LogHelper.log(TAG, "matched attendant is not exist.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1065,7 +1065,7 @@ public class DatabaseProvider {
 				e.printStackTrace();
 			}
 		}
-		LogHelper.log(TAG, "parkinglot = " + parkinglotId);
+		LogHelper.log(TAG, "matched parkinglot = " + parkinglotId);
 		return parkinglotId;
 	}
 
