@@ -36,6 +36,7 @@ import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 import com.lge.sureparksystem.parkserver.util.paymentremoteproxy.PaymentRemoteProxy;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Accessor.GetterSetterReflection;
 
 public class ReservationManager extends ManagerTask {
 	HashMap<String, ParkingLotInfo> parkinglotInfoMap = new HashMap<String, ParkingLotInfo>(); //<parkinglotID, ParkingLotStatus>
@@ -402,6 +403,10 @@ public class ReservationManager extends ManagerTask {
 
 	private void processParkingLotStatusRequst(JSONObject jsonObject) {
 		String attendantId = MessageParser.getString(jsonObject, DataMessage.ID);
+		if (attendantId == null) {
+			Logger.log("attendantId is null");
+			attendantId = getSessionID();
+		}
 		String parkinglotId = dbProvider.getParkingLotId(attendantId);
 
 		//		generateDummyParkinglot(); //temp for test
@@ -595,7 +600,8 @@ public class ReservationManager extends ManagerTask {
 		ArrayList<String> slotStaus = MessageParser.getStringList(jsonObject,
 				DataMessage.SLOT_STATUS);
 
-		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		String parkinglotId = getSessionID(); 
+//				MessageParser.getString(jsonObject, DataMessage.ID);
 		Logger.log("parkinglotId = " + parkinglotId);
 
 		if (parkinglotId == null) {
@@ -620,7 +626,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processEntryGatePassBy(JSONObject jsonObject) {
-		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		String parkinglotId = getSessionID();
 
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
@@ -629,7 +635,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processChangedSlotStatus(JSONObject jsonObject) {
-		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		String parkinglotId = getSessionID();
 
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
@@ -681,7 +687,7 @@ public class ReservationManager extends ManagerTask {
 	}
 
 	private void processExitGateArrive(JSONObject jsonObject) {
-		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		String parkinglotId = getSessionID();
 
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			return;
@@ -717,6 +723,10 @@ public class ReservationManager extends ManagerTask {
 		String confirmationInfo = MessageParser.getString(jsonObject,
 				DataMessage.CONFIRMATION_INFO);
 		String parkinglotId = MessageParser.getString(jsonObject, DataMessage.ID);
+		if (parkinglotId == null) {
+			Logger.log("parkinglotId is null");
+			parkinglotId = getSessionID();
+		}
 		if (isExistValidParkingLot(parkinglotId) == false) {
 			String notiMsg = "parkinglot error";
 			Logger.log(notiMsg);
