@@ -109,12 +109,6 @@ public class CommunicationManager extends ManagerTask {
 		post(new ParkViewNetworkManagerTopic(message), this);
 	}
 
-	private void callAttendant(String string) {
-		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
-		message.setType(string);
-		post(new ParkHereNetworkManagerTopic(message), this);		
-	}
-
 	private void controlEntryGate(String command) {
 		DataMessage sendMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
 		sendMessage.setCommand(command);
@@ -132,5 +126,12 @@ public class CommunicationManager extends ManagerTask {
 		sendMessage.setSlotNumber(slotNumber);
 		sendMessage.setCommand(command);
 		post(new ParkingLotNetworkManagerTopic(sendMessage), this);
+	}
+	
+	private void callAttendant(String type) {
+		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
+		message.setType(type);
+		
+		post(new ParkHereNetworkManagerTopic(message), this);
 	}
 }

@@ -4,9 +4,11 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.message.MessageValueType;
 import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 
@@ -41,7 +43,7 @@ public class ParkingLotWatchDog extends ManagerTask {
 				alertLevel += 10;
 				
 				if(alertLevel > 100) {
-					callAttendant("parkinglot error");
+					callAttendant(MessageValueType.PARKING_ERROR);
 					loop = false;
 				}
 			} catch (InterruptedException e) {

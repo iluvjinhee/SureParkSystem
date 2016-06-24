@@ -3,6 +3,7 @@ package com.lge.sureparksystem.parkserver.manager.networkmanager;
 import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseProvider;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;

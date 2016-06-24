@@ -27,6 +27,7 @@ import com.lge.sureparksystem.parkserver.manager.databasemanager.StatisticsData;
 import com.lge.sureparksystem.parkserver.manager.databasemanager.UserAccountData;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.MessageValueType;
+import com.lge.sureparksystem.parkserver.paymentremoteproxy.PaymentRemoteProxy;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkserver.message.MessageValueType;
@@ -35,7 +36,6 @@ import com.lge.sureparksystem.parkserver.topic.ParkHereNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ParkingLotNetworkManagerTopic;
 import com.lge.sureparksystem.parkserver.topic.ReservationManagerTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
-import com.lge.sureparksystem.parkserver.util.paymentremoteproxy.PaymentRemoteProxy;
 import com.sun.xml.internal.bind.v2.runtime.reflect.Accessor.GetterSetterReflection;
 
 public class ReservationManager extends ManagerTask {
@@ -616,7 +616,7 @@ public class ReservationManager extends ManagerTask {
 					slotStaus);
 			if (validation == false) {
 				Logger.log("Slot satus is weird");
-				callAttendant("parkinglot error");
+				callAttendant(MessageValueType.PARKING_ERROR);
 			}
 		} else {
 			parkinglotInfoMap.put(parkinglotId,
@@ -661,7 +661,7 @@ public class ReservationManager extends ManagerTask {
 					if (changedSlot != assingedslot) {
 						Logger.log("Slot was reallocated..from " + assingedslot + " to "
 								+ changedSlot);
-						callAttendant("reallocation");
+						callAttendant(MessageValueType.REALLOCATION);
 					}
 				}
 			} else {
@@ -728,7 +728,7 @@ public class ReservationManager extends ManagerTask {
 			parkinglotId = getSessionID();
 		}
 		if (isExistValidParkingLot(parkinglotId) == false) {
-			String notiMsg = "parkinglot error";
+			String notiMsg = MessageValueType.PARKING_ERROR;
 			Logger.log(notiMsg);
 			callAttendant(notiMsg);
 			return;
@@ -758,9 +758,9 @@ public class ReservationManager extends ManagerTask {
 
 			String notiMsg = null;
 			if (availSlot <= 0) {
-				notiMsg = "parkinglot error";
+				notiMsg = MessageValueType.PARKING_ERROR;
 			} else {
-				notiMsg = "confirmation information error";
+				notiMsg = MessageValueType.CONFIRMATION_INFORMATION_ERROR;
 			}
 			Logger.log(notiMsg);
 			callAttendant(notiMsg);
@@ -770,7 +770,7 @@ public class ReservationManager extends ManagerTask {
 	private void callAttendant(String string) {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
-
+		
 		post(new ParkHereNetworkManagerTopic(message), this);
 	}
 

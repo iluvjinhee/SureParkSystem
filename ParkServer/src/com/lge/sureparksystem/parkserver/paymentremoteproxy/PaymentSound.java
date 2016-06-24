@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkserver.util.paymentremoteproxy;
+package com.lge.sureparksystem.parkserver.paymentremoteproxy;
 
 import javax.sound.sampled.LineUnavailableException;
 

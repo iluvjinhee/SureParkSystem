@@ -12,7 +12,9 @@ public class MessageValueType {
 	public static final String OCCUPIED = "occupied";
 	public static final String ON = "on";
 	public static final String OFF = "off";
-	public static final String CONFIRMATION_INFORMATION_ERROR = "confirmation information error";
-	public static final String PAYMENT_ERROR = "payment error";
+	public static final String CONFIRMATION_INFORMATION_ERROR = "Confirmation Information Error";
+	public static final String PAYMENT_ERROR = "Payment error";
 	public static final String NO_RESERVATION = "No Reservation";
+	public static final String PARKING_ERROR = "Parkinglot Error";
+	public static final String REALLOCATION = "Reallocation";
 }

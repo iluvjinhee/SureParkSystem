@@ -122,7 +122,7 @@ public class SocketForServer implements Runnable {
 		this.bAttendant  = bAttendant;
 	}
 	
-	public boolean getAttendant() {
+	public boolean isAttendant() {
 		return bAttendant;
 	}
 }
