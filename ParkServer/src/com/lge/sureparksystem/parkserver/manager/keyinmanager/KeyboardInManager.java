@@ -114,7 +114,7 @@ public class KeyboardInManager extends ManagerTask {
 		}
 		
 		if(jsonObject != null)
-			getEventBus().post(new ParkingLotNetworkManagerTopic(jsonObject));
+			post(new ParkingLotNetworkManagerTopic(jsonObject), this);
 		
 		return jsonObject;
 	}
@@ -140,7 +140,7 @@ public class KeyboardInManager extends ManagerTask {
 		}
 		
 		if(jsonObject != null)
-			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));
+			post(new ParkViewNetworkManagerTopic(jsonObject), this);
 		
 		return jsonObject;
 	}

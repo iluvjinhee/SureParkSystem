@@ -15,6 +15,7 @@ public class ParkingLotManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "ParkingLotManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ParkingLotManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
 	}
 }

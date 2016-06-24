@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.message;
+package com.lge.sureparksystem.parkserver.message;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,12 +43,11 @@ public class MessageParser {
 		((DataMessage) message).setPassword(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
 		((DataMessage) message).setSensorNumber(MessageParser.getInt(jsonObject, DataMessage.SENSOR_NUMBER));
 		((DataMessage) message).setSlotNumber(MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER));
-		((DataMessage) message).setSlotStatus(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
+		((DataMessage) message).setSlotStatusList(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
 		((DataMessage) message).setStatus(MessageParser.getString(jsonObject, DataMessage.STATUS));
 		
 		// ParkHere
 		((DataMessage) message).setDriverOften(MessageParser.getStringList(jsonObject, DataMessage.DRIVER_OFTEN));
-		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setGracePeriod(MessageParser.getString(jsonObject, DataMessage.GRACE_PERIOD));
 		((DataMessage) message).setGracePeriodList(MessageParser.getStringList(jsonObject, DataMessage.GRACE_PERIOD_LIST));
 		((DataMessage) message).setParkingFee(MessageParser.getString(jsonObject, DataMessage.PARKING_FEE));
@@ -86,9 +85,10 @@ public class MessageParser {
 		jsonObject.put(Message.MESSAGE_TYPE, message.getMessageType().getText());
 		if (message.getTimestamp() != -1)
 			jsonObject.put(Message.TIMESTAMP, message.getTimestamp());
+		if (((DataMessage) message).getID() != null)
+			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
 
 		switch (message.getMessageType()) {
-		
 		// Common
 		case AUTHENTICATION_REQUEST:
 			jsonObject.put(DataMessage.ID, ((DataMessage) message).getID());
@@ -252,19 +252,13 @@ public class MessageParser {
 		return jsonObject;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void putList(JSONObject jsonObject, String key, ArrayList<String> list) {
 		if(list == null)
 			return;
 		
-		if(list.size() == 1) {
-			jsonObject.put(key, list.get(0));
-		}
-		else {
-			JSONArray array = new JSONArray();
-			array.addAll(list);
-			jsonObject.put(key, array);
-		}
+		JSONArray array = new JSONArray();
+		array.addAll(list);
+		jsonObject.put(key, array);
 	}
 
 	public static MessageType getMessageType(JSONObject jsonObject) {
@@ -324,14 +318,23 @@ public class MessageParser {
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {
 		ArrayList<String> resultList = new ArrayList<String>();
 		
-		JSONArray childrenList = (JSONArray) jsonObject.get(key);
-	    childrenList = (JSONArray) jsonObject.get(key);
-		if(childrenList != null) {
-	        Iterator<String> i = childrenList.iterator();
-	
-	        while (i.hasNext()) {
-	            resultList.add(i.next());
-	        }
+		Object object = jsonObject.get(key);
+		
+		if(object instanceof JSONArray) {
+			JSONArray childrenList = (JSONArray) jsonObject.get(key);
+		    childrenList = (JSONArray) jsonObject.get(key);
+			if(childrenList != null) {
+		        Iterator<String> i = childrenList.iterator();
+		
+		        while (i.hasNext()) {
+		            resultList.add(i.next());
+		        }
+			}
+		}
+		else if(object instanceof String) {
+			String child = (String) jsonObject.get(key);
+
+			resultList.add(child);
 		}
 		
 		return resultList;

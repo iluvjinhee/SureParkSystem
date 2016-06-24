@@ -12,13 +12,15 @@ public class SecurityManager extends ManagerTask {
 		public void onSubscribe(SecurityManagerTopic topic) {
 			System.out.println("SecurityManagerListener: " + topic);
 			
+			setSessionID(topic);
+			
 			processMessage(topic.getJsonObject());
 		}
 	}
 	
 	@Override
 	public void init() {
-		getEventBus().register(new SecurityManagerListener());
+		registerEventBus(new SecurityManagerListener());
 	}
 	
 	@Override

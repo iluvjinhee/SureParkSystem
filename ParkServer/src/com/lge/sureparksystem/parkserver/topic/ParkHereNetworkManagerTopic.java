@@ -15,6 +15,7 @@ public class ParkHereNetworkManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "ParkHereNetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ParkHereNetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID="
+				+ sessionID + "]";
 	}
 }

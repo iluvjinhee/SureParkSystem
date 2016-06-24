@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.lge.sureparksystem.parkserver.manager.ManagerTask;
+import com.lge.sureparksystem.parkserver.manager.databasemanager.DatabaseInfo;
 import com.lge.sureparksystem.parkserver.message.DataMessage;
 import com.lge.sureparksystem.parkserver.message.Message;
 import com.lge.sureparksystem.parkserver.message.MessageParser;
@@ -21,14 +22,15 @@ import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class NetworkManager extends ManagerTask implements ISocketAcceptListener {
 	private int serverPort;
-	private String id = null;
 	protected List<SocketForServer> socketList = new ArrayList<SocketForServer>();
-	SocketForServer currentSocketForServer = null;
+	SocketForServer socketForServer = null;
 	
 	public class NetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(NetworkManagerTopic topic) {
 			System.out.println("NetworkManagerListener: " + topic);
+			
+			setSessionID(topic);
 			
 			processMessage(topic.getJsonObject());
 		}
@@ -36,10 +38,10 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	
 	@Override
 	public void init() {
-		getEventBus().register(new NetworkManagerListener());
+		registerEventBus(new NetworkManagerListener());
 	}
 	
-    public NetworkManager(int serverPort) {
+	public NetworkManager(int serverPort) {
     	super();
     	
     	this.serverPort = serverPort;
@@ -47,10 +49,10 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
     
     @Override
 	public void onSocketAccepted(Socket socket) {
-		currentSocketForServer = new SocketForServer(this, socket);
-		socketList.add(currentSocketForServer);
+		socketForServer = new SocketForServer(this, socket);
+		socketList.add(socketForServer);
 		
-		Thread thread = new Thread(currentSocketForServer, "Socket");
+		Thread thread = new Thread(socketForServer, "Socket");
 		thread.start();
 	}
 
@@ -94,7 +96,7 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	private void initClient(int port) {
 		/*
 		 if(port == SocketInfo.PORT_PARKINGLOT) {
-			getEventBus().post(new ParkingLotNetworkManagerTopic(new Message(MessageType.RESET)));
+			post(new ParkingLotNetworkManagerTopic(new Message(MessageType.RESET)), this);
 		}
 		*/
 	}
@@ -135,24 +137,35 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 	public void send(JSONObject jsonObject) {
 		for(SocketForServer socketForServer : socketList) {
 			if(socketForServer.getSocket().isConnected()) {
-				socketForServer.send(jsonObject);
+				if(getSessionID() != null &&
+				   socketForServer.getSocketID() != null &&
+				   socketForServer.getSocketID().equals(getSessionID())) {
+					System.out.println(socketForServer.getSocketID() + ": " + jsonObject);
+					
+					socketForServer.send(jsonObject);
+				}
+			}
+		}
+	}
+	
+	public void sendToAttendant(JSONObject jsonObject) {
+		for(SocketForServer socketForServer : socketList) {
+			if(socketForServer.getSocket().isConnected()) {
+				if(socketForServer.getAttendant()) {
+					System.out.println("Attendant Message: " + jsonObject);
+					
+					socketForServer.send(jsonObject);
+				}
 			}
 		}
 	}
 	
 	public void send(Message message) {
-		JSONObject jsonObject = MessageParser.convertToJSONObject(message);
-		
-		for(SocketForServer socketForServer : socketList) {
-			if(socketForServer.getSocket().isConnected()) {
-				socketForServer.send(jsonObject);
-			}
-		}
+		send(MessageParser.convertToJSONObject(message));
 	}
 
-	public void receive(JSONObject jsonObject) {
-		if(getID() != null)
-			jsonObject.put(DataMessage.ID, getID());
+	public void receive(JSONObject jsonObject, String socketID) {
+		setSessionID(socketID);
 		
 		processMessage(jsonObject);
 	}
@@ -166,24 +179,27 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 			DataMessage sendMessage = new DataMessage(MessageType.ACKNOWLEDGE, message.getTimestamp());
 			send(sendMessage);
 			
-			getEventBus().post(new ParkingLotWatchDogTopic(jsonObject));
+			post(new ParkingLotWatchDogTopic(jsonObject), this);
 			break;
 		case AUTHENTICATION_REQUEST:
-			id = message.getID();
 			jsonObject.put(DataMessage.PORT, serverPort);
-			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
+//			setSessionID(getSocketID());
+			
+			post(new AuthenticationManagerTopic(jsonObject), this);
 			break;
 		case AUTHENTICATION_RESPONSE:
 			if(message.getResult().equalsIgnoreCase("ok")) {
 				Logger.log("Authentication OK !!!");
-				
-				setID(id);
 			} else if(message.getResult().equalsIgnoreCase("nok")) {
 				Logger.log("Unauthentication !!!");
 				//disconnectServer();
 			}
 			
-			id = null;			
+			if(message.getAuthority() == DatabaseInfo.Authority.ID_TYPE.ATTENDANT)
+				setAttendantSocket(true);
+			else
+				setAttendantSocket(false);
+			
 			send(jsonObject);
 			
 			break;
@@ -192,11 +208,15 @@ public class NetworkManager extends ManagerTask implements ISocketAcceptListener
 		}
 	}
 
-	private void setID(String id) {
-		currentSocketForServer.setID(id);
+	private void setSocketID(String id) {
+		socketForServer.setSocketID(id);
 	}
 	
-	protected String getID() {
-		return currentSocketForServer.getID();
+	protected String getSocketID() {
+		return socketForServer.getSocketID();
+	}
+	
+	private void setAttendantSocket(boolean bAttendant) {
+		socketForServer.setAttendant(bAttendant);
 	}
 }

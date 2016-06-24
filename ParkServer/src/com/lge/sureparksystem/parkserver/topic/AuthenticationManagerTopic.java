@@ -15,6 +15,7 @@ public class AuthenticationManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "AuthenticationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "AuthenticationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID="
+				+ sessionID + "]";
 	}
 }

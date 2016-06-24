@@ -20,7 +20,10 @@ public class TTSWrapper {
 		tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
 			@Override
 			public void onInit(int status) {
-				Log.d(TAG, "TTS Inited: " + status);
+				if(status == TextToSpeech.SUCCESS)
+					Log.d(TAG, "TTS Inited: TextToSpeech.SUCCESS");
+				else
+					Log.d(TAG, "TTS Inited: " + status);
 				
 				initStatus = status;
 			}
@@ -34,6 +37,7 @@ public class TTSWrapper {
 			
 			return;
 		}
+		
 		Locale locale = new Locale("en", "US");
 		tts.setLanguage(locale);
 		

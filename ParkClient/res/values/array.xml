@@ -4,8 +4,11 @@
     <string-array name="owner_configuration_settings">
         <item>@string/change_parking_fee</item>
         <item>@string/change_grace_period</item>
+        <!-- 
+        <item>@string/create_attendant</item>
         <item>@string/add_parking_lot</item>
         <item>@string/delete_parking_lot</item>
+         -->
     </string-array>
 
 </resources>

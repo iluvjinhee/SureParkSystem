@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="22"
-        android:targetSdkVersion="22" />
+        android:minSdkVersion="21"
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -17,10 +17,10 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.lge.sureparksystem.MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

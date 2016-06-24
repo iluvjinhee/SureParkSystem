@@ -2,61 +2,129 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light"
+    android:background="@drawable/main_bg"
     android:orientation="vertical" >
 
-    <TextView
+    <ImageView
+        android:id="@+id/main_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:text="@string/park_id"
-        android:textColor="@color/white" />
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        android:src="@drawable/administion" />
 
-    <Spinner
-        android:id="@+id/park_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-        android:prompt="@string/choose_park_id" />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:text="@string/choose_period"
-        android:textColor="@color/white" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="vertical" >
 
-    <Spinner
-        android:id="@+id/period_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-        android:prompt="@string/duration" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="@string/park_id"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+            <Spinner
+                android:id="@+id/park_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/choose_park_id" />
 
-        <Button
-            android:id="@+id/btn_configuration"
-            style="?android:attr/buttonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_alignParentStart="true"
-            android:text="@string/configuration"
-            android:textColor="@color/white" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="@string/choose_period"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/btn_ok"
-            style="?android:attr/buttonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_alignParentEnd="true"
-            android:text="@string/ok"
-            android:textColor="@color/white" />
-    </RelativeLayout>
+            <Spinner
+                android:id="@+id/period_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:prompt="@string/duration" />
+
+            <LinearLayout
+                android:id="@+id/table_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" >
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/static_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/occupancy_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/occupancy_rate"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/revenue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/revenue"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/cancel_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/cancel_rate"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_configuration"
+                    style="?android:attr/buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="start"
+                    android:text="@string/configuration"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_ok"
+                    style="?android:attr/buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
+                    android:text="@string/ok"
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

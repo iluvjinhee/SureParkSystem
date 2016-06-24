@@ -13,4 +13,6 @@ public class MessageValueType {
 	public static final String ON = "on";
 	public static final String OFF = "off";
 	public static final String CONFIRMATION_INFORMATION_ERROR = "confirmation information error";
+	public static final String PAYMENT_ERROR = "payment error";
+	public static final String NO_RESERVATION = "No Reservation";
 }

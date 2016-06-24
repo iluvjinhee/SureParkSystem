@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
+import com.lge.sureparksystem.util.Utils;
+
 import org.json.simple.JSONObject;
 import org.xml.sax.InputSource;
 
@@ -79,9 +81,13 @@ public class NetworkManager {
         mSocketThread = null;
     }
 
-    public void sendMessage(JSONObject jsonObject) {
+    public boolean sendMessage(JSONObject jsonObject) {
         Log.d(TAG, "sendMessage : " + jsonObject.toJSONString());
+        if (mPrintWriter == null) {
+            return false;
+        }
         mPrintWriter.println(jsonObject.toJSONString());
+        return true;
     }
 
     class ReceiverAysnc extends AsyncTask<Socket, String, Void> {

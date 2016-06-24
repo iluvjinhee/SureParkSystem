@@ -15,6 +15,7 @@ public class ParkingLotWatchDogTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "WatchDogTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ParkingLotWatchDogTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
 	}
 }

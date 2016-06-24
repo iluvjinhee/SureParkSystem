@@ -5,7 +5,7 @@ public class Message {
 	public static String TIMESTAMP = "timestamp";
 
 	MessageType messageType;
-	int timestamp;
+	int timestamp = -1;
 
 	public Message() {
 		this.messageType = null;

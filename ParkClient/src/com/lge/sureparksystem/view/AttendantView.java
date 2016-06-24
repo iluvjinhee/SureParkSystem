@@ -14,6 +14,10 @@ import android.widget.TextView;
 import com.lge.sureparksystem.model.AttendantModel;
 import com.lge.sureparksystem.model.BaseModel;
 import com.lge.sureparksystem.parkclient.R;
+import com.lge.sureparksystem.util.Utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AttendantView extends BaseFragment implements BaseView {
     private static final String TAG = "AttendantView";
@@ -45,21 +49,21 @@ public class AttendantView extends BaseFragment implements BaseView {
     @Override
     public void onResume() {
         if (mNoficationComming) {
-//            if (true) {
+            // if (true) {
             if (mAttendantModel != null && mAttendantModel.mNotification != null) {
                 AlertDialog.Builder notiAlert = new AlertDialog.Builder(getActivity());
                 notiAlert.setIcon(android.R.drawable.ic_dialog_alert);
                 notiAlert.setTitle(R.string.notification);
                 notiAlert.setMessage(mAttendantModel.mNotification.type);
-//                notiAlert.setMessage("Reallocation");
+                // notiAlert.setMessage("Reallocation");
                 notiAlert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-    
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-    
+
                     }
                 }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-    
+
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         mNoficationComming = false;
@@ -69,7 +73,12 @@ public class AttendantView extends BaseFragment implements BaseView {
         } else {
             // if (true) {
             if (mAttendantModel != null && mAttendantModel.mParkinglotStatus != null) {
-                View tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
+                if (mAttendantModel.mParkinglotStatus.slot_count ==0) {
+                    Utils.showToast(getActivity(), "Add parklot");
+                    return;
+                }
+                mTableLayout.removeAllViews();
+                View tableView = mLayoutInflater.inflate(R.layout.pakinglot_status_table_layout, null);
                 mTableLayout.addView(tableView);
                 int count = mAttendantModel.mParkinglotStatus.slot_count;
                 String[] staute = mAttendantModel.mParkinglotStatus.slot_status;
@@ -82,7 +91,7 @@ public class AttendantView extends BaseFragment implements BaseView {
                 // String[] often = {"1", "2", "3", "4", "5"};
                 // String[] time = {"t1", "t2", "t3", "t4", "t5"};
                 for (int i = 0; i < count; i++) {
-                    tableView = mLayoutInflater.inflate(R.layout.attent_status_layout, null);
+                    tableView = mLayoutInflater.inflate(R.layout.pakinglot_status_table_layout, null);
                     TextView tv1 = (TextView)tableView.findViewById(R.id.first_column);
                     tv1.setText(String.valueOf(i + 1));
                     TextView tv2 = (TextView)tableView.findViewById(R.id.second_column);
@@ -92,7 +101,15 @@ public class AttendantView extends BaseFragment implements BaseView {
                     TextView tv4 = (TextView)tableView.findViewById(R.id.fourth_column);
                     tv4.setText(often[i]);
                     TextView tv5 = (TextView)tableView.findViewById(R.id.fifth_column);
-                    tv5.setText(time[i]);
+                    String str = time[i];
+                    if (str == null || str.equals("0")) {
+                        tv5.setText("");
+                    } else {
+                        Date date = new Date(Long.valueOf(str));
+                        SimpleDateFormat sdf = new SimpleDateFormat("MM.dd HH:mm");
+                        str = sdf.format(date);
+                        tv5.setText(str);
+                    }
                     mTableLayout.addView(tableView);
                 }
                 mTableLayout.setVisibility(View.VISIBLE);

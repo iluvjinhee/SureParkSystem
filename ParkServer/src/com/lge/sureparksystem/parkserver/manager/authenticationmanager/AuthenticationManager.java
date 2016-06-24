@@ -25,7 +25,9 @@ public class AuthenticationManager extends ManagerTask {
 	public class AuthenticationManagerListener {
 		@Subscribe
 		public void onSubscribe(AuthenticationManagerTopic topic) {
-			System.out.println("AuthenticationManagerListener: " + topic);
+			System.out.println(topic);
+			
+			setSessionID(topic);
 			
 			processMessage(topic.getJsonObject());
 		}
@@ -35,7 +37,7 @@ public class AuthenticationManager extends ManagerTask {
 	public void init() {
 		dbProvider = DatabaseProvider.getInstance();
 		
-		getEventBus().register(new AuthenticationManagerListener());
+		registerEventBus(new AuthenticationManagerListener());
 	}
 	
 	@Override
@@ -74,7 +76,7 @@ public class AuthenticationManager extends ManagerTask {
 				sendMessage.setResult("nok");
 			sendMessage.setType(MessageValueType.CREATE_DRIVER);
 			
-			getEventBus().post(new ParkHereNetworkManagerTopic(sendMessage));	
+			post(new ParkHereNetworkManagerTopic(sendMessage), this);	
 			break;
 		default:
 			break;
@@ -102,10 +104,10 @@ public class AuthenticationManager extends ManagerTask {
 			sendMessage.setResult("nok");
 		
 		if(port == SocketInfo.PORT_PARKHERE)
-			getEventBus().post(new ParkHereNetworkManagerTopic(sendMessage));
+			post(new ParkHereNetworkManagerTopic(sendMessage), this);
 		else if(port == SocketInfo.PORT_PARKINGLOT)
-			getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+			post(new ParkingLotNetworkManagerTopic(sendMessage), this);
 		else if(port == SocketInfo.PORT_PARKVIEW)
-			getEventBus().post(new ParkViewNetworkManagerTopic(sendMessage));
+			post(new ParkViewNetworkManagerTopic(sendMessage), this);
 	}	
 }

@@ -1,10 +1,10 @@
 package com.lge.sureparksystem.parkview.controller;
 
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.Message;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
+import com.lge.sureparksystem.parkserver.message.MessageType;
 import com.lge.sureparksystem.parkview.FullscreenActivity;
-import com.lge.sureparksystem.parkview.message.DataMessage;
-import com.lge.sureparksystem.parkview.message.Message;
-import com.lge.sureparksystem.parkview.message.MessageParser;
-import com.lge.sureparksystem.parkview.message.MessageType;
 import com.lge.sureparksystem.parkview.networkmanager.ConnectionInfo;
 import com.lge.sureparksystem.parkview.networkmanager.SocketForClient;
 import com.lge.sureparksystem.parkview.qrcode.IntentIntegrator;
@@ -41,7 +41,7 @@ public class Controller {
 	}
 	
 	public void connectServer() {
-		Log.d("ParkView", "connectServer");
+		Log.d(TAG, "connectServer");
 		
 		if(clientSocket == null) {
 			clientSocket = new SocketForClient(ConnectionInfo.IP_ADDRESS, ConnectionInfo.PORT, this);
@@ -61,7 +61,6 @@ public class Controller {
 	public void parseActivityResult(int requestCode, int resultCode, Intent intent) {
 		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
-			// handle scan result
 			String qrcode =  scanResult.getContents();
 			if(qrcode != null) {
 				DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_SEND);
@@ -75,23 +74,6 @@ public class Controller {
 	}
 
 	private void setName(String qrcode) {
-		/*JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = null;
-		
-		try {
-			if(jsonParser.parse(qrcode) != null)
-				jsonObject = (JSONObject) jsonParser.parse(qrcode);
-			else
-				return;
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(jsonObject.get("name") != null) {
-			name = (String) jsonObject.get("name");
-		}*/
-		
 		name = qrcode;
 	}
 
@@ -135,16 +117,26 @@ public class Controller {
 			scanConfirmation();
 			break;
 		case CONFIRMATION_RESPONSE:
-			Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText());
-			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
+			if(((DataMessage)message).getResult().equalsIgnoreCase("OK")) {
+				Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText() + ": OK");
+				
 				assignSlot(((DataMessage) message).getSlotNumber(), getName());
-			else
+				
+				Log.d(TAG, "SlotNumber: " + ((DataMessage) message).getSlotNumber());
+			}
+			else {
+				Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText() + ": Fail");
 				notReserved();
+			}
 			break;
 		case AUTHENTICATION_RESPONSE:
 			Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText());
-			if(((DataMessage)message).getResult().equalsIgnoreCase("OK"))
+			if(((DataMessage)message).getResult().equalsIgnoreCase("OK")) {
+				Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText() + ": OK");
 				welcome();
+			} else {
+				Log.d(TAG, MessageType.CONFIRMATION_RESPONSE.getText() + ": Fail");
+			}
 		default:
 			break;		
 		}

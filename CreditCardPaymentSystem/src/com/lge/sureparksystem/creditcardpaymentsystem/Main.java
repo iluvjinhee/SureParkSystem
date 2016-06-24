@@ -8,13 +8,13 @@ import java.net.Socket;
 
 import org.apache.commons.validator.CreditCardValidator;
 
-public class Main {
-	@SuppressWarnings("deprecation")
-	private static CreditCardValidator creditCardValidator = null;
+import com.lge.sureparksystem.creditcardpaymentsystem.regex.CreditCardNumberRegEx;
 
-	@SuppressWarnings("deprecation")
+public class Main {
+//	private static CreditCardValidator creditCardValidator = null;
+
 	public static void main(String[] args) throws IOException {
-		creditCardValidator = new CreditCardValidator();
+//		creditCardValidator = new CreditCardValidator();
 		
 		System.out.println("Credit Card Payment System is running.");
 
@@ -48,8 +48,8 @@ public class Main {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static boolean validateCard(String card) {
-		return creditCardValidator.isValid(card);
+//		return creditCardValidator.isValid(card);
+		return CreditCardNumberRegEx.isValid(card);
 	}
 }

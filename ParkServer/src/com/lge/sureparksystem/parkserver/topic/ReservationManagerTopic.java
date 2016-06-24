@@ -15,6 +15,7 @@ public class ReservationManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "ReservationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ReservationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
 	}
 }

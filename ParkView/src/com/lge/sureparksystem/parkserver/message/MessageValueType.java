@@ -1,4 +1,4 @@
-package com.lge.sureparksystem.parkview.message;
+package com.lge.sureparksystem.parkserver.message;
 
 public class MessageValueType {
 	public static final String UP = "up";
@@ -13,4 +13,5 @@ public class MessageValueType {
 	public static final String ON = "on";
 	public static final String OFF = "off";
 	public static final String CONFIRMATION_INFORMATION_ERROR = "confirmation information error";
+	public static final String PAYMENT_ERROR = "payment error";
 }

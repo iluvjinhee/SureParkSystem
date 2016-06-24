@@ -16,7 +16,9 @@ public class ParkViewNetworkManager extends NetworkManager {
 	public class ParkViewNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkViewNetworkManagerTopic topic) {
-			System.out.println("ParkViewNetworkManagerListener: " + topic);
+			System.out.println(topic);
+			
+			setSessionID(topic);
 			
 			processMessage(topic.getJsonObject());
 		}
@@ -24,7 +26,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 	
 	@Override
 	public void init() {
-		getEventBus().register(new ParkViewNetworkManagerListener());
+		registerEventBus(new ParkViewNetworkManagerListener());
 	}
 	
 	public ParkViewNetworkManager(int serverPort) {
@@ -57,7 +59,7 @@ public class ParkViewNetworkManager extends NetworkManager {
 			send(jsonObject);
 			break;
 		case CONFIRMATION_SEND:
-			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			post(new CommunicationManagerTopic(jsonObject), this);
 			break;
 		default:
 			break;

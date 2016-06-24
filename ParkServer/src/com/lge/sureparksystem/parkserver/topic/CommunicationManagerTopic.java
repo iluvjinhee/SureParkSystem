@@ -15,6 +15,7 @@ public class CommunicationManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "CommunicationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "CommunicationManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID="
+				+ sessionID + "]";
 	}
 }

@@ -43,7 +43,7 @@ public class MessageParser {
 		((DataMessage) message).setPassword(MessageParser.getString(jsonObject, DataMessage.PASSWORD));
 		((DataMessage) message).setSensorNumber(MessageParser.getInt(jsonObject, DataMessage.SENSOR_NUMBER));
 		((DataMessage) message).setSlotNumber(MessageParser.getInt(jsonObject, DataMessage.SLOT_NUMBER));
-		((DataMessage) message).setSlotStatus(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
+		((DataMessage) message).setSlotStatusList(MessageParser.getStringList(jsonObject, DataMessage.SLOT_STATUS));
 		((DataMessage) message).setStatus(MessageParser.getString(jsonObject, DataMessage.STATUS));
 		
 		// ParkHere
@@ -313,7 +313,7 @@ public class MessageParser {
 			value = Integer.valueOf(jsonObject.get(key).toString());
 		}
 
-		return (int)value;
+		return value;
 	}
 	
 	public static ArrayList<String> getStringList(JSONObject jsonObject, String key) {

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_blue_light"
+    android:background="@drawable/main_bg"
     android:orientation="vertical" >
 
     <ImageView
@@ -11,21 +11,33 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="fitStart"
-        android:src="@drawable/parking_view" >
+        android:src="@drawable/attendant_main1" >
     </ImageView>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/park_status"
-        android:theme="@style/login_text" />
-
     <LinearLayout
-        android:id="@+id/table_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone" >
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:text="@string/park_status"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:theme="@style/login_text" />
+
+        <LinearLayout
+            android:id="@+id/table_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" >
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -20,6 +20,8 @@ public class StatisticsManager extends ManagerTask {
         @Subscribe
         public void onSubscribe(StatisticsManagerTopic topic) {
             System.out.println("StatisticsManagerListener: " + topic);
+            
+            setSessionID(topic);
 
             processMessage(topic.getJsonObject());
         }
@@ -27,7 +29,7 @@ public class StatisticsManager extends ManagerTask {
 
     @Override
     public void init() {
-        getEventBus().register(new StatisticsManagerListener());
+    	registerEventBus(new StatisticsManagerListener());
     }
 
     @Override

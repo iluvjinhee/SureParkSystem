@@ -17,7 +17,9 @@ public class ParkingLotWatchDog extends ManagerTask {
 	public class WatchDogListener {
 		@Subscribe
 		public void onSubscribe(ParkingLotWatchDogTopic topic) {
-			System.out.println("WatchDogListener: " + topic);
+//			System.out.println("WatchDogListener: " + topic);
+			
+			setSessionID(topic);
 			
 			processMessage(topic.getJsonObject());
 		}
@@ -25,7 +27,7 @@ public class ParkingLotWatchDog extends ManagerTask {
 	
 	@Override
 	public void init() {
-		getEventBus().register(new WatchDogListener());
+		registerEventBus(new WatchDogListener());
 		
 		alertLevel = 0;
 	}
@@ -53,7 +55,7 @@ public class ParkingLotWatchDog extends ManagerTask {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
 		
-		getEventBus().post(new ParkHereNetworkManagerTopic(message));
+		post(new ParkHereNetworkManagerTopic(message), this);
 	}
 
 	@Override

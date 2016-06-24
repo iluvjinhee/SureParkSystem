@@ -15,6 +15,7 @@ public class ParkViewNetworkManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "ParkViewNetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ParkViewNetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
 	}
 }

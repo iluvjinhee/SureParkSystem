@@ -15,7 +15,9 @@ public class ParkHereNetworkManager extends NetworkManager {
 	public class ParkHereNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkHereNetworkManagerTopic topic) {
-			System.out.println("ParkHereNetworkManagerListener: " + topic);
+			System.out.println(topic);
+			
+			setSessionID(topic);
 			
 			processMessage(topic.getJsonObject());
 		}
@@ -23,7 +25,7 @@ public class ParkHereNetworkManager extends NetworkManager {
 	
 	@Override
 	public void init() {
-		getEventBus().register(new ParkHereNetworkManagerListener());
+		registerEventBus(new ParkHereNetworkManagerListener());
 	}
 	
 	public ParkHereNetworkManager(int serverPort) {
@@ -43,7 +45,7 @@ public class ParkHereNetworkManager extends NetworkManager {
 		case CREATE_DRIVER:
 		case CREATE_ATTENDANT:
 		case REMOVE_ATTENDANT:
-			getEventBus().post(new AuthenticationManagerTopic(jsonObject));
+			post(new AuthenticationManagerTopic(jsonObject), this);
 			break;
 		case PARKING_LOT_INFO_REQUEST:
 		case PARKING_LOT_STATUS_REQUEST:
@@ -54,19 +56,22 @@ public class ParkHereNetworkManager extends NetworkManager {
 		case CHANGE_GRACE_PERIOD:
 		case ADD_PARKING_LOT:
 		case REMOVE_PARKING_LOT:
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			break;
 		case RESPONSE:
 		case PARKING_LOT_LIST:
-		case PARKING_LOT_STATUS:
-		case NOTIFICATION:
+		case PARKING_LOT_STATUS:		
 		case PARKING_LOT_STATISTICS:
 		case CHANGE_RESPONSE:
 		case RESERVATION_INFORMATION:
 			send(jsonObject);
 			break;
+		case NOTIFICATION:
+			sendToAttendant(jsonObject);
+			break;
 		case PARKING_LOT_STATS_REQUEST:
-			getEventBus().post(new StatisticsManagerTopic(jsonObject));
+//			getEventBus().post(new StatisticsManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			break;
 		default:
 			break;

@@ -89,6 +89,12 @@ public class DriverView extends BaseFragment implements OnClickListener {
     @Override
     public void onResume() {
         Log.d(TAG, "onResume");
+        if (mIsReservedUser && mDriverModel != null && mDriverModel.mReservation_Information != null) {
+            Log.d(TAG, "onResume :" + mDriverModel.mReservation_Information.confirmationinfo);
+            Point point = new Point(900, 900);
+            CreateQRCodeAsyncTask ct = new CreateQRCodeAsyncTask(point);
+            ct.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDriverModel.mReservation_Information.confirmationinfo);
+        }
         CharSequence[] parkId = { "Pittsburgh", "Chicago" };
         if (mIsReservedUser) {
             if (mDriverModel != null && mDriverModel.mReservation_Information != null) {
@@ -178,11 +184,6 @@ public class DriverView extends BaseFragment implements OnClickListener {
             }
         });
 
-        if (mIsReservedUser && mDriverModel != null && mDriverModel.mReservation_Information != null) {
-            Point point = new Point(900, 900);
-            CreateQRCodeAsyncTask ct = new CreateQRCodeAsyncTask(point);
-            ct.execute(mDriverModel.mReservation_Information.confirmationinfo);
-        }
         mButton.setOnClickListener(this);
         if (mIsReservedUser) {
             mReservedTime.setVisibility(View.VISIBLE);
@@ -291,6 +292,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
                  bundle.putString("reservation_time", dTime);
                 bundle.putString("paymentinfo", mSelectedConfirmationNum);
                 mCallback.requsetServer(RequestData.RESERVATION_REQUEST, bundle);
+                mSelectedConfirmationNum = null;
             }
             break;
 
@@ -316,6 +318,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
 
         @Override
         protected Bitmap doInBackground(String... params) {
+            Log.d(TAG, "doInBackground");
             // zxing library class (QR code writer)
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
@@ -361,6 +364,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
 
         @Override
         protected void onPostExecute(Bitmap result) {
+            Log.d(TAG, "result : " + result);
             if (result != null) {
                 mCurrentQRImage = result;
             }

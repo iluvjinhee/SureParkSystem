@@ -10,7 +10,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.lge.sureparksystem.parkserver.message.DataMessage;
+import com.lge.sureparksystem.parkserver.message.MessageParser;
 import com.lge.sureparksystem.parkserver.message.MessageType;
+import com.lge.sureparksystem.parkserver.topic.ParkingLotWatchDogTopic;
 import com.lge.sureparksystem.parkserver.util.Logger;
 
 public class SocketForServer implements Runnable {
@@ -20,7 +23,8 @@ public class SocketForServer implements Runnable {
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	
-	private String id = null;
+	private String socketID = null;
+	private boolean bAttendant = false;
 
 	public SocketForServer(NetworkManager manager, Socket socket) {
 		this.manager = manager;
@@ -46,8 +50,16 @@ public class SocketForServer implements Runnable {
 		if(!jsonMessage.contains(MessageType.HEARTBEAT.getText()))
 			System.out.printf("%-20s %40s\n", "[RECV]", jsonMessage);
 		
+		DataMessage message = (DataMessage) MessageParser.convertToMessage(jsonMessage);
+		MessageType messageType = message.getMessageType();
+
+		if(messageType != null &&
+		   messageType == MessageType.AUTHENTICATION_REQUEST) {
+			setSocketID(message.getID());
+		}
+		
 		try {
-			manager.receive((JSONObject) new JSONParser().parse(jsonMessage));
+			manager.receive((JSONObject) new JSONParser().parse(jsonMessage), socketID);
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -98,11 +110,19 @@ public class SocketForServer implements Runnable {
 		}		
 	}
 
-	public void setID(String id) {
-		this.id = id;		
+	public void setSocketID(String socketID) {
+		this.socketID = socketID;		
 	}
 	
-	public String getID() {
-		return id;
+	public String getSocketID() {
+		return socketID;
+	}
+
+	public void setAttendant(boolean bAttendant) {
+		this.bAttendant  = bAttendant;
+	}
+	
+	public boolean getAttendant() {
+		return bAttendant;
 	}
 }
