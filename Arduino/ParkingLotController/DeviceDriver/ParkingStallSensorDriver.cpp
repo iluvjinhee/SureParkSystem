@@ -269,14 +269,14 @@ int PrintParkingLostStatus(void)
 	Serial.println();
 
 	Serial.print("-- EntryGate      : ");
-	Serial.print(GetEntryBeamStatus()?"Break":"NotBreak");
+	Serial.print(GetEntryBeamStatus()?"NotBreak":"Break");
 	Serial.print(", ");
 	Serial.print(GetEntryGateLED()?"green":"red");
 	Serial.println();
 	Serial.print("-- ExitGate       : ");
-	Serial.print(!GetExitBeamStatus()?"Break":"NotBreak");
+	Serial.print(GetExitBeamStatus()?"NotBreak":"Break");
 	Serial.print(", ");
-	Serial.print(!GetExitGateLED()?"Break":"NotBreak");
+	Serial.print(GetExitGateLED()?"green":"red");
 	Serial.println();
 
 }
