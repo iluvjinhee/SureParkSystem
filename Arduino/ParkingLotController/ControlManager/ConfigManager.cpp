@@ -98,11 +98,17 @@ static String ParkingLot_PWD;
 void SeiralCommand(String sCmd)
 {
 	int iCmdIndex;
+	static int iLed[STALL_LED_MAX] = {false};
+	static int iEntry=false;
+	static int iExit=false;	
 	
 	for( iCmdIndex=0 ; iCmdIndex<S_CMD_MAX ; iCmdIndex++ )
 	{
 		if( sCmd.equalsIgnoreCase(cmdMsg[iCmdIndex]) == true ) break;
 	}
+
+	if( sCmd.equalsIgnoreCase("x") == true ) iCmdIndex = S_CMD_DISCONNECT_SERVER;
+	if( sCmd.equalsIgnoreCase("c") == true ) iCmdIndex = S_CMD_CONNECT_SERVER;
 
 	switch( iCmdIndex )
 	{
@@ -237,6 +243,62 @@ void SeiralCommand(String sCmd)
 	Serial.print(iCmdIndex);
 	Serial.print("):");
 	Serial.println(sCmd);
+
+//-------------------------------short cut--------------------------------------------
+	char cNum[2]={'1','\0',};
+
+	for( int i=0 ; i< STALL_LED_MAX ; i++ )
+	{
+		if( sCmd.equalsIgnoreCase(cNum) == true )
+		{
+			if( iLed[i] )
+			{
+				SetParkingStallLED(i, OFF);
+				iLed[i]=false;
+			}
+			else
+			{
+				SetParkingStallLED(i, ON);
+				iLed[i]=true;
+			}
+		}
+		cNum[0]++;
+	}
+
+
+	if( sCmd.equalsIgnoreCase("d") == true )
+	{
+		if( iEntry )
+		{
+			iEntry=false;
+			EntryGateClose();
+			SetEntryGateLED_Red();
+		}
+		else
+		{
+			iEntry=true;
+			EntryGateOpen();
+			SetEntryGateLED_Green();
+		}
+	}
+	
+	if( sCmd.equalsIgnoreCase("f") == true )
+	{
+		if( iExit )
+		{
+			iExit=false;
+			ExitGateClose();
+			SetExitGateLED_Red();
+		}
+		else
+		{
+			iExit=true;
+			ExitGateOpen();
+			SetExitGateLED_Green();
+		}
+	}
+//---------------------------------------------------------------------------
+
 
 }
 

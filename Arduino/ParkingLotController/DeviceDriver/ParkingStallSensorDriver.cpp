@@ -27,6 +27,7 @@
 #include <SPI.h>
 #include <Timer.h>
 #include "ParkingStallSensorDriver.h"
+#include "EntryExitBeamDriver.h"
 
 // debug
 #include "LEDDriver.h"
@@ -267,11 +268,15 @@ int PrintParkingLostStatus(void)
 	Serial.print(GetParkingStallLED(0));
 	Serial.println();
 
-	Serial.print("-- EntryGate LED  : ");
+	Serial.print("-- EntryGate      : ");
+	Serial.print(GetEntryBeamStatus()?"Occupied":"Empty");
+	Serial.print(", ");
 	Serial.print(GetEntryGateLED()?"green":"red");
 	Serial.println();
-	Serial.print("-- ExitGate LED  : ");
-	Serial.print(GetExitGateLED()?"green":"red");
+	Serial.print("-- ExitGate       : ");
+	Serial.print(!GetExitBeamStatus()?"Break":"NotBreak");
+	Serial.print(", ");
+	Serial.print(!GetExitGateLED()?"Break":"NotBreak");
 	Serial.println();
 
 }

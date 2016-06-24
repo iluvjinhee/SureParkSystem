@@ -25,12 +25,6 @@
 * Internal Methods: void printConnectionStatus()
 *
 ************************************************************************************************/
-#include <WiFi.h>
-#include <Timer.h>
-
-#include <ArduinoJson.h>
-#include <xxtea-iot-crypt.h>
-
 #include "CommManager.h"
 #include "..\ControlManager\ControlManager.h"
 #include "..\ControlManager\SensorManager.h"
@@ -47,9 +41,7 @@
 #define MAX_TARGET_NUM 5
 #define MAX_WIFI_STRING_LENGTH 50
 
-JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx);
-bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat);
-
+void listNetworks(void);
 static void printConnectionStatus(void);
 static void ConnectToWiFi(void);
 static void HeartBeatComm(void)
@@ -60,26 +52,10 @@ static void HeartBeatComm(void)
 	if( GetRunningMode() & 1<<RUN_PRINT_MODE ) PrintParkingLostStatus();
 }
 
+JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx);
+bool DecodingJSONmsgToRx(JsonBuffer& buf, char *stringMsgJSONformat);
 
-#define TEST_LOCAL
 
-#ifdef TEST_LOCAL
-#define PORTID  9897               // IP socket port ID
-
-//static IPAddress server(192,168,1,6);  // The server's IP address
-static IPAddress server(192,168,43,152);  // The server's IP address
-
-#else
-#define PORTID  9897               // IP socket port ID
-static IPAddress server(192,168,1,184);  // The server's IP address
-
-#endif
-
-static char ssid[] = "G Flex2_5009";              // The network SSID for CMU unsecure network
-static char pass[] = "12345678";
-
-//static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
-//static char pass[] = "16swarchitect";
 
 static char c;                           // Character read from server
 static int status = WL_IDLE_STATUS;      // Network connection status
@@ -223,6 +199,9 @@ String Decrypt(const char * msg)
 
 JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx)
 {
+	unsigned int iParkingLotStatusCode=0;
+	unsigned int iStatus=0;
+
 	JsonObject& root = buf.createObject();
 
 	root[__STR_MESSAGETYPE]  = clientMsg[iTx];
@@ -330,6 +309,36 @@ JsonObject& EncodingTxToJSONmsg(JsonBuffer& buf, int iTx)
 			break;
 			
 		case CS_HeartBeat :
+
+			iStatus = GetEntryGateServo() == Open ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_GATE_SERVO;
+
+			iStatus = GetEntryGateLED() == ON ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_GATE_LED;
+
+			iStatus = GetEntryBeamStatus() == BROKEN ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_BEAM;
+
+			iStatus = GetExitGateServo() == Open ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_GATE_SERVO;
+
+			iStatus = GetExitGateLED() == ON ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_GATE_LED;
+
+			iStatus = GetExitBeamStatus() == BROKEN ? 1:0;
+			iParkingLotStatusCode |= iStatus << S_ENTRY_BEAM;
+
+			for( int i=0 ; i<PARKSLOT_MAX ; i++ )
+			{
+				iStatus = GetStallSensorOccupied((T_StallSensorID)i) == OCCUFIED ? 1:0;
+				iParkingLotStatusCode |= iStatus << (S_SLOT_LED + i);
+				iStatus = GetParkingStallLED(i) == ON ? 1:0;
+				iParkingLotStatusCode |= iStatus << (S_SLOT_STALL_SENSOR + i);
+			}
+			
+			char temp_str_buff[7];
+			itoa(iParkingLotStatusCode, temp_str_buff, 16);
+			root[__STR_STATUS] = String(temp_str_buff);
 			break;
 			
 		default :
@@ -528,7 +537,6 @@ void CommManagerSetup()
 
 static void ConnectToWiFi(void)
 {
-
 	if( status != WL_CONNECTED )
 	{
 		Serial.println("Attempting to connect to network...");
@@ -741,6 +749,4 @@ static void printConnectionStatus()
  Serial.println(" dBm");
 
 } // printConnectionStatus
- 
-
 

@@ -21,10 +21,39 @@
 
 #ifndef _COMMMANAGER_H_
 #define _COMMMANAGER_H_
+#include <WiFi.h>
+#include <Timer.h>
 
+#include <ArduinoJson.h>
+#include <xxtea-iot-crypt.h>
 
 #define __ID	"SP001"
 #define __PWD	"SP001"
+
+
+#define TEST_LOCAL
+
+#ifdef TEST_LOCAL
+
+#define PORTID  9897               // IP socket port ID
+static IPAddress server(192,168,43,152);  // The server's IP address
+static char ssid[] = "G Flex2_5009";              // The network SSID for CMU unsecure network
+static char pass[] = "12345678";
+
+//#define PORTID  9897               // IP socket port ID
+//static IPAddress server(192,168,1,184);  // The server's IP address
+//static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
+//static char pass[] = "16swarchitect";
+
+#else
+
+#define PORTID  9897               // IP socket port ID
+static IPAddress server(192,168,1,184);  // The server's IP address
+static char ssid[] = "LGArchi_Guest1";              // The network SSID for CMU unsecure network
+static char pass[] = "16swarchitect";
+
+#endif
+
 
 #define __CRYPTION_KEY	"SP1234567890"
 
@@ -100,6 +129,20 @@ enum ServerToClientMsg  {
 	SC_Parkingslot_Reset,
 	SC_Ack,
 	SC_CLIENTTOSERVERMSG_MAX
+};
+
+enum ParkingLostStatusCode  {
+	S_ENTRY_GATE_SERVO = 0,
+	S_ENTRY_GATE_LED,	
+	S_ENTRY_BEAM,	
+
+	S_EXIT_GATE_SERVO,	
+	S_EXIT_GATE_LED,
+	S_EXIT_BEAM,
+	
+	S_SLOT_LED,	
+	S_SLOT_STALL_SENSOR,	
+	S_STATUSCODE_MAX
 };
 
 
