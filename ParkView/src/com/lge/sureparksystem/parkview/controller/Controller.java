@@ -34,6 +34,7 @@ public class Controller {
 	
 	public void destroy() {
 		disconnectServer();
+		tts.destory();
 		
 		fullScreen = null;	
 		tts = null;
