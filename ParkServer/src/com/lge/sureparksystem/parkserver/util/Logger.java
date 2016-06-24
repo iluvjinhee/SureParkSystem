@@ -9,18 +9,17 @@ public class Logger {
 		System.out.printf("%-20s $%40s\n", "[Client" + clientNumber + "]", message);
 	}
 	
-//	public static void log(String message) {
-//		System.out.println("[" + message + "]");
-//	}
+	public static void log(String message) {
+		System.out.println("[" + message + "]");
+	}
 	
-
-//	public static void log() {
-//		StackTraceElement[] ste = (new Throwable()).getStackTrace();
-//		String text = "[" + ste[1].getFileName() + ":" + ste[1].getLineNumber() + ":"
-//				+ ste[1].getMethodName() + "()"
-//				+ "] oooooo ";
-//		System.out.println(text);
-//	}
+	/*public static void log() {
+		StackTraceElement[] ste = (new Throwable()).getStackTrace();
+		String text = "[" + ste[1].getFileName() + ":" + ste[1].getLineNumber() + ":"
+				+ ste[1].getMethodName() + "()"
+				+ "] oooooo ";
+		System.out.println(text);
+	}
 
 	public static void log(String message) {
 		StackTraceElement[] ste = (new Throwable()).getStackTrace();
@@ -36,5 +35,5 @@ public class Logger {
 				+ ste[1].getMethodName() + "()"
 				+ "] oooooo ";
 		System.out.println("[" + TAG + "]" + text + message);
-	}
+	}*/
 }

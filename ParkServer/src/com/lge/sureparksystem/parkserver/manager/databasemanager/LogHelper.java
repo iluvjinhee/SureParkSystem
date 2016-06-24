@@ -2,7 +2,7 @@ package com.lge.sureparksystem.parkserver.manager.databasemanager;
 
 public class LogHelper {
 
-    private static boolean LOG_ON = true;
+    private static boolean LOG_ON = false;
 
     public static void setLogOn(boolean enable) {
         LOG_ON = enable;
