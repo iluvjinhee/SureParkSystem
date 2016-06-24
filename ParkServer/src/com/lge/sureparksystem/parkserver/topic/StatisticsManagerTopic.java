@@ -14,7 +14,8 @@ public class StatisticsManagerTopic extends ManagerTopic {
     }
 
     @Override
-    public String toString() {
-        return "StatisticsManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
-    }
+	public String toString() {
+		return "StatisticsManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
+	}
 }

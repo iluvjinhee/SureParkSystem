@@ -90,13 +90,13 @@ public class DataMessage extends Message {
 	String type;
 	String value;
 	
-	int authority;
-	int ledNumber;
-	int parkingLotCount;
-	int port;
-	int sensorNumber;;
-	int slotCount;
-	int slotNumber;
+	int authority = -1;
+	int ledNumber = -1;
+	int parkingLotCount = -1;
+	int port = -1;
+	int sensorNumber = -1;
+	int slotCount = -1;
+	int slotNumber = -1;
 	
 	public DataMessage() {
 		super();
@@ -464,20 +464,383 @@ public class DataMessage extends Message {
 
 	@Override
 	public String toString() {
-		return "DataMessage [driverOftenList=" + driverOftenList + ", gracePeriodList=" + gracePeriodList
-				+ ", ledStatusList=" + ledStatusList + ", parkingFeeList=" + parkingFeeList + ", parkingLotIDList="
-				+ parkingLotIDList + ", parkingLotLocationList=" + parkingLotLocationList + ", slotDriverIDList="
-				+ slotDriverIDList + ", slotStatusList=" + slotStatusList + ", slotTimeList=" + slotTimeList
-				+ ", address=" + address + ", cancelRate=" + cancelRate + ", command=" + command + ", confirmationInfo="
-				+ confirmationInfo + ", driverID=" + driverID + ", entryGateArrive=" + entryGateArrive
-				+ ", entryGateLEDStatus=" + entryGateLEDStatus + ", entryGateStatus=" + entryGateStatus
-				+ ", exitGateArrive=" + exitGateArrive + ", exitGateLEDStatus=" + exitGateLEDStatus
-				+ ", exitGateStatus=" + exitGateStatus + ", id=" + id + ", name=" + name + ", occupancyRate="
-				+ occupancyRate + ", password=" + password + ", paymentInfo=" + paymentInfo + ", period=" + period
-				+ ", reservationID=" + reservationID + ", reservationTime=" + reservationTime + ", result=" + result
-				+ ", revenue=" + revenue + ", status=" + status + ", type=" + type + ", value=" + value + ", authority="
-				+ authority + ", ledNumber=" + ledNumber + ", parkingLotCount=" + parkingLotCount + ", port=" + port
-				+ ", sensorNumber=" + sensorNumber + ", slotCount=" + slotCount + ", slotNumber=" + slotNumber
-				+ ", messageType=" + messageType + ", timestamp=" + timestamp + "]";
+		return "DataMessage [messageType=" + messageType + ", timestamp=" + timestamp + ", " + 
+				toStringAddress() +
+				toStringAuthority() +
+				toStringCancelRate() +
+				toStringCommand() +
+				toStringConfirmationInfo() +
+				toStringDriverID() +
+				toStringDriverOftenList() +
+				toStringEntryGateArrive() +
+				toStringEntryGateLEDStatus() +
+				toStringEntryGateStatus() +
+				toStringExitGateArrive() +
+				toStringExitGateLEDStatus() +
+				toStringExitGateStatus() +
+				toStringGracePeriodList() +
+				toStringID() +
+				toStringLEDNumber() +
+				toStringLedStatusList() +
+				toStringName() +
+				toStringOccupancyRate() +
+				toStringParkingFeeList() +
+				toStringParkingLotCount() +
+				toStringParkingLotIDList() +
+				toStringParkingLotLocationList() +
+				toStringPassword() +
+				toStringPaymentInfo() +
+				toStringPeriod() +
+				toStringPort() +
+				toStringReservationID() +
+				toStringReservationTime() +
+				toStringResult() +
+				toStringRevenue() +
+				toStringSensorNumber() +
+				toStringSlotCount() +
+				toStringSlotDriverIDList() +
+				toStringSlotNumber() +
+				toStringSlotStatusList() +
+				toStringSlotTimeList() +
+				toStringStatus() +
+				toStringType() +
+				toStringValue() +
+				"]";
+	}
+
+	private String toStringTimestamp() {
+		if(timestamp != -1) {
+			return "timestamp=" + timestamp + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringMessageType() {
+		if(messageType != null) {
+			return "messageType=" + timestamp + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSlotNumber() {
+		if(slotNumber != -1) {
+			return "slotNumber=" + slotNumber + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSlotCount() {
+		if(slotCount != -1) {
+			return "slotCount=" + slotCount + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSensorNumber() {
+		if(sensorNumber != -1) {
+			return "sensorNumber=" + sensorNumber + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringPort() {
+		if(port != -1) {
+			return "port=" + port + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringParkingLotCount() {
+		if(parkingLotCount != -1) {
+			return "parkingLotCount=" + parkingLotCount + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringLEDNumber() {
+		if(ledNumber != -1) {
+			return "ledNumber=" + ledNumber + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringAuthority() {
+		if(authority != -1) {
+			return "authority=" + authority + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringValue() {
+		if(value != null) {
+			return "value=" + value + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringType() {
+		if(type != null) {
+			return "type=" + type + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringStatus() {
+		if(status != null) {
+			return "status=" + status + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringResult() {
+		if(result != null) {
+			return "result=" + result + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringRevenue() {
+		if(revenue != null) {
+			return "result=" + result + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringReservationTime() {
+		if(reservationTime != null) {
+			return "reservationTime=" + reservationTime + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringReservationID() {
+		if(reservationID != null) {
+			return "reservationID=" + reservationID + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringPeriod() {
+		if(period != null) {
+			return "period=" + period + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringPaymentInfo() {
+		if(paymentInfo != null) {
+			return "paymentInfo=" + paymentInfo + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringPassword() {
+		if(password != null) {
+			return "password=" + password + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringOccupancyRate() {
+		if(occupancyRate != null) {
+			return "occupancyRate=" + occupancyRate + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringName() {
+		if(name != null) {
+			return "name=" + name + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringID() {
+		if(id != null) {
+			return "id=" + id + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringExitGateStatus() {
+		if(exitGateStatus != null) {
+			return "exitGateStatus=" + exitGateStatus + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringExitGateLEDStatus() {
+		if(exitGateLEDStatus != null) {
+			return "exitGateLEDStatus=" + exitGateLEDStatus + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringExitGateArrive() {
+		if(exitGateArrive != null) {
+			return "exitGateArrive=" + exitGateArrive + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringEntryGateStatus() {
+		if(entryGateStatus != null) {
+			return "entryGateStatus=" + entryGateStatus + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringEntryGateLEDStatus() {
+		if(entryGateLEDStatus != null) {
+			return "entryGateLEDStatus=" + entryGateLEDStatus + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringEntryGateArrive() {
+		if(entryGateArrive != null) {
+			return "entryGateArrive=" + entryGateArrive + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringDriverID() {
+		if(driverID != null) {
+			return "driverID=" + driverID + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringConfirmationInfo() {
+		if(confirmationInfo != null) {
+			return "confirmationInfo=" + confirmationInfo + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringCommand() {
+		if(command != null) {
+			return "command=" + command + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringCancelRate() {
+		if(cancelRate != null) {
+			return "command=" + cancelRate + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringAddress() {
+		if(address != null) {
+			return "address=" + address + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSlotTimeList() {
+		if(slotTimeList != null && slotTimeList.size() != 0) {
+			return "slotTimeList=" + slotTimeList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSlotStatusList() {
+		if(slotStatusList != null && slotStatusList.size() != 0) {
+			return "slotStatusList=" + slotStatusList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringSlotDriverIDList() {
+		if(slotDriverIDList != null && slotDriverIDList.size() != 0) {
+			return "slotDriverIDList=" + slotDriverIDList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringParkingLotLocationList() {
+		if(parkingLotLocationList != null && parkingLotLocationList.size() != 0) {
+			return "parkingLotLocationList=" + parkingLotLocationList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringParkingLotIDList() {
+		if(parkingLotIDList != null && parkingLotIDList.size() != 0) {
+			return "parkingLotIDList=" + parkingLotIDList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringParkingFeeList() {
+		if(parkingFeeList != null && parkingFeeList.size() != 0) {
+			return "parkingFeeList=" + parkingFeeList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringLedStatusList() {
+		if(ledStatusList != null && ledStatusList.size() != 0) {
+			return "ledStatusList=" + ledStatusList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringGracePeriodList() {
+		if(gracePeriodList != null && gracePeriodList.size() != 0) {
+			return "gracePeriodList=" + gracePeriodList + ", ";
+		}
+		
+		return "";
+	}
+
+	private String toStringDriverOftenList() {
+		if(driverOftenList != null && driverOftenList.size() != 0) {
+			return "driverOftenList=" + driverOftenList + ", ";
+		}
+		
+		return "";
 	}
 }

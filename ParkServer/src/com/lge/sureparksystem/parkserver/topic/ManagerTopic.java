@@ -8,6 +8,7 @@ import com.lge.sureparksystem.parkserver.message.MessageParser;
 public class ManagerTopic {
 	JSONObject jsonObject = null;
 	Message message = null;
+	String sessionID = null;
 
 	public ManagerTopic(JSONObject jsonObject) {
 		this.jsonObject = jsonObject;
@@ -40,9 +41,17 @@ public class ManagerTopic {
 	public void setMessage(Message message) {
 		this.message = message;
 	}
+	
+	public String getSessionID() {
+		return sessionID;
+	}
+
+	public void setSessionID(String sessionID) {
+		this.sessionID = sessionID;
+	}
 
 	@Override
 	public String toString() {
-		return "ManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "ManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID + "]";
 	}
 }

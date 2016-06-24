@@ -15,7 +15,9 @@ public class ParkingLotNetworkManager extends NetworkManager {
 	public class ParkingLotNetworkManagerListener {
 		@Subscribe
 		public void onSubscribe(ParkingLotNetworkManagerTopic topic) {
-			System.out.println("ParkingLotNetworkManagerListener: " + topic);
+			System.out.println(topic);
+			
+			setSessionID(topic);
 
 			processMessage(topic.getJsonObject());
 		}
@@ -27,7 +29,7 @@ public class ParkingLotNetworkManager extends NetworkManager {
 
 	@Override
 	public void init() {
-		getEventBus().register(new ParkingLotNetworkManagerListener());
+		registerEventBus(new ParkingLotNetworkManagerListener());
 	}
 	
 	@Override
@@ -52,13 +54,13 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		case EXIT_GATE_ARRIVE:
 		case EXIT_GATE_PASSBY:
 		case SLOT_SENSOR_STATUS:
-			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			post(new CommunicationManagerTopic(jsonObject), this);
 			break;
 		case PARKING_LOT_INFORMATION:
-			getEventBus().post(new CommunicationManagerTopic(jsonObject));
+			post(new CommunicationManagerTopic(jsonObject), this);
 			
 //			message.setID(getID());
-			getEventBus().post(new ReservationManagerTopic(message));
+			post(new ReservationManagerTopic(message), this);
 			break;
 		case ENTRY_GATE_CONTROL:
 		case EXIT_GATE_CONTROL:

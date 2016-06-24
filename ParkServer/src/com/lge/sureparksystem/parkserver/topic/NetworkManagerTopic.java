@@ -15,6 +15,7 @@ public class NetworkManagerTopic extends ManagerTopic {
 
 	@Override
 	public String toString() {
-		return "NetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + "]";
+		return "NetworkManagerTopic [jsonObject=" + jsonObject + ", message=" + message + ", sessionID=" + sessionID
+				+ "]";
 	}
 }

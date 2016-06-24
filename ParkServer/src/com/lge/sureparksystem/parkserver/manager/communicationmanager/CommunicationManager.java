@@ -20,13 +20,15 @@ public class CommunicationManager extends ManagerTask {
 		public void onSubscribe(CommunicationManagerTopic topic) {
 			System.out.println("CommunicationManagerListener: " + topic);
 			
+			setSessionID(topic);
+			
 			processMessage(topic.getJsonObject());
 		}
 	}
 	
 	@Override
 	public void init() {
-		getEventBus().register(new CommunicationManagerListener());
+		registerEventBus(new CommunicationManagerListener());
 	}
 	
 	@Override
@@ -48,22 +50,22 @@ public class CommunicationManager extends ManagerTask {
 		switch (MessageParser.getMessageType(jsonObject)) {
 		case ENTRY_GATE_ARRIVE:
 			message = new DataMessage(MessageType.QR_START);
-			getEventBus().post(new ParkViewNetworkManagerTopic(message));
+			post(new ParkViewNetworkManagerTopic(message), this);
 			
 			/*// For Test
 			message = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			message.setResult("ok");
 			message.setSlotNumber(3);
-			getEventBus().post(new CommunicationManagerTopic(message));*/
+			post(new CommunicationManagerTopic(message), this);*/
 			break;
 		case ENTRY_GATE_PASSBY:
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			
 			controlEntryGate(MessageValueType.DOWN);
 			controlParkView(MessageType.WELCOME_DISPLAY);
 			break;	
 		case EXIT_GATE_ARRIVE:
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			
 //			controlExitGate("up");
 			break;		
@@ -79,17 +81,17 @@ public class CommunicationManager extends ManagerTask {
 			else {
 				callAttendant(MessageValueType.CONFIRMATION_INFORMATION_ERROR);
 			}
-			getEventBus().post(new ParkViewNetworkManagerTopic(jsonObject));			
+			post(new ParkViewNetworkManagerTopic(jsonObject), this);			
 			break;
 		case CONFIRMATION_SEND:
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			break;
 		case SLOT_SENSOR_STATUS:
 			message = (DataMessage) MessageParser.convertToMessage(jsonObject);
 			if(message.getStatus().equalsIgnoreCase(MessageValueType.OCCUPIED)) {
 				turnSlotLED(0, MessageValueType.OFF);
 			}
-			getEventBus().post(new ReservationManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			break;
 		default:
 			break;
@@ -99,26 +101,26 @@ public class CommunicationManager extends ManagerTask {
 	private void controlParkView(MessageType messageType) {
 		DataMessage message = new DataMessage(messageType);
 		
-		getEventBus().post(new ParkViewNetworkManagerTopic(message));
+		post(new ParkViewNetworkManagerTopic(message), this);
 	}
 
 	private void callAttendant(String string) {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
 		
-		getEventBus().post(new ParkHereNetworkManagerTopic(message));		
+		post(new ParkHereNetworkManagerTopic(message), this);		
 	}
 
 	private void controlEntryGate(String command) {
 		DataMessage sendMessage = new DataMessage(MessageType.ENTRY_GATE_CONTROL);
 		sendMessage.setCommand(command);
-		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+		post(new ParkingLotNetworkManagerTopic(sendMessage), this);
 	}
 	
 	private void controlExitGate(String command) {
 		DataMessage sendMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 		sendMessage.setCommand(command);
-		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+		post(new ParkingLotNetworkManagerTopic(sendMessage), this);
 	}
 
 	private void turnSlotLED(int slotNumber, String command) {
@@ -126,6 +128,6 @@ public class CommunicationManager extends ManagerTask {
 		sendMessage.setSlotNumber(slotNumber);
 		sendMessage.setCommand(command);
 		
-		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+		post(new ParkingLotNetworkManagerTopic(sendMessage), this);
 	}	
 }

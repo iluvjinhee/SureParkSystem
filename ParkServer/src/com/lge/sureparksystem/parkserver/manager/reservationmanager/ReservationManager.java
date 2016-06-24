@@ -43,6 +43,8 @@ public class ReservationManager extends ManagerTask {
 		public void onSubscribe(ReservationManagerTopic topic) {
 			System.out.println("ReservationManagerListener: " + topic);
 
+			setSessionID(topic);
+
 			processMessage(topic.getJsonObject());
 		}
 	}
@@ -52,7 +54,7 @@ public class ReservationManager extends ManagerTask {
 		if (dbProvider == null) {
 			dbProvider = DatabaseProvider.getInstance();
 		}
-		getEventBus().register(new ReservationManagerListener());
+		registerEventBus(new ReservationManagerListener());
 	}
 
 	@Override
@@ -212,7 +214,7 @@ public class ReservationManager extends ManagerTask {
 		}
 		dataMessage.setType(MessageValueType.CANCEL_RESERVATION);
 
-		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
+		post(new ParkHereNetworkManagerTopic(dataMessage), this);
 	}
 
 	private void processParkingLotInfoRequst(JSONObject jsonObject) {
@@ -252,7 +254,7 @@ public class ReservationManager extends ManagerTask {
 		dataMessage.setParkingFeeList(parkingFeeList);
 		dataMessage.setGracePeriodList(gracePeriodList);
 
-		getEventBus().post(new ParkHereNetworkManagerTopic(dataMessage));
+		post(new ParkHereNetworkManagerTopic(dataMessage), this);
 
 	}
 
@@ -277,7 +279,7 @@ public class ReservationManager extends ManagerTask {
 				dataMessage.setConfirmationInfo(reservation.getConfirmInfo());
 
 				jsonObject = MessageParser.convertToJSONObject(dataMessage);
-				getEventBus().post(new ParkHereNetworkManagerTopic(jsonObject));
+				post(new ParkHereNetworkManagerTopic(jsonObject), this);
 				result = true;
 			}
 		}
@@ -291,14 +293,12 @@ public class ReservationManager extends ManagerTask {
 		dataMessage.setResult("nok");
 
 		JSONObject jsonObject = MessageParser.convertToJSONObject(dataMessage);
-		getEventBus().post(new ParkHereNetworkManagerTopic(jsonObject));
+		post(new ParkHereNetworkManagerTopic(jsonObject), this);
 	}
 
 	private void processReservationInfoRequest(JSONObject jsonObject) {
-
 		String driverId = MessageParser.getString(jsonObject, DataMessage.DRIVER_ID);
 		sendReservationInformation(driverId);
-
 	}
 
 	private void processReservationRequest(JSONObject jsonObject) {
@@ -437,7 +437,7 @@ public class ReservationManager extends ManagerTask {
 	private void controlExitGate(String command) {
 		DataMessage sendMessage = new DataMessage(MessageType.EXIT_GATE_CONTROL);
 		sendMessage.setCommand(command);
-		getEventBus().post(new ParkingLotNetworkManagerTopic(sendMessage));
+		post(new ParkingLotNetworkManagerTopic(sendMessage), this);
 	}
 
 	private void processVerificationConfirmationInfo(JSONObject jsonObject) {
@@ -461,14 +461,14 @@ public class ReservationManager extends ManagerTask {
 			dataMessage.setResult("ok");
 			dataMessage.setSlotNumber(availSlot);
 
-			getEventBus().post(new CommunicationManagerTopic(dataMessage));
+			post(new CommunicationManagerTopic(dataMessage), this);
 		} else {
 			parkingLot.changeToSlientState();
 
 			DataMessage dataMessage = new DataMessage(MessageType.CONFIRMATION_RESPONSE);
 			dataMessage.setResult("nok");
 
-			getEventBus().post(new CommunicationManagerTopic(dataMessage));
+			post(new CommunicationManagerTopic(dataMessage), this);
 
 			String notiMsg = null;
 			if (availSlot <= 0) {
@@ -485,6 +485,6 @@ public class ReservationManager extends ManagerTask {
 		DataMessage message = new DataMessage(MessageType.NOTIFICATION);
 		message.setType(string);
 
-		getEventBus().post(new ParkHereNetworkManagerTopic(message));
+		post(new ParkHereNetworkManagerTopic(message), this);
 	}
 }

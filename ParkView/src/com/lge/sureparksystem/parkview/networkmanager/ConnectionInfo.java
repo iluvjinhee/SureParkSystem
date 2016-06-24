@@ -2,7 +2,7 @@ package com.lge.sureparksystem.parkview.networkmanager;
 
 public class ConnectionInfo {
 	//public static final String IP_ADDRESS = "192.168.1.184";
-	//public static final String IP_ADDRESS = "192.168.43.214"; // ≥ª≤®
+//	public static final String IP_ADDRESS = "192.168.43.214"; // ≥ª≤®
 	public static final String IP_ADDRESS = "192.168.43.152"; // ¡¯√•¿”
 	public static final int PORT = 9898;
 	
