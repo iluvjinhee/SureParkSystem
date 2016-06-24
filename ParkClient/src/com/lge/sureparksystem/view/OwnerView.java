@@ -74,6 +74,8 @@ public class OwnerView extends BaseFragment implements OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         mLayoutInflater = getActivity().getLayoutInflater();
+        mConfigurationBtn.setOnClickListener(this);
+        mOkBtn.setOnClickListener(this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -184,8 +186,6 @@ public class OwnerView extends BaseFragment implements OnClickListener {
             mTableLayout.setVisibility(View.GONE);
             mStaticLayout.setVisibility(View.GONE);
         }
-        mConfigurationBtn.setOnClickListener(this);
-        mOkBtn.setOnClickListener(this);
         super.onResume();
     }
 

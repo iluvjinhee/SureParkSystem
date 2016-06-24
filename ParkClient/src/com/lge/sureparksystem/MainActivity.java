@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +44,7 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
     private int mTempNum = 1;
     private String mCurrentId;
     private int mCurrentAutority;
+    final static int ATTENDANT_WATCH_HANDLER = 1;
 
     public void viewLoadingView() {
         mLoadingView.setVisibility(View.VISIBLE);
@@ -233,6 +236,9 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                     requsetServer(RequestData.RESERVATION_INFO_REQUEST, null);
                 } else if (Utils.ATTENDANTVIEW_FRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.PARKING_LOT_STATUS_REQUEST, null);
+                    Message msg = mServerWatchHandler.obtainMessage(ATTENDANT_WATCH_HANDLER);
+                    mServerWatchHandler.sendMessageDelayed(msg, 15000);
+                    Log.d(TAG, "mServerWatchHandler send 15000");
                 } else if (Utils.OWNERVIEWFRAGMENT == mCurrentAutority) {
                     requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
                 }
@@ -272,7 +278,6 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
                 // reserved flag update in Driver view
                 mDriverFactory.mBaseFragment.updateFlag(false);
                 requsetServer(RequestData.PARKINGLOT_INFO_REQUEST, null);
-                Utils.showToast(getApplication(), "Reservation fail. Check your information");
             }
             // Driver fragment update
             refreshFragemnt(mDriverFactory);
@@ -283,10 +288,14 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
             parking_lot_status_response.mParkinglotStatus = parking_lot_status_response.new ParkinglotStatus(jsonObject);
             mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
             refreshFragemnt(mAttendantFactory);
+            mServerWatchHandler.removeMessages(ATTENDANT_WATCH_HANDLER);
+            Message msg = mServerWatchHandler.obtainMessage(ATTENDANT_WATCH_HANDLER);
+            mServerWatchHandler.sendMessageDelayed(msg, 15000);
+            Log.d(TAG, "mServerWatchHandler update");
             break;
         case NOTIFICATION:
             AttendantModel notification_response = (AttendantModel)mAttendantFactory.mBaseModel;
-            notification_response.mParkinglotStatus = notification_response.new ParkinglotStatus(jsonObject);
+            notification_response.mNotification = notification_response.new Notification(jsonObject);
             mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
             mAttendantFactory.mBaseFragment.updateFlag(true);
             refreshFragemnt(mAttendantFactory);
@@ -316,6 +325,29 @@ public class MainActivity extends Activity implements OnClickListener, NetworkTo
         }
 
     }
+
+    private Handler mServerWatchHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case ATTENDANT_WATCH_HANDLER:
+                Log.e(TAG, "mServerWatchHandler working. Check server");
+                AttendantModel notification_response = (AttendantModel)mAttendantFactory.mBaseModel;
+                notification_response.mNotification = notification_response.new Notification(
+                        MessageType.NOTIFICATION.getText(), "Server has problem. Check Please");
+                mAttendantFactory.mBaseFragment.setBaseModel(mAttendantFactory.mBaseModel);
+                mAttendantFactory.mBaseFragment.updateFlag(true);
+                refreshFragemnt(mAttendantFactory);
+                break;
+
+            default:
+                break;
+            }
+
+        }
+
+    };
 
     private void refreshFragemnt(AbstractFactory af) {
         if (af == null || af.mBaseFragment == null) {

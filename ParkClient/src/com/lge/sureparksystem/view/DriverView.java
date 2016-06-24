@@ -77,6 +77,7 @@ public class DriverView extends BaseFragment implements OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.d(TAG, "onActivityCreated");
+        mButton.setOnClickListener(this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -121,7 +122,6 @@ public class DriverView extends BaseFragment implements OnClickListener {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Utils.showToast(getActivity(), "unselected");
             }
         });
 
@@ -139,7 +139,6 @@ public class DriverView extends BaseFragment implements OnClickListener {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Utils.showToast(getActivity(), "unselected");
             }
         });
 
@@ -184,7 +183,6 @@ public class DriverView extends BaseFragment implements OnClickListener {
             }
         });
 
-        mButton.setOnClickListener(this);
         if (mIsReservedUser) {
             mReservedTime.setVisibility(View.VISIBLE);
             mArrivedTimelayout.setVisibility(View.GONE);
@@ -270,14 +268,15 @@ public class DriverView extends BaseFragment implements OnClickListener {
             Bundle bundle = new Bundle();
             if (mIsReservedUser) {
                 if (mDriverModel == null || mDriverModel.mReservation_Information == null) {
-                    Utils.showToast(getActivity(), "mDriverModel null");
+                    Log.e(TAG, "mDriverModel is null");
                     return;
                 }
                 bundle.putString("reservation_id", mDriverModel.mReservation_Information.reservation_id);
                 mCallback.requsetServer(RequestData.CANCEL_REQUEST, bundle);
+                mSelectedConfirmationNum = null;
             } else {
                 if (mDriverModel == null || mDriverModel.mParkinglot_List == null) {
-                    Utils.showToast(getActivity(), "mDriverModel null");
+                    Log.e(TAG, "mDriverModel is null");
                     return;
                 }
                 if (mSelectedConfirmationNum == null) {

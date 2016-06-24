@@ -16,15 +16,15 @@
     <string name="action_settings">Settings</string>
     <string name="loading">Loading&#8230;</string>
     <string name="create">Create ID</string>
-    <string name="park_id">Choose park where you want you :</string>
-    <string name="choose_park_id">Choose park ID</string>
-    <string name="reservation_time">Choose time :</string>
-    <string name="card_info">Insert card number :</string>
-    <string name="park_fee">Park fee : </string>
-    <string name="park_grace_period">Grace period : </string>
+    <string name="park_id">"\u2022 Choose park where you want you : "</string>
+    <string name="choose_park_id">"\2022 Choose park ID : "</string>
+    <string name="reservation_time">"\u2022 Choose time : "</string>
+    <string name="card_info">"\u2022 Insert card number : "</string>
+    <string name="park_fee">"\u2022 Park fee : "</string>
+    <string name="park_grace_period">"\u2022 Grace period : "</string>
     <string name="park_description">Oh TEAM Sure park system is good!</string>
     <string name="park_confirmation_info">"park_confirmation_info"</string>
-    <string name="choose_period">Choose duration</string>
+    <string name="choose_period">"\u2022 Choose duration : "</string>
     <string name="duration">Duration</string>
     <string name="create_id">Input new ID and Password</string>
     <string name="configuration">Configuration</string>
@@ -33,14 +33,14 @@
     <string name="change_grace_period">Change grace period</string>
     <string name="add_parking_lot">Add parking lot</string>
     <string name="delete_parking_lot">Delete parking lot</string>
-    <string name="current_value">Current value :</string>
+    <string name="current_value">"\u2022 Current value : "</string>
     <string name="new_reservation">New reservation</string>
     <string name="qr_dialog_title">QR code</string>
-    <string name="payment_info">Payment_info : </string>
-    <string name="parking_address">Parkinglot address : </string>
-    <string name="reserved_time">Reserved time information :</string>
+    <string name="payment_info">"\u2022 Payment_info : "</string>
+    <string name="parking_address">"\u2022 Parkinglot address : "</string>
+    <string name="reserved_time">"\u2022 Reserved time information : "</string>
     <string name="reservation_cancel">Reservation cancel</string>
-    <string name="slot_count">Slot counnt :</string>
+    <string name="slot_count">"\u2022 Slot counnt : "</string>
     <string name="parking_slot">Slot</string>
     <string name="parking_slot_statue">Status</string>
     <string name="parking_slot_driverid">Driver</string>
@@ -54,8 +54,8 @@
     <string name="remove_attendant">Remove attendant</string>
     <string name="create_attendant_title">Add attendant ID, Password and Parking ID</string>
     <string name="address">Address</string>
-    <string name="occupancy_rate">Occupancy rate :</string>
-    <string name="revenue">Revenue :</string>
-    <string name="cancel_rate">Cancel rate :</string>
+    <string name="occupancy_rate">"\u2022 Occupancy rate : "</string>
+    <string name="revenue">"\u2022 "Revenue : "</string>
+    <string name="cancel_rate">"\u2022 Cancel rate : "</string>
 
 </resources>
