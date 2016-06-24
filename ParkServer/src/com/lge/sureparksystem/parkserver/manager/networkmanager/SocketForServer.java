@@ -24,6 +24,7 @@ public class SocketForServer implements Runnable {
 	private PrintWriter out = null;
 	
 	private String socketID = null;
+	private boolean bAttendant = false;
 
 	public SocketForServer(NetworkManager manager, Socket socket) {
 		this.manager = manager;
@@ -115,5 +116,13 @@ public class SocketForServer implements Runnable {
 	
 	public String getSocketID() {
 		return socketID;
+	}
+
+	public void setAttendant(boolean bAttendant) {
+		this.bAttendant  = bAttendant;
+	}
+	
+	public boolean getAttendant() {
+		return bAttendant;
 	}
 }
