@@ -547,6 +547,39 @@ public class DatabaseProvider {
 		return reservation;
 	}
 
+	public int getReservationCount(String email) {
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return -1;
+		}
+		int count = 0;
+		StringBuilder where = new StringBuilder(" where ");
+		where.append(Reservation.Columns.USER_EMAIL + "='" + email + "' AND ");
+		where.append(
+				Reservation.Columns.RESERVATION_STATE + "!=" + Reservation.STATE_TYPE.CANCELED);
+
+		count = doExecGetCountSQL(Reservation.RESERVATION_TABLE, where.toString());
+
+		LogHelper.log(TAG, "count = " + count);
+		return count;
+	}
+
+	public int getReservationCountAll() {
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return -1;
+		}
+		int count = 0;
+		StringBuilder where = new StringBuilder(" where ");
+		where.append(
+				Reservation.Columns.RESERVATION_STATE + "=" + Reservation.STATE_TYPE.RESERVED);
+
+		count = doExecGetCountSQL(Reservation.RESERVATION_TABLE, where.toString());
+
+		LogHelper.log(TAG, "count = " + count);
+		return count;
+	}
+
 	//if not exist, return null
 	@Nullable
 	public ReservationData getReservationInfo(int reservationId) {
@@ -990,6 +1023,52 @@ public class DatabaseProvider {
 		return parkinglot;
 	}
 
+	//if not exist, return null
+	@Nullable
+	public String getParkingLotId(String userEmail) {
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return null;
+		}
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String parkinglotId = null;
+		try {
+			StringBuilder where = new StringBuilder(" where ");
+			where.append(ParkingLot.Columns.USEREMAIL + "='" + userEmail + "'");
+
+			String sql = "select * from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
+			LogHelper.log(TAG, "sql = " + sql);
+			pstmt = mDBConn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				parkinglotId = rs.getString(ParkingLot.Columns.LOGIN_ID);
+				if (rs.next()) {
+					LogHelper.log(TAG, "Warning :: result is not one.");
+				}
+			} else {
+				LogHelper.log(TAG, "matched reservation is not exist.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		LogHelper.log(TAG, "parkinglot = " + parkinglotId);
+		return parkinglotId;
+	}
+
 	public boolean removeParkingLot(String id) {
 		if (mDBConn == null) {
 			LogHelper.log(TAG, "Error : There is no connection with sql server");
@@ -1000,7 +1079,7 @@ public class DatabaseProvider {
 		int count = 0;
 		try {
 			StringBuilder where = new StringBuilder(" where ");
-			where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+			where.append(ParkingLot.Columns.LOGIN_ID + "='" + id +"'");
 			String sql = "delete from " + ParkingLot.PARKINGLOT_TABLE + where.toString();
 			LogHelper.log(TAG, "sql = " + sql);
 
@@ -1039,7 +1118,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.FEE + "='" + fee + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id +"'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1065,7 +1144,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1080,7 +1159,7 @@ public class DatabaseProvider {
 		return result;
 	}
 
-	public boolean updateParkingLotUserEmail(int id, String email) {
+	public boolean updateParkingLotUserEmail(String id, String email) {
 		if (mDBConn == null) {
 			LogHelper.log(TAG, "Error : There is no connection with sql server");
 			return false;
@@ -1092,7 +1171,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 
@@ -1113,7 +1192,7 @@ public class DatabaseProvider {
 		set.append(ParkingLot.Columns.ADDRESS + "='" + address + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 
@@ -1135,7 +1214,7 @@ public class DatabaseProvider {
 		set.append(", " + ParkingLot.Columns.GRACE_PERIOD + "='" + gracePeriod + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1166,7 +1245,7 @@ public class DatabaseProvider {
 		set.append(", " + ParkingLot.Columns.USEREMAIL + "='" + email + "'");
 
 		StringBuilder where = new StringBuilder(" where ");
-		where.append(ParkingLot.Columns.LOGIN_ID + "=" + id);
+		where.append(ParkingLot.Columns.LOGIN_ID + "='" + id + "'");
 
 		count = doExecUpdateSQL(ParkingLot.PARKINGLOT_TABLE, set.toString(), where.toString());
 		if (count > 0) {
@@ -1683,6 +1762,65 @@ public class DatabaseProvider {
 		result = (count == 1) ? true : false;
 		LogHelper.log(TAG, "result = " + result);
 		return result;
+	}
+
+	public StatisticsData getStatisticsInformation(String parkinglotId, Date startTime,
+			Date endTime) {
+		StatisticsData statisticsData = new StatisticsData();
+		if (mDBConn == null) {
+			LogHelper.log(TAG, "Error : There is no connection with sql server");
+			return null;
+		}
+		LogHelper.log("TAG", "startTime = " + startTime.toString());
+		LogHelper.log("TAG", "endTime = " + endTime.toString());
+
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			StringBuilder where = new StringBuilder(" where ");
+			where.append(StatisticsInfo.Columns.PARKINGLOT_ID + "='" + parkinglotId + "'");
+			where.append(" AND " + StatisticsInfo.Columns.DATE_TIME + " between '");
+			where.append(
+					mDateFormat.format(startTime) + "' AND '" + mDateFormat.format(endTime) + "'");
+
+			String sql = "select  avg(" + StatisticsInfo.Columns.OCCUPANCY_RATE + "), avg("
+					+ StatisticsInfo.Columns.REVENUE + "), avg(" + StatisticsInfo.Columns.CANCEL_RATE
+					+ ") from "
+					+ StatisticsInfo.STATISTICSINFO_TABLE + where.toString();
+			LogHelper.log(TAG, "sql = " + sql);
+
+			pstmt = mDBConn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				statisticsData.setOccupancyRate(rs.getFloat(1));
+				statisticsData.setRevenue(rs.getFloat(2));
+				statisticsData.setCancelRate(rs.getFloat(3));
+				if (rs.next()) {
+					LogHelper.log(TAG, "Warnning : count is not one.");
+				}
+			} else {
+				LogHelper.log(TAG, "parkinglot is not exist.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (pstmt != null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (statisticsData != null) {
+			LogHelper.log(TAG, "statisticsListData.size() = " + statisticsData.toString());
+		}
+		return statisticsData;
 	}
 
 	public List<StatisticsData> getStatisticsInfo(String parkinglotId, Date startTime,

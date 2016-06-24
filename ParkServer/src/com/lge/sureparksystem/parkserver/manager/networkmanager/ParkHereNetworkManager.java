@@ -68,7 +68,8 @@ public class ParkHereNetworkManager extends NetworkManager {
 			send(jsonObject);
 			break;
 		case PARKING_LOT_STATS_REQUEST:
-			post(new StatisticsManagerTopic(jsonObject), this);
+//			getEventBus().post(new StatisticsManagerTopic(jsonObject));
+			post(new ReservationManagerTopic(jsonObject), this);
 			break;
 		default:
 			break;

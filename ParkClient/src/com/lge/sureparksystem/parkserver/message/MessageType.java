@@ -1,3 +1,4 @@
+
 package com.lge.sureparksystem.parkserver.message;
 
 public enum MessageType {
@@ -29,7 +30,15 @@ public enum MessageType {
     PARKING_LOT_STATUS("ParkinglotStatus"),
 
     NOTIFICATION("Notification"),
-
+    
+    // Owner
+    PARKINGLOT_STATS_REQUEST("Parkinglot_stats_Request"),
+    PARKINGLOT_STATISTICS("Parkinglot_Statistics"),
+    CHANGE_RESPONSE("Change_Response"),
+    CHANGE_PARKINGFEE("Change_parkingfee"),
+    CHANGE_GRACEPERIOD("Change_graceperiod"),
+    CREATE_ATTENDANT("Create_Attendant"),
+    
     NONE("NONE");
 
     private String text;

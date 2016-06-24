@@ -23,10 +23,10 @@ public class DatabaseTest {
         //        getRemoveUserAccount_Test();
         //        getUserAuthority_Test();
 
-                createReservation_Test();
+//                createReservation_Test();
         //        getReservationInfo_Test();
         //        updateReservationState_Test();
-    	getReservationCreditInfo_Test();
+//    	getReservationCreditInfo_Test();
         //
         //        updateParkingLot_Test();
         //        updateParkingLotFee_Test();
@@ -43,7 +43,7 @@ public class DatabaseTest {
 
         //        ucreateOccupancyRatePerHour_Test();
 
-        //        createStatisticsData();
+//                createStatisticsData();
         //        updateDailyStatisticsInfo_Test();
 //        getStatisticsInfo_Test();
     }
@@ -140,7 +140,7 @@ public class DatabaseTest {
         //        UserAccountData newuser = new UserAccountData("tester", "tester2@lge.com", "1234567890",
         //                cal.getTime(), DatabaseInfo.Authority.DRIVER_ID);
         //        mDatabaseProvider.createUserAccount(newuser);
-        mDatabaseProvider.updateParkingLotUserEmail(15, "tester2@lge.com");
+        mDatabaseProvider.updateParkingLotUserEmail("15", "tester2@lge.com");
     }
 
     /*************************************************************************************/

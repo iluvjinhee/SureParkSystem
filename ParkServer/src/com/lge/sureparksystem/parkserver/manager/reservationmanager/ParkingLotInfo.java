@@ -43,6 +43,15 @@ public class ParkingLotInfo {
 		this.parkingState = PARKINGLOT_STATE.SLIENT;
 	}
 
+	public ParkingLotInfo(String parkingLotId, int totalSlotNum, int parkingState,
+			int movingReservationId, ArrayList<ParkingSlot> slotList) {
+		this.parkingLotId = parkingLotId;
+		this.totalSlotNum = totalSlotNum;
+		this.parkingState = parkingState;
+		this.movingReservationId = movingReservationId;
+		this.slotList = slotList;
+	}
+
 	public boolean checkValidation(int slotNum, ArrayList<String> slotStatusList) {
 		boolean isValid = true;
 		if (totalSlotNum != slotNum) {
@@ -57,6 +66,29 @@ public class ParkingLotInfo {
 					break;
 				}
 			}
+		}
+		Logger.log("parkingLotId = " + parkingLotId + ", isValid = " + isValid);
+		return isValid;
+	}
+
+	public boolean updateSlotStatus(int slotNum, ArrayList<String> slotStatusList) {
+		boolean isValid = true;
+		if (totalSlotNum != slotNum) {
+			Logger.log("totalSlotNum = " + totalSlotNum + "slotNum = " + slotNum);
+			totalSlotNum = slotNum;
+			isValid = false;
+		} 
+		int invalidCount = 0;
+		for (int slot = 0; slot < totalSlotNum; slot++) {
+			if (slotList.get(slot).getStatus() != Integer.valueOf(slotStatusList.get(slot))) {
+				Logger.log("slotList = " + slotList.toString());
+				Logger.log("slotStatusList = " + slotStatusList.toString());
+				slotList.get(slot).setStatus(Integer.valueOf(slotStatusList.get(slot)));
+				invalidCount++;
+			}
+		}
+		if (invalidCount > 0) {
+			isValid = false;
 		}
 		Logger.log("parkingLotId = " + parkingLotId + ", isValid = " + isValid);
 		return isValid;
@@ -229,6 +261,14 @@ public class ParkingLotInfo {
 	public void setMovingReservationId(int movingReservationId) {
 		Logger.log("movingReservationId = " + movingReservationId);
 		this.movingReservationId = movingReservationId;
+	}
+
+	public ArrayList<ParkingSlot> getSlotList() {
+		return slotList;
+	}
+
+	public void setSlotList(ArrayList<ParkingSlot> slotList) {
+		this.slotList = slotList;
 	}
 
 	@Override
