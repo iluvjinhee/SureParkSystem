@@ -37,6 +37,7 @@ public class StatisticsManager extends ManagerTask {
         ScheduledJob job = new ScheduledJob();
         Timer jobScheduler = new Timer();
         jobScheduler.schedule(job, getFirstScheduleTime(), javax.management.timer.Timer.ONE_DAY);
+        
         while (loop) {
             try {
                 Thread.sleep(100);

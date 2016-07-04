@@ -32,16 +32,6 @@ public class ParkingLotNetworkManager extends NetworkManager {
 		registerEventBus(new ParkingLotNetworkManagerListener());
 	}
 	
-	@Override
-	public void run() {
-		super.run();
-	}
-	
-//	@Override
-//	public void receive(JSONObject jsonObject) {
-//		processMessage(jsonObject);
-//	}
-	
 	protected void processMessage(JSONObject jsonObject) {
 		super.processMessage(jsonObject);
 		

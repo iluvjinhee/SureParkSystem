@@ -33,10 +33,6 @@ public class ParkHereNetworkManager extends NetworkManager {
 		super(serverPort);
 	}
 	
-	public void run() {
-		super.run();
-	}
-	
 	protected void processMessage(JSONObject jsonObject) {
 		super.processMessage(jsonObject);
 		
